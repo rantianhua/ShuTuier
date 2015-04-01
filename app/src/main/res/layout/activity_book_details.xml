@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        >
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rl_bottom"
+        android:layout_alignParentTop="true"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:id="@+id/img_bookcover"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_below="@id/img_bookcover"
+                android:background="@color/list_item_bottom"
+                android:id="@+id/margin1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="书名：射雕英雄传"
+                android:id="@+id/tv_book_name"
+                android:layout_below="@+id/margin1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="作者：金庸"
+                android:id="@+id/tv_book_author"
+                android:layout_below="@+id/tv_book_name"
+                android:layout_marginTop="8dp"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_isbn"
+                android:layout_below="@+id/tv_book_author"
+                android:layout_marginTop="8dp"
+                android:text="ISBN号：9787806553312"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_publisher"
+                android:text="出版社：天华出版社"
+                android:layout_below="@+id/tv_book_details_isbn"
+                android:layout_marginTop="8dp"
+                android:layout_centerHorizontal="true"
+                />
+
+            <View
+                android:id="@+id/margin2"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="@color/list_item_bottom"
+                android:layout_below="@+id/tv_book_details_publisher"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_origin_price"
+                android:text="45"
+                android:textStyle="italic"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@+id/img_book_details_user"
+                android:gravity="bottom"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_sell_price"
+                android:text="32"
+                android:textSize="18sp"
+                android:layout_toLeftOf="@+id/tv_book_details_origin_price"
+                android:layout_toStartOf="@+id/tv_book_details_origin_price"
+                android:layout_alignBottom="@+id/img_book_details_user"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:gravity="bottom"
+                />
+
+            <ImageView
+                android:layout_width="@dimen/item_title_photo"
+                android:layout_height="@dimen/item_title_photo"
+                android:id="@+id/img_book_details_user"
+                android:src="@drawable/heart"
+                android:layout_below="@+id/margin2"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_ownername"
+                android:layout_toRightOf="@+id/img_book_details_user"
+                android:layout_toEndOf="@+id/img_book_details_user"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="Be Winner"
+                android:layout_alignBottom="@+id/img_book_details_user"
+                android:layout_alignTop="@+id/img_book_details_user"
+                android:gravity="center_vertical"
+                />
+
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all_description"
+                android:textSize="16sp"
+                android:layout_below="@+id/img_book_details_user"
+                android:layout_marginTop="10dp"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignStart="@+id/img_book_details_user"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_decription"
+                android:text="1、金庸武侠宗师地位奠基之作 2、最受学生、家长及老师欢迎和推荐的金庸作品之一：侠之大者，为国为民 3、新加坡中学华文文学课程选读作品 4、央视科教频道《读书》栏目寒假特别节目《我的一本课外书》推荐书目 "
+                android:layout_below="@+id/tv_description"
+                android:layout_marginTop="8dp"
+                android:padding="8dp"
+                android:maxLines="8"
+                android:layout_alignStart="@+id/img_book_details_user"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignRight="@+id/tv_book_details_origin_price"
+                android:layout_alignEnd="@+id/tv_book_details_origin_price"
+                />
+
+            <TextView
+                android:id="@+id/tv_remark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remarks"
+                android:textSize="16sp"
+                android:layout_below="@+id/tv_book_details_decription"
+                android:layout_marginTop="10dp"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignStart="@+id/img_book_details_user"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_book_details_remark"
+                android:text="1、金庸武侠宗师地位奠基之作 2、最受学生、家长及老师欢迎和推荐的金庸作品之一：侠之大者，为国为民 3、新加坡中学华文文学课程选读作品 4、央视科教频道《读书》栏目寒假特别节目《我的一本课外书》推荐书目 "
+                android:layout_below="@+id/tv_remark"
+                android:layout_marginTop="8dp"
+                android:padding="8dp"
+                android:maxLines="5"
+                android:layout_alignStart="@+id/img_book_details_user"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignRight="@+id/tv_book_details_origin_price"
+                android:layout_alignEnd="@+id/tv_book_details_origin_price"
+                />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:id="@+id/margin3"
+                android:background="@color/list_item_bottom"
+                android:layout_below="@+id/tv_book_details_remark"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/message"
+                android:textSize="16sp"
+                android:id="@+id/tv_message_label"
+                android:layout_below="@id/margin3"
+                android:layout_alignStart="@+id/img_book_details_user"
+                android:layout_alignLeft="@+id/img_book_details_user"
+              />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/tv_message_label"
+                android:layout_marginTop="8dp"
+                android:id="@+id/ll_comments_list"
+                android:layout_alignRight="@+id/tv_book_details_origin_price"
+                android:layout_alignEnd="@+id/tv_book_details_origin_price"
+                android:layout_alignStart="@+id/img_book_details_user"
+                android:layout_alignLeft="@+id/img_book_details_user"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/personal_center_bg">
+
+        <include layout="@layout/view_detail_bottom"/>
+
+    </RelativeLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pb_frament_detail"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

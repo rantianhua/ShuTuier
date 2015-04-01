@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:id="@+id/rl_college">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="16dp"
+            android:src="@drawable/arrow_down"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/img_up_down"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:scaleType="center"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_toLeftOf="@+id/img_up_down"
+            android:layout_toStartOf="@+id/img_up_down"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="全部"/>
+
+    </RelativeLayout>
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gridView_colleges"
+        android:numColumns="3"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="15dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:background="@color/personal_center_bg"
+        android:layout_below="@+id/rl_college"
+        android:visibility="gone"
+        />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent" android:id="@+id/swipe_container"
+        android:layout_height="match_parent"
+        android:paddingLeft="5dp"
+        android:paddingEnd="5dp"
+        android:paddingRight="5dp"
+        android:layout_below="@+id/rl_college"
+        >
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pb_loading"
+        android:indeterminateDrawable="@drawable/loading"
+        android:indeterminateOnly="true"
+        android:indeterminateBehavior="repeat"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        />
+
+</RelativeLayout>

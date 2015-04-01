@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/img_login_bg"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_bg"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/test"
+        android:text="豆腐块杜可风打开"
+        android:textColor="@color/black"/>
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/img_logo_login"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_launcher"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_purpose"
+        android:layout_below="@+id/img_logo_login"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:id="@+id/tv_my_purpose"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/login_view_height"
+        android:id="@+id/rl_login_view"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-155dp"
+        >
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/ibn_qq_login"
+            android:background="@drawable/ibn_qq"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/qq_login"/>
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qq_login"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/ibn_qq_login"
+            android:layout_marginTop="5dp"
+            android:id="@+id/tv_qq_label"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/blue"
+            android:layout_below="@+id/tv_qq_label"
+            android:layout_marginTop="10dp"
+            android:id="@+id/view_line"
+            />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:text="@string/just_look"
+            android:textSize="12sp"
+            android:textColor="@color/section_selected"
+            android:layout_below="@+id/view_line"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn_just_look"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/btn_just_look"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="110dp"
+    android:padding="8dp"
+    >
+
+    <ImageView
+        android:layout_width="@dimen/item_title_photo"
+        android:layout_height="@dimen/item_title_photo"
+        android:src="@drawable/ic_launcher"
+        android:id="@+id/img_item_user_photo"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bdfd ddfd"
+        android:layout_alignBottom="@+id/img_item_user_photo"
+        android:layout_alignTop="@+id/img_item_user_photo"
+        android:layout_toRightOf="@+id/img_item_user_photo"
+        android:layout_toEndOf="@+id/img_item_user_photo"
+        android:gravity="center"
+        android:singleLine="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"/>
+
+
+    <TextView
+        android:id="@+id/textview_item_title_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/img_item_user_photo"
+        android:layout_alignTop="@+id/img_item_user_photo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        android:gravity="center"
+        android:text="10分钟前"
+        />
+
+    <TextView
+        android:id="@+id/textview_item_title_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:gravity="center_vertical"
+        android:layout_below="@+id/img_item_user_photo"
+        android:layout_alignLeft="@+id/img_item_user_photo"
+        android:layout_alignStart="@+id/img_item_user_photo"
+        android:layout_alignRight="@+id/textview_item_title_time"
+        android:layout_alignEnd="@+id/textview_item_title_time"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:text="华福酒店涣发大号可发可三上京赶考上百个可是个可事不过三客观上是白色恐怖上不上课上课不是时刻表空白符交话费好地方可可日东方红惊魂甫定"
+        />
+
+    <TextView
+        android:id="@+id/textview_item_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_item_title_description"
+        android:layout_marginTop="8dp"
+        android:layout_alignLeft="@+id/textview_item_title_description"
+        android:layout_alignStart="@+id/textview_item_title_description"
+        android:text="想卖"/>
+
+    <TextView
+        android:id="@+id/textview_item_title_original_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/textview_item_goal"
+        android:layout_alignBottom="@+id/textview_item_goal"
+        android:textStyle="italic"
+        android:text="45"
+        />
+
+    <TextView
+        android:id="@+id/textview_item_title_sell_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/textview_item_title_original_price"
+        android:layout_toStartOf="@+id/textview_item_title_original_price"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_alignTop="@+id/textview_item_goal"
+        android:layout_alignBottom="@+id/textview_item_goal"
+        android:text="32"
+        />
+
+
+</RelativeLayout>

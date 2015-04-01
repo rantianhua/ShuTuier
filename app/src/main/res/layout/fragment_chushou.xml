@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/btn_isbn"
+                android:id="@+id/btn_isbn"
+                android:textColor="@color/white"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/btn_isbn"/>
+
+            <include layout="@layout/tablayout_essential_info"
+                android:id="@+id/tablayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_isbn"
+                android:layout_marginTop="10dp"
+                />
+
+            <include layout="@layout/tablayout_input_info"
+                android:id="@+id/tablayout_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tablayout"
+                android:layout_marginTop="20dp"/>
+
+            <ImageView
+                android:id="@+id/img_book_cover"
+                android:layout_width="@dimen/img_cover_width"
+                android:layout_height="@dimen/img_cover_height"
+                android:layout_below="@+id/tablayout_input"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/def"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_add_book_cover"
+                android:layout_alignStart="@+id/tablayout_input"
+                android:layout_alignLeft="@+id/tablayout_input"
+                android:layout_alignEnd="@+id/tablayout_input"
+                android:layout_alignRight="@+id/tablayout_input"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/add_cover"
+                android:textColor="@color/tv_personnal"
+                android:layout_below="@+id/img_book_cover"
+                android:layout_marginTop="15dp"
+                android:padding="10dp"
+                android:background="@drawable/btn_add_cover"
+                />
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:id="@+id/btn_reset"
+                android:layout_below="@+id/btn_add_book_cover"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/reset"
+                android:textColor="@color/tv_personnal"
+                android:textSize="18sp"
+                android:background="@drawable/btn_reset"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:id="@+id/btn_send"
+                android:layout_below="@+id/btn_add_book_cover"
+                android:layout_marginTop="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/release"
+                android:textColor="@color/tv_personnal"
+                android:background="@drawable/btn_commit"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>

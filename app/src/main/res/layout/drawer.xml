@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/white"
+    tools:ignore="MissingPrefix">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/division"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:overScrollMode="never">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/user_cover"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/userSpace"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/user_photo"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="@dimen/photoMarginTop"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="Be Winner"
+                android:layout_below="@+id/user_photo"
+                android:layout_marginTop="16dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_cover"
+                android:id="@+id/rl_section_home"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                android:background="@drawable/section_bg">
+
+            <ImageView
+                android:layout_width="@dimen/sectionIconSize"
+                android:layout_height="@dimen/sectionIconSize"
+                android:id="@+id/icon_home"
+                android:layout_marginStart="45dp"
+                android:layout_marginLeft="45dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/section_home_icon"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/home"
+                android:textColor="@color/section_tv"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="80dp"
+                android:layout_marginEnd="80dp"
+                android:layout_centerVertical="true"
+                android:id="@+id/tv_section_home"
+                />
+
+        </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_section_home"
+                android:id="@+id/rl_section_commit"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                android:background="@drawable/section_bg">
+
+                <ImageView
+                    android:layout_width="@dimen/sectionIconSize"
+                    android:layout_height="@dimen/sectionIconSize"
+                    android:id="@+id/icon_commit"
+                    android:layout_marginStart="45dp"
+                    android:layout_marginLeft="45dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/section_sell_icon"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/commit"
+                    android:textColor="@color/section_tv"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/tv_section_commit"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_section_commit"
+                android:id="@+id/rl_section_message"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                android:background="@drawable/section_bg">
+
+                <ImageView
+                    android:layout_width="@dimen/sectionIconSize"
+                    android:layout_height="@dimen/sectionIconSize"
+                    android:id="@+id/icon_message"
+                    android:layout_marginStart="45dp"
+                    android:layout_marginLeft="45dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/calling_48"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/message_section"
+                    android:textColor="@color/section_tv"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/tv_section_message"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3"
+                    android:textSize="17sp"
+                    android:textColor="@color/section_tv"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:id="@+id/tv_section_message_number"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_section_message"
+                android:id="@+id/rl_section_swipe"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp"
+                android:background="@drawable/section_bg">
+
+                <ImageView
+                    android:layout_width="@dimen/sectionIconSize"
+                    android:layout_height="@dimen/sectionIconSize"
+                    android:id="@+id/icon_swipe"
+                    android:layout_marginStart="45dp"
+                    android:layout_marginLeft="45dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/scan"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/swipe"
+                    android:textColor="@color/section_tv"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="60dp"
+                    android:layout_marginEnd="60dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/tv_section_swipe"
+                    />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:id="@+id/division"
+        android:layout_above="@+id/rl_section_setting"
+        android:layout_height="1dp"
+        android:background="@color/dividing_line"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_section_setting"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:layout_width="@dimen/sectionIconSize"
+            android:layout_height="@dimen/sectionIconSize"
+            android:id="@+id/icon_setting"
+            android:layout_marginStart="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/section_setting_icon"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/setting"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="70dp"
+            android:layout_marginEnd="70dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_section_setting"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

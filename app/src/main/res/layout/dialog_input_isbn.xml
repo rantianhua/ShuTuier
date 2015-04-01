@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:background="@drawable/corner_dialog"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/tv_input_isbn"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/green_light"
+        android:id="@+id/tv_isbn_label"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/et_isbn"
+        android:layout_below="@+id/tv_isbn_label"
+       android:layout_margin="8dp"
+        android:id="@+id/et_isbn"/>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="@string/cancel"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:background="@drawable/btn_reset"
+        android:layout_below="@+id/et_isbn"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:id="@+id/btn_cancel_isbn"/>
+
+
+    <Button
+        android:id="@+id/btn_sure_isbn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="@string/sure"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:background="@drawable/btn_commit"
+        android:layout_alignBottom="@+id/btn_cancel_isbn"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@+id/btn_cancel_isbn"/>
+
+</RelativeLayout>

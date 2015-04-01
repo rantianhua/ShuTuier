@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="section_selected">#ffbd3617</color>
+    <color name="drawer_bg">#fafafa</color>
+    <color name="section_pressed">#81504b09</color>
+    <color name="tv_selected">#ff8d2823</color>
+    <color name="personal_center_bg">#d7dadae2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="tv_align_bg">#ff727272</color>
+    <color name="list_item_bottom">#63aaaaaa</color>
+    <color name="bottom_pressed">#7b8e8e8e</color>
+    <color name="black">#000</color>
+    <color name="blue">#d61dc1cf</color>
+    <color name="green_light">#ff77dd51</color>
+    <color name="dividing_line">#ff6b6b6b</color>
+
+
+    <!-- ##### zxing-lib ##### -->
+    <color name="possible_result_points">#c0ffbd21</color> <!-- Android standard ICS color -->
+    <color name="result_view">#b0000000</color>
+    <color name="status_text">#ffffffff</color>
+    <color name="transparent">#00000000</color>
+    <color name="viewfinder_laser">#ffcc0000</color> <!-- Android standard ICS color -->
+    <color name="viewfinder_mask">#60000000</color>
+
+</resources>

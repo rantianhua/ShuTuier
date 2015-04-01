@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/img_comment_photo"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@color/material_blue_grey_800"/>
+
+    <TextView
+        android:id="@+id/tv_comment_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/img_comment_photo"
+        android:layout_alignStart="@+id/img_comment_photo"
+        android:layout_alignTop="@+id/img_comment_photo"
+        android:layout_alignBottom="@+id/img_comment_photo"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:textColor="#000000"
+        android:text="恭候大驾"/>
+
+    <TextView
+        android:id="@+id/tv_comment_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_comment_name"
+        android:layout_marginTop="10dp"
+        android:layout_alignLeft="@+id/tv_comment_name"
+        android:layout_alignStart="@+id/tv_comment_name"
+        android:text="大喊大叫很好的数据计算过"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_comment_time"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_alignTop="@+id/tv_comment_name"
+        android:layout_alignBottom="@+id/tv_comment_name"
+        />
+
+
+</RelativeLayout>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_top_corner_no_bottom_line"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/classify"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Spinner
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/spinner_main_classify"
+            android:entries="@array/main_classify">
+        </Spinner>
+
+        <Spinner
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/spinner_sub_classify">
+
+        </Spinner>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/number"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/et_book_number"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_gravity="center_vertical"
+            android:inputType="number"
+            android:singleLine="true"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp"
+        android:id="@+id/tr_college">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/college_label"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:id="@+id/spinner_college"
+            android:layout_gravity="center_vertical"
+            android:entries="@array/colleges"/>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/how_old"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Spinner
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:id="@+id/spinner_how_old"
+            android:layout_gravity="center_vertical"
+            android:entries="@array/how_old"/>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/origin_price"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/et_origin_price"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:singleLine="true"
+            android:inputType="number"/>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/my_action"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <CheckBox
+            android:id="@+id/cb_sell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/sell"
+            android:textSize="18sp"
+            />
+
+        <CheckBox
+            android:id="@+id/cb_ask_buy"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/ask_buy"
+            android:textSize="18sp"/>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/how_sell"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/tv_how_commit"
+            />
+
+        <CheckBox
+            android:id="@+id/cb_pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/pay"
+            android:textSize="18sp"
+            />
+
+        <CheckBox
+            android:id="@+id/cb_send"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/send"
+            android:textSize="18sp"/>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp"
+        android:id="@+id/tr_sell_price"
+        >
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/sell_price"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/tv_sell_price_label"
+            />
+
+        <EditText
+            android:id="@+id/et_sell_price"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:singleLine="true"
+            android:hint="@string/hint_sell_price"
+            android:inputType="number"/>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:id="@+id/tr_send_condition"
+        >
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/send_conditions"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/et_send_condition"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:maxLength="150"
+            android:minLines="3"
+            android:maxLines="5"
+            android:gravity="top"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_no_corner_without_bottom"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/all_description"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/et_descripition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:maxLength="200"
+            android:minLines="5"
+            android:maxLines="8"
+            android:gravity="top"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_bottom_corner_no_top_line"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="@string/remarks"
+            android:textSize="18sp"
+            android:gravity="end"
+            android:layout_gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/et_remarks"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:maxLength="150"
+            android:minLines="3"
+            android:maxLines="5"
+            android:gravity="top"/>
+
+    </TableRow>
+
+</TableLayout>

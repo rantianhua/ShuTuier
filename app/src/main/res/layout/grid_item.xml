@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/img_grid_item"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/tv_align_grid_img"
+        android:layout_alignLeft="@+id/img_grid_item"
+        android:layout_alignStart="@+id/img_grid_item"
+        android:layout_alignRight="@+id/img_grid_item"
+        android:layout_alignEnd="@+id/img_grid_item"
+        android:layout_alignBottom="@+id/img_grid_item"
+        android:text="未交易"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:background="@color/tv_align_bg"
+        />
+
+    <TextView
+        android:id="@+id/tv_name_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_below="@+id/img_grid_item"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:text="复旦复华大家"
+        android:textSize="12sp"
+        android:singleLine="true"/>
+
+</RelativeLayout>

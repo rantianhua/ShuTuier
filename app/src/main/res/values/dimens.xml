@@ -1,0 +1,17 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="statusMargin">0dp</dimen>
+    <dimen name="userSpace">160dp</dimen>
+    <dimen name="photoMarginTop">34dp</dimen>
+    <dimen name="photoMarginLeft">100dp</dimen>
+    <dimen name="sectionIconSize">24dp</dimen>
+    <dimen name="item_title_photo">32dp</dimen>
+    <dimen name="tv_tab_width">60dp</dimen>
+    <dimen name="tv_tab_height">40dp</dimen>
+    <dimen name="img_cover_width">90dp</dimen>
+    <dimen name="img_cover_height">120dp</dimen>
+    <dimen name="margin_5">5dp</dimen>
+    <dimen name="login_view_height">155dp</dimen>
+</resources>

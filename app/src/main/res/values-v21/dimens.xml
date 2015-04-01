@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="userSpace">160dp</dimen>
+    <dimen name="photoMarginTop">35dp</dimen>
+    <dimen name="photoMarginLeft">100dp</dimen>
+</resources>
