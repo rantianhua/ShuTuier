@@ -38,7 +38,9 @@
     <string name="reset">重置</string>
     <string name="release">发布</string>
     <string name="want_buy">我想买</string>
-   <string name="want_get">我想要</string>
+    <string name="have_sell">我有卖</string>
+   <string name="ask_give">求送</string>
+    <string name="give_he">送给他</string>
     <string name="send_comments">发送</string>
     <string name="back">返回</string>
     <string name="hint_comments">最多150字</string>
@@ -97,10 +99,13 @@
     <string name="my_send">我的赠送</string>
     <string name="my_ask_send">我的求赠</string>
     <string name="my_base_information">基本信息</string>
-    <string name="message">留言</string>
+    <string name="message">留言：</string>
     <string name="zxing_msg_default_status">请将二维码或条形码对准取景框</string>
     <string name="hint_sell_price">单位/元</string>
     <string name="sure">确  定</string>
     <string name="cancel">取  消</string>
-
+    <string name="choose_college_label">当前学院：</string>
+    <string name="end">结束</string>
+    <string name="contact_none">这位坊友很懒，什么都没留下，你可以给他(她)留言。</string>
+    <string name="choose_contact">请选择联系方式</string>
 </resources>

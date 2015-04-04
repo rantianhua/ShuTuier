@@ -32,6 +32,8 @@ import weike.data.BookItem;
 import weike.data.BookOtherData;
 import weike.data.CommentData;
 import weike.data.ListBookData;
+import weike.fragment.ContactDialogFragment;
+import weike.fragment.ShareFragment;
 import weike.util.Constants;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
@@ -68,24 +70,46 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     TextView tvRemark;
     @InjectView(R.id.ll_comments_list)
     LinearLayout ll;
-    @InjectView(R.id.rl_bottom)
-    RelativeLayout rlBottom;
     @InjectView(R.id.tv_message_detail)
     TextView tvMessageBottom;
     @InjectView(R.id.btn_want_buy)
     Button btnWantBuy;
     @InjectView(R.id.tv_share_detail)
     TextView tvShareBottom;
+    @InjectView(R.id.ll_bottom_buy_action)
+    LinearLayout llBuyAction;
+    @InjectView(R.id.ll_btn_want_buy)
+    LinearLayout llWntBuy;
+    @InjectView(R.id.ll_btn_have_sell)
+    LinearLayout llHaveSell;
+    @InjectView(R.id.btn_have_sell)
+    Button haveSell;
+    @InjectView(R.id.ll_btn_ask_give)
+    LinearLayout llAskGive;
+    @InjectView(R.id.btn_ask_give)
+    Button askGive;
+    @InjectView(R.id.ll_btn_give_he)
+    LinearLayout llGiveHe;
+    @InjectView(R.id.btn_give_he)
+    Button giveHe;
+    @InjectView(R.id.rl_bottom_commend)
+    RelativeLayout rlBottomCommend;
+    @InjectView(R.id.btn_back)
+    Button btnBack;
+    @InjectView(R.id.et_comments)
+    EditText etCommend;
+    @InjectView(R.id.btn_send_comment)
+    Button btnSend;
+    @InjectView(R.id.tv_send_condition)
+    TextView tvSendCondition;
 
     private Handler hanGetDetail = null,hanComment=null;
     private ImageLoader imageLoader;
     private Map<String,Integer> map;
-    private View viewBottm;
-    private View viewComment;
-    private EditText etComment= null;
     private int itemId;
     private String comment = null;
     public static final String TAG = "BookDetailActivity";
+    private BookItem item = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,9 +132,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
         HttpManager.startTask(task);
         ListBookData data = ListBookData.getInstance(from);
-        BookItem item = (BookItem) data.getBookItem(itemId).get("item");
-
-        tvMessageBottom.setOnClickListener(this);
+        item = (BookItem) data.getBookItem(itemId).get("item");
 
         if(imageLoader == null) {
             imageLoader = Mysingleton.getInstance(this).getImageLoader();
@@ -145,13 +167,27 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     //初始化底部视图
     private void initBottomView() {
-        viewComment = View.inflate(this,R.layout.view_comments,null);
-        viewBottm = rlBottom.getChildAt(0);
-        Button btnBack = (Button) viewComment.findViewById(R.id.btn_back);
-        Button btnSend = (Button) viewComment.findViewById(R.id.btn_send_comment);
-        etComment = (EditText) viewComment.findViewById(R.id.et_comments);
+        tvMessageBottom.setOnClickListener(this);
+        tvShareBottom.setOnClickListener(this);
+        //根据书的状态改变不同的状态
+        String status  = item.getStatue();
+        if(!status.contains("出售")) {
+            llWntBuy.setVisibility(View.GONE);
+        }
+        if(!status.contains("求购")){
+            llHaveSell.setVisibility(View.GONE);
+        }
+        if(!status.contains("赠送") || status.contains("求赠送")){
+            llAskGive.setVisibility(View.GONE);
+            tvSendCondition.setVisibility(View.INVISIBLE);
+        }
+        if(!status.contains("求赠送")) {
+            llGiveHe.setVisibility(View.GONE);
+        }
         btnBack.setOnClickListener(this);
         btnSend.setOnClickListener(this);
+        //初始状态下隐藏评论试图
+        rlBottomCommend.setVisibility(View.GONE);
     }
 
     private void initHandler() {
@@ -160,6 +196,10 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 pb.setVisibility(View.GONE);
+                btnWantBuy.setOnClickListener(BookDetailActivity.this);
+                haveSell.setOnClickListener(BookDetailActivity.this);
+                giveHe.setOnClickListener(BookDetailActivity.this);
+                askGive.setOnClickListener(BookDetailActivity.this);
                 switch (msg.what) {
                     case 0:
                         StringBuilder sb = new StringBuilder();
@@ -179,6 +219,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         }
                         break;
                     case 1:
+                        Toast.makeText(BookDetailActivity.this,"加载评论失败",Toast.LENGTH_SHORT).show();
                         break;
                     case 2:
                         break;
@@ -236,12 +277,30 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 changeBottomView(1);
                 break;
             case R.id.btn_send_comment:
-                CharSequence str = etComment.getText();
+                CharSequence str = etCommend.getText();
                 if(!TextUtils.isEmpty(str)) {
                     comment = str.toString();
                     str = null;
                     sendComment();
                 }
+                break;
+            case R.id.tv_share_detail:
+                ShareFragment.getInstance(item.getImgUrl(),itemId).show(getSupportFragmentManager(),"share");
+                break;
+            case R.id.btn_want_buy:
+                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
+                break;
+            case R.id.btn_have_sell:
+                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
+                break;
+            case R.id.btn_give_he:
+                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
+                break;
+            case R.id.btn_ask_give:
+                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
+                break;
+            default:
+                break;
         }
     }
 
@@ -249,13 +308,13 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     private void changeBottomView(int flag){
         if(flag == 0) {
             //从默认视图变成评论视图
-            rlBottom.removeViewAt(0);
-            rlBottom.addView(viewComment);
+            llBuyAction.setVisibility(View.GONE);
+            rlBottomCommend.setVisibility(View.VISIBLE);
         }else {
             //从评论视图返回默认视图
-            etComment.setText("");
-            rlBottom.removeViewAt(0);
-            rlBottom.addView(viewBottm);
+            etCommend.setText("");
+            rlBottomCommend.setVisibility(View.GONE);
+            llBuyAction.setVisibility(View.VISIBLE);
         }
     }
 
@@ -263,7 +322,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     private void sendComment() {
         //先隐藏软件盘
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(etComment.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(etCommend.getWindowToken(),0);
         imm = null;
         CommentData data = CommentData.getInstance();
         data.setBookId(itemId);

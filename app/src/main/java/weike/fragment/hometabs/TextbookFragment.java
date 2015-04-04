@@ -1,5 +1,6 @@
 package weike.fragment.hometabs;
 
+import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -19,7 +20,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -28,6 +30,7 @@ import weike.adapter.BookListAdapter;
 import weike.adapter.GridCollegeAdapter;
 import weike.data.BookItem;
 import weike.data.ListBookData;
+import weike.fragment.CollegesDialogFragment;
 import weike.shutuier.BookDetailActivity;
 import weike.shutuier.R;
 import weike.util.ConnectionDetector;
@@ -41,16 +44,18 @@ import weike.util.HttpTask;
 public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.OnRefreshListener
         ,AdapterView.OnItemClickListener ,View.OnClickListener{
 
-    @InjectView(R.id.pb_loading)
-    ProgressBar pb;
     @InjectView(R.id.listview)
     ListView listView;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout  refreshLayout;
-    @InjectView(R.id.gridView_colleges)
-    GridView gridView;
     @InjectView(R.id.img_up_down)
     ImageView showGrid;
+    @InjectView(R.id.tv_choose_college)
+    TextView tvCollege;
+    @InjectView(R.id.rl_college)
+    RelativeLayout rlCollege;
+    @InjectView(R.id.gridView_colleges)
+    GridView gridView;
 
     private static TextbookFragment fragment = null;
     private BookListAdapter adapter = null;
@@ -58,13 +63,14 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     private final String dataLink = Constants.OLink + "教材";
     private Handler handler = null;
     private boolean isDatainited = false;
+    private int action = 0;
+    Animation rotate1 = null,rotate2;  //旋转动画
+    private CollegesDialogFragment collegesDialogFragment = null;
     private String[] colleges = {"全部","计算机院","通电学院","电院"
             ,"机电学院","物光学院","经管学院","数统学院","人文学院"
             ,"外国语学院","软件学院","微电子院","空间学院","材料与纳米",
             "国际学院","网络学院"};
-    private int action = 0;
-    Animation rotate1 = null,rotate2;  //旋转动画
-    Animation translateShow = null,translateHide = null;  //平移动画
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -86,14 +92,20 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         adapter = new BookListAdapter(data.getList(),getActivity());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
-        if(pb.getVisibility() == View.INVISIBLE){
-            pb.setVisibility(View.VISIBLE);
-        }
+
         GridCollegeAdapter collegeAdapter = new GridCollegeAdapter(getActivity(),colleges);
         gridView.setAdapter(collegeAdapter);
         gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
+        gridView.setOnItemClickListener(this);
+
         showGrid.setOnClickListener(this);
+
+        LayoutTransition transition = new LayoutTransition();
+        transition.setAnimator(LayoutTransition.APPEARING, transition.getAnimator(LayoutTransition.APPEARING));
+        transition.setAnimator(LayoutTransition.DISAPPEARING,transition.getAnimator(LayoutTransition.DISAPPEARING));
+        gridView.setLayoutTransition(transition);
     }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -123,13 +135,11 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
 
 
     private void initHandler() {
+
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(pb.getVisibility() == View.VISIBLE) {
-                    pb.setVisibility(View.INVISIBLE);
-                }
                 switch (msg.what) {
                     case 0:
                         adapter.notifyDataSetChanged();
@@ -172,6 +182,18 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.gridView_colleges:
+                Toast.makeText(getActivity(),"点击了"+position,Toast.LENGTH_LONG).show();
+                break;
+            case R.id.listview:
+                showDetail(position);
+                break;
+         }
+
+    }
+
+    private void showDetail(int position) {
         BookItem item = (BookItem)listView.getAdapter().getItem(position);
         Intent intent = new Intent(getActivity(), BookDetailActivity.class);
         intent.putExtra(Constants.EXTRA_ITEM_ID,item.getId());
@@ -189,50 +211,12 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     }
 
     private void startRoted() {
-        if(translateShow == null) {
-            translateShow = AnimationUtils.loadAnimation(getActivity(),R.anim.colleges_translate_show);
-            translateShow.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    gridView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
-        if(translateHide == null) {
-            translateHide = AnimationUtils.loadAnimation(getActivity(),R.anim.colleges_translate_show);
-            translateHide.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    gridView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-        }
         if(rotate1 == null) {
             rotate1 = AnimationUtils.loadAnimation(getActivity(),R.anim.view_rotate_1);
             rotate1.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    gridView.startAnimation(translateShow);
+                    gridView.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -251,7 +235,7 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
             rotate2.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    gridView.startAnimation(translateHide);
+                    gridView.setVisibility(View.GONE);
                 }
 
                 @Override

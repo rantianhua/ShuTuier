@@ -7,7 +7,7 @@
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/rl_bottom"
+        android:layout_marginBottom="50dp"
         android:layout_alignParentTop="true"
         >
 
@@ -158,12 +158,35 @@
                 />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_conditions"
+                android:id="@+id/tv_send_condition_label"
+                android:textSize="16sp"
+                android:layout_below="@+id/tv_book_details_decription"
+                android:layout_marginTop="10dp"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignStart="@+id/img_book_details_user"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_send_condition"
+                android:layout_below="@+id/tv_send_condition_label"
+                android:layout_marginTop="8dp"
+                android:padding="8dp"
+                android:layout_alignStart="@+id/img_book_details_user"
+                android:layout_alignLeft="@+id/img_book_details_user"
+                android:layout_alignRight="@+id/tv_book_details_origin_price"
+                android:layout_alignEnd="@+id/tv_book_details_origin_price"/>
+
+            <TextView
                 android:id="@+id/tv_remark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/remarks"
                 android:textSize="16sp"
-                android:layout_below="@+id/tv_book_details_decription"
+                android:layout_below="@+id/tv_send_condition"
                 android:layout_marginTop="10dp"
                 android:layout_alignLeft="@+id/img_book_details_user"
                 android:layout_alignStart="@+id/img_book_details_user"
@@ -177,7 +200,6 @@
                 android:layout_below="@+id/tv_remark"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
-                android:maxLines="5"
                 android:layout_alignStart="@+id/img_book_details_user"
                 android:layout_alignLeft="@+id/img_book_details_user"
                 android:layout_alignRight="@+id/tv_book_details_origin_price"
@@ -220,16 +242,23 @@
 
     </ScrollView>
 
-    <RelativeLayout
-        android:id="@+id/rl_bottom"
+    <include layout="@layout/view_detail_bottom_buy_sell"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
+        android:id="@+id/ll_bottom_buy_action"
         android:layout_alignParentBottom="true"
-        android:background="@color/personal_center_bg">
+        />
 
-        <include layout="@layout/view_detail_bottom"/>
+    <include layout="@layout/view_comments"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/rl_bottom_commend"
+        android:layout_alignParentBottom="true"/>
 
-    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:layout_above="@+id/ll_bottom_buy_action"/>
 
     <ProgressBar
         style="?android:attr/progressBarStyle"

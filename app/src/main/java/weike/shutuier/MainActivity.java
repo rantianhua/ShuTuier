@@ -95,7 +95,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         resources = this.getResources();
         sectionIconSize = resources.getDimensionPixelSize(R.dimen.sectionIconSize);
         initView();
-
     }
 
     private void initView() {
@@ -245,7 +244,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override

@@ -5,8 +5,17 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="@dimen/rl_college_height"
         android:id="@+id/rl_college">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_college_label"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_centerVertical="true"
+            />
 
         <ImageView
             android:layout_width="20dp"
@@ -29,23 +38,10 @@
             android:layout_toStartOf="@+id/img_up_down"
             android:layout_marginRight="5dp"
             android:layout_marginEnd="5dp"
+            android:id="@+id/tv_choose_college"
             android:text="全部"/>
 
     </RelativeLayout>
-
-    <GridView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/gridView_colleges"
-        android:numColumns="3"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="15dp"
-        android:gravity="center"
-        android:padding="5dp"
-        android:background="@color/personal_center_bg"
-        android:layout_below="@+id/rl_college"
-        android:visibility="gone"
-        />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent" android:id="@+id/swipe_container"
@@ -63,16 +59,21 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pb_loading"
-        android:indeterminateDrawable="@drawable/loading"
-        android:indeterminateOnly="true"
-        android:indeterminateBehavior="repeat"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="invisible"
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/gridView_colleges"
+        android:numColumns="3"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="15dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@color/white"
+        android:layout_below="@+id/rl_college"
+        android:visibility="gone"
         />
+
 
 </RelativeLayout>

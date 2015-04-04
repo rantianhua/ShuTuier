@@ -213,9 +213,6 @@ public class Utils {
             case "Sprice":
                 item.setSellPrice((String)value);
                 break;
-            case "collection":
-                item.setCollectionNumber((int)value);
-                break;
             case "share":
                 item.setShareNumber((int)value);
                 break;
@@ -254,6 +251,18 @@ public class Utils {
                             case "Head":
                                 BookOtherData.getInstance().setHeadUrl(v);
                                 break;
+                            case "weixinNum":
+                                BookOtherData.getInstance().setWxNumber(v);
+                                break;
+                            case "qqNum":
+                                BookOtherData.getInstance().setQqNumber(v);
+                                break;
+                            case "teleNum":
+                                BookOtherData.getInstance().setTeleNumber(v);
+                                break;
+                            case "Mail":
+                                BookOtherData.getInstance().setMail(v);
+                                break;
                             default:
                                 break;
                         }
@@ -264,21 +273,14 @@ public class Utils {
                     reader.beginObject();
                     while (reader.hasNext()) {
                         String k = reader.nextName();
-                        Log.i("key is " ,k);
-                        if(k.equals("marker")) {
-                            mm.put("marker","maker");
-                            k=null;
-                            reader.nextNull();
-                        }else {
-                            k = null;
-                            reader.beginObject();
-                            while (reader.hasNext()) {
-                                String kk = reader.nextName();
-                                String vv = reader.nextString();
-                                mm.put(kk,vv);
-                            }
-                            reader.endObject();
+                        k = null;
+                        reader.beginObject();
+                        while (reader.hasNext()) {
+                            String kk = reader.nextName();
+                            String vv = reader.nextString();
+                            mm.put(kk,vv);
                         }
+                        reader.endObject();
                     }
                     reader.endObject();
                     BookOtherData.getInstance().getList().add(mm);
@@ -289,12 +291,12 @@ public class Utils {
             Log.e("Utils/getDetailData","error in getDetailData",e);
         }finally {
             try {
-                reader.close();
+                if(reader != null) {
+                    reader.close();
+                    reader = null;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            if(reader != null) {
-                reader = null;
             }
         }
     }

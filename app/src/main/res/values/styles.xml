@@ -45,4 +45,31 @@
         <item name="android:windowExitAnimation">@anim/dialog_cover_out</item>
     </style>
 
+    <style name="dialog_colleges" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Translate.Colleges</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="Animation.Translate.Colleges" parent="@android:style/Animation.Translucent">
+        <item name="android:windowExitAnimation">@anim/dialog_colleges_hide</item>
+        <item name="android:windowEnterAnimation">@anim/dialog_colleges_show</item>
+    </style>
+
+
+    <style name="dialog_contacts" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
 </resources>

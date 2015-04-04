@@ -12,6 +12,10 @@ public class BookOtherData {
     private String headUrl;
     private String ISBN;
     private String ownerName;
+    private String wxNumber;
+    private String qqNumber;
+    private String teleNumber;
+    private String mail;
 
     private List<Map<String,String>> list;  //评论列表
 
@@ -43,6 +47,38 @@ public class BookOtherData {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public String getWxNumber() {
+        return wxNumber;
+    }
+
+    public void setWxNumber(String wxNumber) {
+        this.wxNumber = wxNumber;
+    }
+
+    public String getQqNumber() {
+        return qqNumber;
+    }
+
+    public void setQqNumber(String qqNumber) {
+        this.qqNumber = qqNumber;
+    }
+
+    public String getTeleNumber() {
+        return teleNumber;
+    }
+
+    public void setTeleNumber(String teleNumber) {
+        this.teleNumber = teleNumber;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public List<Map<String, String>> getList() {

@@ -1,1 +1,1 @@
-include ':app', ':volley', ':StackBlur'
+include ':app', ':volley'

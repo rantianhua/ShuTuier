@@ -10,4 +10,4 @@
     android:padding="5dp"
     android:layout_toLeftOf="@+id/view_margin"
     android:layout_toStartOf="@+id/view_margin"
-    android:background="@drawable/tv_bottom_bg"/>
+    />

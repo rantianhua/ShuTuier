@@ -10,5 +10,4 @@
     android:drawablePadding="8dp"
     android:padding="5dp"
     android:text="4"
-    android:background="@drawable/tv_bottom_bg"
 />

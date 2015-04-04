@@ -14,4 +14,5 @@
     <dimen name="img_cover_height">120dp</dimen>
     <dimen name="margin_5">5dp</dimen>
     <dimen name="login_view_height">155dp</dimen>
+    <dimen name="rl_college_height">38dp</dimen>
 </resources>

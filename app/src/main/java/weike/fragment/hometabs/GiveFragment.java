@@ -49,7 +49,7 @@ public class GiveFragment extends Fragment   implements SwipeRefreshLayout.OnRef
 
     private void initView(View v) {
         refreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
-        refreshLayout.setColorSchemeResources(android.R.color.holo_red_light);
+        refreshLayout.setColorSchemeResources(R.color.section_selected);
         refreshLayout.setOnRefreshListener(this);
         ListView listView = (ListView) v.findViewById(R.id.listview);
         adapter = new BookListAdapter(data.getList(),getActivity());

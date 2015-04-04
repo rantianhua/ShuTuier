@@ -16,9 +16,9 @@ public class BookItem {
     private String statue = null;
     private String originPrice;
     private String sellPrice;
-    private int collectionNumber;
     private int messageNumber;
     private int shareNumber;
+    private String sendCondition;
 
     public int getId() {
         return id;
@@ -100,10 +100,6 @@ public class BookItem {
         this.sellPrice = sellPrice;
     }
 
-    public void setCollectionNumber(int collectionNumber) {
-        this.collectionNumber = collectionNumber;
-    }
-
     public int getMessageNumber() {
         return messageNumber;
     }
@@ -126,5 +122,13 @@ public class BookItem {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getSendCondition() {
+        return sendCondition;
+    }
+
+    public void setSendCondition(String sendCondition) {
+        this.sendCondition = sendCondition;
     }
 }
