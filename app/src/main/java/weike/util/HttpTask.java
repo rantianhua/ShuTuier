@@ -107,10 +107,10 @@ public class HttpTask implements Runnable {
             CommitBookData.clear();
         }else if(from.equals(LoginActivity.TAG)){
             SharedPreferences sp = con.getSharedPreferences(Constants.SP_USER,0);
-            list.add(new BasicNameValuePair("thirdName",sp.getString(Constants.QQNICNAME,"")));
-            list.add(new BasicNameValuePair("OpenId",sp.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID,"")));
+            list.add(new BasicNameValuePair("thirdName",sp.getString(Constants.NICNAME,"")));
+            list.add(new BasicNameValuePair("OpenId",sp.getString(Constants.UID,"")));
             list.add(new BasicNameValuePair("Sex", sp.getString(Constants.SEX,"")));
-            list.add(new BasicNameValuePair("Head",sp.getString(Constants.QQICONURL, "")));
+            list.add(new BasicNameValuePair("Head",sp.getString(Constants.USERURL, "")));
             Log.e("list is " ,list.toString());
         } else{
             CommentData data = CommentData.getInstance();

@@ -72,7 +72,6 @@
         android:focusableInTouchMode="true"
         android:background="@color/white"
         android:layout_below="@+id/rl_college"
-        android:visibility="gone"
         />
 
 

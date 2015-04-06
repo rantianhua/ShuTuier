@@ -13,13 +13,6 @@
         android:src="@drawable/login_bg"
         />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/test"
-        android:text="豆腐块杜可风打开"
-        android:textColor="@color/black"/>
-
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -46,32 +39,72 @@
         android:id="@+id/rl_login_view"
         android:background="@color/white"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="-155dp"
         >
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/ibn_qq_login"
-            android:background="@drawable/ibn_qq"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/qq_login"/>
-        
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/qq_login"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/ibn_qq_login"
-            android:layout_marginTop="5dp"
-            android:id="@+id/tv_qq_label"/>
+            android:orientation="horizontal"
+            android:id="@+id/ll_login_choice1"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/qq_login"
+                android:text="@string/qq_login"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:drawablePadding="5dp"
+                android:background="@drawable/login_tv_bg"
+                android:id="@+id/tv_login_qq"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/sina_login"
+                android:text="@string/sina_login"
+                android:textSize="12sp"
+                android:drawablePadding="5dp"
+                android:gravity="center"
+                android:background="@drawable/login_tv_bg"
+                android:id="@+id/tv_login_sina"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/wx_login"
+                android:text="@string/wx_login"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:background="@drawable/login_tv_bg"
+                android:drawablePadding="5dp"
+                android:id="@+id/tv_login_wx"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/renren_login"
+                android:text="@string/renren_login"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:background="@drawable/login_tv_bg"
+                android:drawablePadding="5dp"
+                android:id="@+id/tv_login_renren"
+                />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/blue"
-            android:layout_below="@+id/tv_qq_label"
+            android:layout_below="@+id/ll_login_choice1"
             android:layout_marginTop="10dp"
             android:id="@+id/view_line"
             />

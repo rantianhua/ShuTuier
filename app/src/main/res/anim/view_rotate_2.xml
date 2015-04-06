@@ -6,6 +6,6 @@
     android:pivotX="50%"
     android:pivotY="50%"
     android:fillEnabled="true"
-    android:duration="500"/>
+    android:duration="400"/>
 
 

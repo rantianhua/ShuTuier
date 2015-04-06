@@ -1,6 +1,6 @@
 package weike.fragment.hometabs;
 
-import android.animation.LayoutTransition;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -66,10 +67,12 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     private int action = 0;
     Animation rotate1 = null,rotate2;  //旋转动画
     private CollegesDialogFragment collegesDialogFragment = null;
-    private String[] colleges = {"全部","计算机院","通电学院","电院"
+    private String[] colleges = {"全部","计算机院","通信工程","电子工程"
             ,"机电学院","物光学院","经管学院","数统学院","人文学院"
             ,"外国语学院","软件学院","微电子院","空间学院","材料与纳米",
-            "国际学院","网络学院"};
+            "国际教育","网络教育"};
+    private ValueAnimator translateIn = null,translateOut = null;
+    private ScaleAnimation expand = null, fold = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -99,11 +102,7 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         gridView.setOnItemClickListener(this);
 
         showGrid.setOnClickListener(this);
-
-        LayoutTransition transition = new LayoutTransition();
-        transition.setAnimator(LayoutTransition.APPEARING, transition.getAnimator(LayoutTransition.APPEARING));
-        transition.setAnimator(LayoutTransition.DISAPPEARING,transition.getAnimator(LayoutTransition.DISAPPEARING));
-        gridView.setLayoutTransition(transition);
+        gridView.setVisibility(View.INVISIBLE);
     }
 
 
@@ -184,13 +183,68 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.gridView_colleges:
-                Toast.makeText(getActivity(),"点击了"+position,Toast.LENGTH_LONG).show();
+                changeTvCollege(position);
                 break;
             case R.id.listview:
                 showDetail(position);
                 break;
          }
 
+    }
+
+    private void changeTvCollege(int position) {
+        switch (position) {
+            case 0:
+                tvCollege.setText("全部");
+                break;
+            case 1:
+                tvCollege.setText("计算机学院");
+                break;
+            case 2:
+                tvCollege.setText("通信工程学院");
+                break;
+            case 3:
+                tvCollege.setText("电子工程学院");
+                break;
+            case 4:
+                tvCollege.setText("机电工程学院");
+                break;
+            case 5:
+                tvCollege.setText("物理与光电工程学院");
+                break;
+            case 6:
+                tvCollege.setText("经济管理学院");
+                break;
+            case 7:
+                tvCollege.setText("数学与统计学院");
+                break;
+            case 8:
+                tvCollege.setText("人文学院");
+                break;
+            case 9:
+                tvCollege.setText("外国语学院");
+                break;
+            case 10:
+                tvCollege.setText("软件学院");
+                break;
+            case 11:
+                tvCollege.setText("微电子学院");
+                break;
+            case 12:
+                tvCollege.setText("空间科学与技术学院");
+                break;
+            case 13:
+                tvCollege.setText("先进材料与纳米科技");
+                break;
+            case 14:
+                tvCollege.setText("国际教育学院");
+                break;
+            case 15:
+                tvCollege.setText("网络与继续教育学院");
+                break;
+            default:
+                break;
+        }
     }
 
     private void showDetail(int position) {
@@ -211,12 +265,50 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     }
 
     private void startRoted() {
+        if(expand == null) {
+            expand = (ScaleAnimation)AnimationUtils.loadAnimation(getActivity(),R.anim.gridview_colleges_expand);
+            expand.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    gridView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
+        if(fold == null) {
+            fold = (ScaleAnimation) AnimationUtils.loadAnimation(getActivity(),R.anim.gridview_colleges_fold);
+            fold.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    gridView.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+        }
         if(rotate1 == null) {
             rotate1 = AnimationUtils.loadAnimation(getActivity(),R.anim.view_rotate_1);
             rotate1.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    gridView.setVisibility(View.VISIBLE);
+                     gridView.startAnimation(expand);
                 }
 
                 @Override
@@ -235,7 +327,7 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
             rotate2.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    gridView.setVisibility(View.GONE);
+                    gridView.startAnimation(fold);
                 }
 
                 @Override

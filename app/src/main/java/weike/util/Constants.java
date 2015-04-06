@@ -37,8 +37,15 @@ public class Constants {
     public static final String EXTRA_PIC = "获取封面方式";
     public static final String SP_USER = "user";
     public static final String USER_ONLINE_KEY = "online";
-    public static final String QQNICNAME = "nickname";
-    public static final String QQICONURL = "figureurl_qq_1";
+    public static final String NICNAME = "nickname";
+    public static final String USERURL = "user_url";
     public static final String SEX = "gender";
-
+    public static final String UID = "uid";
+    public static final String QQNumber = "qq";
+    public static final String WxNumber = "wx";
+    public static final String PhoneNumber = "phone";
+    public static final String Email = "mail";
+    public static final String Birthday = "birthday";
+    public static final String Hobbit = "hobbit";
+    public static final String USERICONFILE = "/user_icon.jpg";
 }

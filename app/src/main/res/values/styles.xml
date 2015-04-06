@@ -5,9 +5,14 @@
         <item name="colorPrimary">#ffffb14b</item>
         <!--状态栏颜色-->
         <item name="colorPrimaryDark">#ff1a2621</item>
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:actionMenuTextAppearance">@style/MyActionMenuApp</item>
+        <item name="android:windowBackground">@color/white</item>
         <!-- SearchView -->
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="MyActionMenuApp">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="AppTheme" parent="@style/AppBaseTheme"/>

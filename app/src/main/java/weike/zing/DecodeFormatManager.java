@@ -46,7 +46,7 @@ final class DecodeFormatManager {
 //                BarcodeFormat.EAN_8,
 //                BarcodeFormat.RSS_14,
 //                BarcodeFormat.RSS_EXPANDED);
-        PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.EAN_13);
+        PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.EAN_13,BarcodeFormat.QR_CODE);
         INDUSTRIAL_FORMATS = EnumSet.of(BarcodeFormat.CODE_39,
                 BarcodeFormat.CODE_93,
                 BarcodeFormat.CODE_128,

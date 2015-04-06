@@ -19,4 +19,8 @@ public class MessageFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_found,container,false);
         return v;
     }
+
+    public static MessageFragment getInstance() {
+        return new MessageFragment();
+    }
 }

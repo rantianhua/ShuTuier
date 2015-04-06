@@ -33,6 +33,10 @@ import java.net.URL;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.fragment.HomeFragment;
+import weike.fragment.MessageFragment;
+import weike.fragment.ScanFragment;
+import weike.fragment.SellFragment;
+import weike.fragment.SettingFragment;
 import weike.util.Constants;
 import weike.util.Utils;
 import weike.zing.CaptureActivity;
@@ -86,7 +90,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private static final int REQUEST_CODE = 200;
     private final String TAG = "MainActivity";
     private int sectionIconSize ;   //左侧图片的大小
-    private String userPhotoPath = Utils.getPicturePath() + "/user_icon.jpg";
+    private String userPhotoPath = Utils.getPicturePath() + Constants.USERICONFILE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +104,28 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private void initView() {
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open,
-                R.string.drawer_close);
+                R.string.drawer_close){
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                if(rlCommit.isSelected()) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, SellFragment.getInstance()).commit();
+                    return;
+                }
+                if(rlHome.isSelected()) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, HomeFragment.getInstance()).commit();
+                    return;
+                }
+                if(rlMessage.isSelected()) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, MessageFragment.getInstance()).commit();
+                    return;
+                }
+                if(rlSwipe.isSelected()) {
+                    startScan();
+                }
+            }
+        };
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -158,11 +181,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 Bitmap bitmap = BitmapFactory.decodeFile(userPhotoPath);
                 userPhoto.setImageBitmap(Utils.getCroppedBitmapDrawable(bitmap));
             }else {
-                String url = sp.getString(Constants.QQICONURL,null) ;
+                String url = sp.getString(Constants.USERURL,null) ;
                 if(url != null) {
                     new GetBitmap().execute(url,null,null);
                 }
             }
+            userName.setText(sp.getString(Constants.NICNAME,""));
         }else {
             userPhoto.setImageBitmap(BitmapFactory.decodeResource(resources,R.drawable.user));
             userName.setText("您还未登陆！");
@@ -256,23 +280,36 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.rl_section_swipe:
                 if(!rlSwipe.isSelected()) {
                     changeSection(rlSwipe,tvSwipe,iconSwipe,R.drawable.scan);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, ScanFragment.getInstance()).commit();
+                }else {
+                    mDrawerLayout.closeDrawers();
                 }
                 break;
             case R.id.rl_section_setting:
+                getSupportFragmentManager().beginTransaction().replace(R.id.contain, SettingFragment.getInstance()).commit();
                 break;
             case R.id.rl_section_message:
                 if(!rlMessage.isSelected()) {
                     changeSection(rlMessage,tvMessage,iconMessage,R.drawable.calling_48);
+                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, MessageFragment.getInstance()).commit();
+                }else {
+                    mDrawerLayout.closeDrawers();
                 }
                 break;
             case R.id.rl_section_commit:
                 if(!rlCommit.isSelected()) {
                     changeSection(rlCommit,tvCommit,iconCommit,R.drawable.section_sell_icon);
+                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, SellFragment.getInstance()).commit();
+                }else {
+                    mDrawerLayout.closeDrawers();
                 }
                 break;
             case R.id.rl_section_home:
                 if(!rlHome.isSelected()) {
                     changeSection(rlHome,tvHome,iconHome,R.drawable.section_home_icon);
+                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, HomeFragment.getInstance()).commit();
+                }else {
+                    mDrawerLayout.closeDrawers();
                 }
                 break;
             default:
