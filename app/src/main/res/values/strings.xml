@@ -122,8 +122,14 @@
     <string name="qq">QQ</string>
     <string name="wx">微信</string>
     <string name="address">宿舍楼</string>
-    <string name="hint_et_birthday">例如：1993-1-1</string>
+    <string name="hint_et_birthday">例如：1993&#8211;1&#8211;1</string>
     <string name="hint_et_school">当前默认为西安电子科技大学</string>
     <string name="text_tip_contact">以下联系方式至少完成一种,但为了您更好地完成交易，建议全部填写</string>
     <string name="edit">编辑</string>
+    <string name="delete">删除交易</string>
+    <string name="complete">完成交易</string>
+    <string name="about_us">关于我们</string>
+    <string name="update_version">版本更新</string>
+    <string name="your_idea">意见反馈</string>
+    <string name="login_out">登出</string>
 </resources>

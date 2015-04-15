@@ -32,7 +32,9 @@ public class PersonalCenterActivity extends ActionBarActivity implements Persona
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("个人中心");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportFragmentManager().beginTransaction().add(R.id.container, PersonalFragment.getInstance(this)).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, PersonalFragment.getInstance(this))
+                .commit();
     }
 
     @Override
@@ -65,5 +67,4 @@ public class PersonalCenterActivity extends ActionBarActivity implements Persona
                 break;
         }
     }
-
 }

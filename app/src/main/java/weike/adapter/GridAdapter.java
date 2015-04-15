@@ -10,42 +10,42 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.android.volley.toolbox.ImageLoader;
 
-import weike.data.BookItem;
+import java.util.ArrayList;
+import java.util.Map;
+
 import weike.shutuier.R;
+import weike.util.Mysingleton;
 
 /**
  * Created by Rth on 2015/3/24.
  */
 public class GridAdapter extends BaseAdapter {
 
-    private List<BookItem> list = null;
     private LayoutInflater inflater = null;
     private RelativeLayout.LayoutParams params = null;
+    private ArrayList<Map<String,String>> data= null;
+    private ImageLoader loader =  null;
 
-    public GridAdapter(Context context) {
-        list = new ArrayList<>();
-        for (int i = 0;i<10;i++){
-            list.add(new BookItem());
-        }
+    public GridAdapter(Context context,ArrayList<Map<String,String>> data) {
+        this.data = data;
         inflater = LayoutInflater.from(context);
         Resources resources = context.getResources();
-       //int width = Utils.getWindowWidth(context);
        int height = resources.getDimensionPixelSize(R.dimen.photoMarginLeft);
         resources =  null;
         params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,height);
+        loader = Mysingleton.getInstance(context).getImageLoader();
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return data.get(position);
     }
 
     @Override
@@ -61,18 +61,22 @@ public class GridAdapter extends BaseAdapter {
             hodler = new ViewHodler();
             hodler.img = (ImageView) convertView.findViewById(R.id.img_grid_item);
             hodler.tvAlign = (TextView) convertView.findViewById(R.id.tv_align_grid_img);
-            hodler.tvName = (TextView) convertView.findViewById(R.id.tv_name_grid);
+            hodler.tvDate = (TextView) convertView.findViewById(R.id.tv_date_grid);
             hodler.img.setLayoutParams(params);
             hodler.img.setImageResource(R.drawable.def);
             convertView.setTag(hodler);
         }else {
             hodler = (ViewHodler) convertView.getTag();
         }
+        Map<String,String> map = data.get(position);
+        loader.get(map.get("InternetImg"),ImageLoader.getImageListener(hodler.img,R.drawable.def,R.drawable.def));
+        hodler.tvAlign.setText(map.get("close"));
+        //hodler.tvDate.setText(map.get("date"));
         return convertView;
     }
 
     static class ViewHodler {
         ImageView img ;
-        TextView tvAlign,tvName;
+        TextView tvAlign,tvDate;
     }
 }

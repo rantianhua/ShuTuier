@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    >
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/tv_center_action_bg"
+        android:text="@string/complete"
+        android:textColor="@color/blue"
+        android:gravity="center"
+        android:id="@+id/tv_center_complete_trade"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:progressBarStyleSmall"
+        android:id="@+id/progress_center_complete"
+        android:layout_alignBottom="@+id/tv_center_complete_trade"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/tv_center_action_bg"
+        android:text="@string/delete"
+        android:textColor="@color/section_selected"
+        android:gravity="center"
+        android:id="@+id/tv_center_delete_trade"
+        android:layout_below="@+id/tv_center_complete_trade"
+        android:layout_marginTop="10dp"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:progressBarStyleSmall"
+        android:id="@+id/progress_center_delete"
+        android:layout_alignBottom="@+id/tv_center_delete_trade"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/tv_center_cancel_bg"
+        android:id="@+id/tv_center_cancel"
+        android:layout_below="@+id/tv_center_delete_trade"
+        android:layout_marginTop="10dp"
+        android:text="@string/cancel"
+        android:textColor="@color/blue"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        />
+
+</RelativeLayout>

@@ -7,7 +7,9 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,20 +23,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.connect.UserInfo;
+import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.controller.UMServiceFactory;
 import com.umeng.socialize.controller.UMSocialService;
 import com.umeng.socialize.controller.listener.SocializeListeners;
 import com.umeng.socialize.exception.SocializeException;
 import com.umeng.socialize.sso.SinaSsoHandler;
-import com.umeng.socialize.sso.UMQQSsoHandler;
 import com.umeng.socialize.sso.UMSsoHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import weike.util.ConnectReceiver;
 import weike.util.Constants;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
@@ -42,7 +50,7 @@ import weike.util.HttpTask;
 /**
  * Created by Rth on 2015/3/8.
  */
-public class LoginActivity extends Activity implements View.OnClickListener
+public class LoginActivity extends Activity implements View.OnClickListener,ConnectReceiver.GetNetState
 {
 
     @InjectView(R.id.img_logo_login)
@@ -64,17 +72,21 @@ public class LoginActivity extends Activity implements View.OnClickListener
     @InjectView(R.id.tv_login_renren)
     TextView tvRRLogin;
 
-    private Tencent tencent;
     public static final String TAG = "LoginActivity";
     private ProgressDialog pd = null;
     //友盟授权接口
     UMSocialService controller = UMServiceFactory.getUMSocialService("com.umeng.login");
     private SharedPreferences sp = null;
+    //网络状态接收器
+    private ConnectReceiver netReceiver = new ConnectReceiver(this);
+    public static boolean netConnect = false ;    //记录接收的网络状态
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        this.registerReceiver(netReceiver,filter);
         initController();
         initView();
     }
@@ -82,10 +94,6 @@ public class LoginActivity extends Activity implements View.OnClickListener
     private void initController() {
         //设置新浪SSO handler
         controller.getConfig().setSsoHandler(new SinaSsoHandler());
-        //配置qq登陆
-        UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(this, "1104326437",
-                "Jj4RMmh7LOSdOeSU");
-        qqSsoHandler.addToSocialSDK();
     }
 
     private void initView() {
@@ -201,6 +209,7 @@ public class LoginActivity extends Activity implements View.OnClickListener
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                     LoginActivity.this.finish();
+                    overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 }
 
                 @Override
@@ -222,14 +231,23 @@ public class LoginActivity extends Activity implements View.OnClickListener
         switch (v.getId()){
             case R.id.btn_just_look:
                 startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                LoginActivity.this.finish();
+                overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
             case R.id.tv_login_qq:
-                doLogin(SHARE_MEDIA.QQ);
+                saveLoginWay(Constants.QQ);
+                if(netConnect) {
+                    qqLogin();
+                }else {
+                    showToast("网络不可用");
+                }
                 break;
             case R.id.tv_login_sina:
+                saveLoginWay(Constants.SINA);
                 doLogin(SHARE_MEDIA.SINA);
                 break;
             case R.id.tv_login_wx:
+                saveLoginWay(Constants.WX);
                 doLogin(SHARE_MEDIA.WEIXIN);
                 break;
             case R.id.tv_login_renren:
@@ -240,7 +258,21 @@ public class LoginActivity extends Activity implements View.OnClickListener
         }
     }
 
+    private void saveLoginWay(String way){
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(Constants.LOGIN_WAY,way);
+        editor.apply();
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    }
+
     private void doLogin(final SHARE_MEDIA media) {
+        if(!netConnect) {
+            showToast("网络未连接");
+            return;
+        }
         if(pd == null) {
             pd = new ProgressDialog(this);
         }
@@ -255,18 +287,11 @@ public class LoginActivity extends Activity implements View.OnClickListener
             @Override
             public void onComplete(Bundle bundle, SHARE_MEDIA share_media) {
                 if(bundle != null && !TextUtils.isEmpty(bundle.getString("uid"))) {
-                    if(share_media == SHARE_MEDIA.QQ) {
-                        String uid = bundle.getString("uid");
-                        if(!TextUtils.isEmpty(uid)) {
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putString(weike.util.Constants.UID,uid);
-                            editor.apply();
-                        }
-                    }
                     Log.e(TAG,"doLogin ， the info is " + bundle.toString());
+                    //获取用户信息
                     getPlatformInfo(media);
                 }else {
-                    Toast.makeText(LoginActivity.this,"授权失败+" ,Toast.LENGTH_LONG).show();
+                    showToast("授权失败");
                 }
             }
 
@@ -286,7 +311,6 @@ public class LoginActivity extends Activity implements View.OnClickListener
         controller.getPlatformInfo(this,media,new SocializeListeners.UMDataListener() {
             @Override
             public void onStart() {
-                Toast.makeText(LoginActivity.this,"开始获取平台数据",Toast.LENGTH_LONG).show();
             }
             @Override
             public void onComplete(int i, Map<String, Object> info) {
@@ -297,20 +321,16 @@ public class LoginActivity extends Activity implements View.OnClickListener
                     editor.putString(weike.util.Constants.NICNAME,nicName);
                     editor.putString(weike.util.Constants.USERURL,url);
                     String sex = null;
-                    if(media != SHARE_MEDIA.QQ) {
-                        long uid = (long)info.get("uid");
-                        int n = (int) info.get("gender");
-                        sex = (n == 1 ? "男" : "女");
-                        editor.putString(weike.util.Constants.UID,String.valueOf(uid));
-                    }else {
-                        sex = (String) info.get("gender");
-                    }
+                    long uid = (long)info.get("uid");
+                    int n = (int) info.get("gender");
+                    sex = (n == 1 ? "男" : "女");
+                    editor.putString(weike.util.Constants.UID,String.valueOf(uid));
                     editor.putString(weike.util.Constants.SEX,sex);
                     editor.apply();
                     Log.e(TAG, info.toString());
                     finishLogin();
                 }else {
-                    Toast.makeText(LoginActivity.this,"获取平台数据失败",Toast.LENGTH_LONG).show();
+                    showToast("获取平台数据失败");
                 }
             }
         });
@@ -321,7 +341,9 @@ public class LoginActivity extends Activity implements View.OnClickListener
             pd = new ProgressDialog(this);
         }
         pd.setMessage("正在登陆...");
-        pd.show();
+        if(!pd.isShowing()){
+            pd.show();
+        }
         HttpTask task = new HttpTask(this,weike.util.Constants.LOGINLINK,loginHan,TAG,"post");
         HttpManager.startTask(task);
     }
@@ -330,14 +352,19 @@ public class LoginActivity extends Activity implements View.OnClickListener
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            pd.dismiss();
-            if(msg.obj.toString().equals("true")){
+            if(pd.isShowing()) {
+                pd.dismiss();
+            }
+            if(msg.obj.equals("true")) {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
                 editor.apply();
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                 startActivity(intent);
-                finish();
+                LoginActivity.this.finish();
+                overridePendingTransition(R.anim.right_in,R.anim.left_out);
+            }else{
+                showToast("登陆失败！");
             }
         }
     };
@@ -360,6 +387,111 @@ public class LoginActivity extends Activity implements View.OnClickListener
                 pd.dismiss();
             }
             pd = null;
+        }
+    }
+
+    //qq登陆，因为一些特殊原因，单独写出qq登陆
+    private void qqLogin() {
+        if(pd == null) {
+            pd = new ProgressDialog(this);
+        }
+        pd.setMessage("正在跳转至QQ...");
+        pd.show();
+        final Tencent tencent = Tencent.createInstance("1104326437",this);
+        if(tencent != null && !tencent.isSessionValid()) {
+            tencent.login(this,"all",new IUiListener() {
+                @Override
+                public void onComplete(Object o) {
+                    try {
+                        JSONObject object = (JSONObject)o;
+                        String uid = object.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
+                        if(!TextUtils.isEmpty(uid)) {
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString(Constants.UID,uid);
+                            editor.apply();
+                        }
+                        //获取qq用户基本信息
+                        if(pd == null) {
+                            pd = new ProgressDialog(LoginActivity.this);
+                        }
+                        pd.setMessage("正在获取信息...");
+                        getQQInfo(tencent);
+                    } catch (JSONException e) {
+                        Log.e(TAG,"error in get ak",e);
+                    }
+                }
+
+                @Override
+                public void onError(UiError uiError) {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+        }
+    }
+
+    private void getQQInfo(Tencent tencent) {
+        if(tencent != null && tencent.isSessionValid()) {
+            UserInfo info = new UserInfo(this,tencent.getQQToken());
+            info.getUserInfo(new IUiListener() {
+                @Override
+                public void onComplete(Object o) {
+                    if(o != null) {
+                        Log.e(TAG,o.toString());
+                        try{
+                            JSONObject json=  (JSONObject) o;
+                            String nicName = json.getString(Constants.NICNAME);
+                            String iconUrl = json.getString(Constants.QQ_FIGURE2);
+                            if(TextUtils.isEmpty(iconUrl)) {
+                                iconUrl = json.getString(Constants.QQ_FIGURE1);
+                            }
+                            String sex = json.getString(weike.util.Constants.SEX);
+                            Log.e(TAG, nicName + "----" + iconUrl + "---" + sex);
+                            SharedPreferences.Editor editor = sp.edit();
+                            if(!TextUtils.isEmpty(nicName) && !TextUtils.isEmpty(iconUrl) && !TextUtils.isEmpty(sex)) {
+                                editor.putString(Constants.NICNAME,nicName);
+                                editor.putString(Constants.USERURL,iconUrl);
+                                editor.putString(weike.util.Constants.SEX,sex);
+                                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
+                            }else {
+                                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,false);
+                            }
+                            editor.apply();
+                        }catch (Exception e) {
+                            Log.e(TAG,"error in get qq useinfo ",e);
+                        }
+                        finishLogin();
+                    }
+                }
+
+                @Override
+                public void onError(UiError uiError) {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    public void sendState(boolean state) {
+        netConnect = state;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(netReceiver != null) {
+            this.unregisterReceiver(netReceiver);
+            netReceiver = null;
         }
     }
 }

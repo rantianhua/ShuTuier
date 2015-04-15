@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import weike.shutuier.R;
 /**
  * Created by Rth on 2015/2/9.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener{
 
     private static HomeFragment homeFragment = null;
 
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         selectedColor = getActivity().getResources().getColor(R.color.tv_selected);
+        unSelectColor = getActivity().getResources().getColor(android.R.color.secondary_text_light);
     }
 
     @Override
@@ -61,8 +63,6 @@ public class HomeFragment extends Fragment {
 
     private void initView(View v) {
         ButterKnife.inject(this,v);
-        unSelectColor = tvGvie.getCurrentTextColor();
-
         frags = new ArrayList<>();
         frags.add(LatestFragment.getInstance());
         frags.add(TextbookFragment.getInstance());
@@ -96,6 +96,7 @@ public class HomeFragment extends Fragment {
                 switch (position) {
                     case 0:
                         tvLatest.setTextColor(selectedColor);
+                        break;
                     case 1:
                         tvTextbook.setTextColor(selectedColor);
                         break;
@@ -118,15 +119,19 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
+        tvLatest.setOnClickListener(this);
+        tvGvie.setOnClickListener(this);
+        tvKaoyan.setOnClickListener(this);
+        tvProgram.setOnClickListener(this);
+        tvTextbook.setOnClickListener(this);
     }
 
     protected void resetTextView() {
         tvLatest.setTextColor(unSelectColor);
+        tvTextbook.setTextColor(unSelectColor);
         tvGvie.setTextColor(unSelectColor);
         tvKaoyan.setTextColor(unSelectColor);
         tvProgram.setTextColor(unSelectColor);
-        tvTextbook.setTextColor(unSelectColor);
     }
 
     public static HomeFragment getInstance() {
@@ -136,4 +141,26 @@ public class HomeFragment extends Fragment {
         return homeFragment;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_home_latest:
+                vp.setCurrentItem(0);
+                break;
+            case R.id.tv_home_textbook:
+                vp.setCurrentItem(1);
+                break;
+            case R.id.tv_home_program:
+                vp.setCurrentItem(2);
+                break;
+            case R.id.tv_home_kaoyan:
+                vp.setCurrentItem(3);
+                break;
+            case R.id.tv_home_give:
+                vp.setCurrentItem(4);
+                break;
+            default:
+                break;
+        }
+    }
 }

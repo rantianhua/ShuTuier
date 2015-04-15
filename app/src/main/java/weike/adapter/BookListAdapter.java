@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import weike.data.BookItem;
@@ -22,12 +23,18 @@ import weike.util.Mysingleton;
  */
 public class BookListAdapter extends BaseAdapter {
 
-    private List<BookItem> list;
+    private List<BookItem> list = new ArrayList<>();
     private Context context;
+    private ImageLoader loader = null;
+    private int w,h;
 
     public BookListAdapter(List<BookItem> list,Context con) {
-        this.list = list;
+        this.list.clear();
+        this.list.addAll(list);
         this.context = con;
+        loader = Mysingleton.getInstance(con).getImageLoader();
+        w = con.getResources().getDimensionPixelSize(R.dimen.imgwidth_listitem);
+        h = con.getResources().getDimensionPixelSize(R.dimen.imgwidth_listitem);
     }
 
         @Override
@@ -67,22 +74,21 @@ public class BookListAdapter extends BaseAdapter {
                 holder =(ViewHolder) convertView.getTag();
             }
             try {
-                holder.tvName.setText(list.get(position).getBookName());
-                holder.tvHowOld.setText(list.get(position).getHowOld());
-                holder.tvAuthor.setText(list.get(position).getAuthorName());
-                holder.tvPublisher.setText(list.get(position).getPublisher());
-                holder.tvDetail.setText(list.get(position).getDetail());
-                holder.tvStatue.setText(list.get(position).getStatue());
-                holder.tvOPrice.setText("￥"+list.get(position).getOriginPrice());
-                holder.tvSPrice.setText("￥"+list.get(position).getSellPrice());
-                holder.tvSNum.setText(list.get(position).getShareNumber()+"");
-                holder.tvMNum.setText(list.get(position).getMessageNumber()+"");
+                BookItem item = list.get(position);
+                holder.tvName.setText(item.getBookName());
+                holder.tvHowOld.setText(item.getHowOld());
+                holder.tvAuthor.setText(item.getAuthorName());
+                holder.tvPublisher.setText(item.getPublisher());
+                holder.tvDetail.setText(item.getDetail());
+                holder.tvStatue.setText(item.getStatue());
+                holder.tvOPrice.setText("￥"+item.getOriginPrice());
+                holder.tvSPrice.setText("￥"+item.getSellPrice());
+                holder.tvSNum.setText(item.getShareNumber()+"");
+                holder.tvMNum.setText(item.getMessageNumber()+"");
             } catch (Exception e) {
                 Log.e("BookListAdapter","error in setTextView",e);
             }
-            ImageLoader loader = Mysingleton.getInstance(context).getImageLoader();
-            loader.get(list.get(position).getImgUrl(),ImageLoader.getImageListener(holder.imgView,R.drawable.def,R.drawable.def),120,160);
-            loader = null;
+            loader.get(list.get(position).getImgUrl(),ImageLoader.getImageListener(holder.imgView,R.drawable.def,R.drawable.def),w,h);
             return convertView;
         }
 
@@ -90,5 +96,12 @@ public class BookListAdapter extends BaseAdapter {
         ImageView imgView;
         TextView tvName,tvHowOld,tvAuthor,tvPublisher, tvDetail,tvStatue,tvOPrice,tvSPrice,tvSNum,tvMNum;
     }
+
+    public void updateData(List<BookItem> data){
+        this.list.clear();
+        this.list.addAll(data);
+        notifyDataSetChanged();
+    }
+
 
 }

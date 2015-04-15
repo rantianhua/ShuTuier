@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
@@ -24,6 +25,7 @@ import com.google.gson.stream.JsonReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -157,7 +159,7 @@ public class Utils {
                         }else{
                             value = reader.nextString();
                         }
-                        updateData(key, value, from, item);
+                        updateData(key, value, item);
                     }
                     ListBookData.getInstance(from).addItems(item);
                     reader.endObject();
@@ -178,7 +180,7 @@ public class Utils {
         }
     }
 
-    private static void updateData(String key, Object value, final String from, BookItem item) {
+    private static void updateData(String key, Object value, BookItem item) {
         switch (key) {
             case "ID":
                 item.setId((int)value);
@@ -221,6 +223,9 @@ public class Utils {
                 break;
             case "Other":
                 item.setRemark((String)value);
+                break;
+            case "subMenu":
+                item.setSubClassify((String)value);
                 break;
             default:
                 break;
@@ -432,5 +437,33 @@ public class Utils {
                 super.onPreExecute();
             }
         }.execute(user_bg,null,null);
+    }
+
+    public static String getMyCommitUrl(String id,String type) {
+        return Constants.BASEMYCOMMIT + id + "/name/"  + type;
+    }
+
+    public static ArrayList<Map<String,String>> getMyCommitData(String content) {
+        ArrayList<Map<String,String>> list = new ArrayList<Map<String,String>>();
+        if(!TextUtils.isEmpty(content)) {
+            JsonReader reader = null;
+            try {
+                reader = new JsonReader(new StringReader(content));
+                reader.beginArray();
+                while (reader.hasNext()) {
+                    Map<String ,String> map = new HashMap<>();
+                    reader.beginObject();
+                    while (reader.hasNext()) {
+                        map.put(reader.nextName(),reader.nextString());
+                    }
+                    reader.endObject();
+                    list.add(map);
+                }
+                reader.endArray();
+            }catch (Exception  e) {
+                Log.e("getMyCommitData","error in cut mySell json",e);
+            }
+        }
+        return list;
     }
 }

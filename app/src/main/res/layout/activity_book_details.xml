@@ -109,7 +109,6 @@
                 android:layout_width="@dimen/item_title_photo"
                 android:layout_height="@dimen/item_title_photo"
                 android:id="@+id/img_book_details_user"
-                android:src="@drawable/heart"
                 android:layout_below="@+id/margin2"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="8dp"

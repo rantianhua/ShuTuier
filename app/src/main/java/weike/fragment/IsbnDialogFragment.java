@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.shutuier.R;
 import weike.util.Constants;
+import weike.util.Utils;
 
 /**
  * Created by Rth on 2015/3/28.
@@ -70,6 +71,6 @@ public class IsbnDialogFragment extends DialogFragment implements View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
-        getDialog().getWindow().setLayout(400, WindowManager.LayoutParams.WRAP_CONTENT);
+        getDialog().getWindow().setLayout(Utils.getWindowWidth(getActivity())-40, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 }

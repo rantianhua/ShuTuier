@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:id="@+id/img_login_bg"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_bg"
+        android:src="@drawable/home"
         />
 
     <ImageView
@@ -20,6 +20,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_launcher"
+        android:scaleType="centerCrop"
         />
 
     <TextView

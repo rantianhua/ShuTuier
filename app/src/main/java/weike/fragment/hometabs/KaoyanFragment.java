@@ -1,5 +1,6 @@
 package weike.fragment.hometabs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,11 +11,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import weike.adapter.BookListAdapter;
+import weike.data.BookItem;
 import weike.data.ListBookData;
+import weike.shutuier.BookDetailActivity;
+import weike.shutuier.MainActivity;
 import weike.shutuier.R;
 import weike.util.Constants;
 import weike.util.HttpManager;
@@ -23,11 +31,18 @@ import weike.util.HttpTask;
 /**
  * Created by Rth on 2015/2/14.
  */
-public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+        AdapterView.OnItemClickListener{
+
+    @InjectView(R.id.customer_progressbar)
+    ProgressBar pb;
+    @InjectView(R.id.swipe_container)
+    SwipeRefreshLayout refreshLayout;
+    @InjectView(R.id.listview)
+    ListView listView;
 
     private static KaoyanFragment fragment = null;
     private final String dataLink = Constants.OLink+"考研";
-    private SwipeRefreshLayout refreshLayout = null;
     private BookListAdapter adapter = null;
     private ListBookData data = null;
     private Handler handler = null;
@@ -47,12 +62,12 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     private void initView(View v) {
-        refreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
-        refreshLayout.setColorSchemeResources(android.R.color.holo_red_light);
+        ButterKnife.inject(this,v);
+        refreshLayout.setColorSchemeResources(R.color.section_selected);
         refreshLayout.setOnRefreshListener(this);
-        ListView listView = (ListView) v.findViewById(R.id.listview);
         adapter = new BookListAdapter(data.getList(),getActivity());
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
     }
 
     @Override
@@ -69,12 +84,21 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     private void getData(){
-        if(handler == null) {
-            initHandler();
+        if(MainActivity.netConnect) {
+            upDatePb(true);
+            if(handler == null) {
+                initHandler();
+            }
+            //开始网络任务，下载数据
+            HttpTask textbookTask = new HttpTask(getActivity(),dataLink,handler,Constants.TYPE_3,null);
+            HttpManager.startTask(textbookTask);
+        }else {
+            Toast.makeText(getActivity(),"网络不可用",Toast.LENGTH_SHORT).show();
         }
-        //开始网络任务，下载数据
-        HttpTask textbookTask = new HttpTask(getActivity(),dataLink,handler,Constants.TYPE_3,null);
-        HttpManager.startTask(textbookTask);
+    }
+
+    private void upDatePb(boolean show) {
+        pb.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void initHandler() {
@@ -82,10 +106,11 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                upDatePb(false);
                 if(refreshLayout.isRefreshing()) refreshLayout.setRefreshing(false);
                 switch (msg.what) {
                     case 0:
-                        adapter.notifyDataSetChanged();
+                        adapter.updateData(data.getList());
                         break;
                     case 1:
                         Toast.makeText(getActivity(), "哎呀！下载出了问题", Toast.LENGTH_SHORT).show();
@@ -110,6 +135,15 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onRefresh() {
         getData();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        BookItem item = (BookItem)listView.getAdapter().getItem(position);
+        Intent intent = new Intent(getActivity(), BookDetailActivity.class);
+        intent.putExtra(Constants.EXTRA_ITEM_ID,item.getId());
+        intent.putExtra(Constants.REQUEST_FROM_FRAGMENT,Constants.TYPE_3);
+        startActivity(intent);
     }
 }
 

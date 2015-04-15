@@ -1,23 +1,18 @@
 package weike.fragment;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.shutuier.R;
-import weike.util.Constants;
+import weike.util.GetUserPhotoWork;
 import weike.util.Utils;
 
 /**
@@ -67,20 +62,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     }
 
     private void showUserPhoto() {
-        Bitmap bitmap = null;
-        try{
-            String iconPath = Utils.getPicturePath()+ Constants.USERICONFILE;
-            File f = new File(iconPath);
-            if(f.exists()) {
-                bitmap = BitmapFactory.decodeFile(iconPath);
-                f = null;
-            }else {
-                bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.user);
-            }
-            userPhoto.setImageBitmap(Utils.getCroppedBitmapDrawable(bitmap));
-        }catch (Exception e) {
-            Log.e(TAG, "error in get bitmap", e);
-        }
+        new GetUserPhotoWork(userPhoto,getActivity(),true).execute();
     }
 
     public static PersonalFragment getInstance(UpdateToolbar listener) {
@@ -92,21 +74,35 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_my_base_information:
-                getFragmentManager().beginTransaction().replace(R.id.container,BaseInfoFragment.getInstance(toolbarListener)).addToBackStack(null).commit();
+                changeFragment(BaseInfoFragment.getInstance(toolbarListener,TAG));
                 toolbarListener.changeTitle(4);
                 break;
             case R.id.tv_my_send:
+                changeFragment(MySendFragment.getInstance(toolbarListener));
+                toolbarListener.changeTitle(2);
                 break;
             case R.id.tv_my_ask_send:
+                changeFragment(MyAskSendFragment.getInstance(toolbarListener));
+                toolbarListener.changeTitle(3);
                 break;
             case R.id.tv_my_buy:
+                changeFragment(MyAskBuyFragment.getInstance(toolbarListener));
+                toolbarListener.changeTitle(1);
                 break;
             case R.id.tv_my_sell:
-                getFragmentManager().beginTransaction().replace(R.id.container,MySellFragment.getInstance(toolbarListener)).addToBackStack(null).commit();
+                changeFragment(MySellFragment.getInstance(toolbarListener));
                 toolbarListener.changeTitle(0);
                 break;
         }
     }
+
+    private void changeFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out)
+                .replace(R.id.container,fragment)
+                .addToBackStack(null).commit();
+    }
+
 
     public interface UpdateToolbar {
         public  void changeTitle(int mode);

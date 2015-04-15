@@ -35,23 +35,21 @@ import android.widget.Toast;
 import com.android.volley.toolbox.ImageLoader;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UploadManager;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Map;
 
-import qiniu.AuthException;
-import qiniu.PutPolicy;
 import weike.data.CommitBookData;
+import weike.shutuier.MainActivity;
 import weike.shutuier.R;
-import weike.util.ConnectionDetector;
 import weike.util.Constants;
 import weike.util.DouBanTask;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
 import weike.util.Mysingleton;
+import weike.util.UploadPicture;
 import weike.util.Utils;
 
 /**
@@ -84,6 +82,8 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private String oOrn = "全新"; //记录选择的新旧程度
     private LayoutTransition layoutTransition = null;   //布局动画
     private String coverDouBanUrl = null; //从豆瓣获取的封面url
+    private UpCompletionHandler upHandler = null;   //处理异步上传图片的handler
+    private final String TAG = "SellFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -195,7 +195,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         data = null;
     }
 
-    public static SellFragment getInstance( ){
+    public static SellFragment getInstance(){
         if(sellFragment == null) {
             sellFragment = new SellFragment();
         }
@@ -339,40 +339,58 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                 //图片上传完成后发布信息
                 if(coverDouBanUrl == null) {
                     if(picPath == null) {
-                        Toast.makeText(getActivity(),"信息不完整！",Toast.LENGTH_SHORT).show();
+                        showToast("请先选择封面");
                     }else {
-                        upLoadPicture();
+                        commitBook(picPath, true);
                     }
                 }else {
-                    if(canCommit(coverDouBanUrl)) {
-                        System.out.println(CommitBookData.getInstance().toString());
-                        commitBook();
-                    }else {
-                        Toast.makeText(getActivity(),"信息不完整！",Toast.LENGTH_SHORT).show();
-                        System.out.println(CommitBookData.getInstance().toString());
-                    }
+                    commitBook(coverDouBanUrl,false);
                 }
                 break;
         }
     }
 
-    private void commitBook() {
+    private void commitBook(String pic,boolean needUpPic) {
         //检查网络
-        if(ConnectionDetector.isConnectingToInternet(getActivity())) {
-            if(pd == null) {
-                pd = new ProgressDialog(getActivity());
+        if(MainActivity.netConnect) {
+            //检查信息是否完整
+            if(canCommit()) {
+                if(pd == null) {
+                    pd = new ProgressDialog(getActivity());
+                }
+                pd.setMessage("正在发布...");
+                pd.show();
+                //判断是否需要上传图片到七牛
+                if(needUpPic) {
+                    if(upHandler == null) {
+                        initUpHandler();
+                    }
+                    try{
+                        new UploadPicture(pic,upHandler).upToQiNiu();
+                    }catch (Exception e) {
+                        Log.e(TAG,"error in commit book",e);
+                    }
+                }else {
+                    CommitBookData.getInstance().setCoverUrl(pic);
+                    postBook();
+                }
             }
-            pd.setMessage("正在发布...");
-            pd.show();
-            if(commitHandler == null) {
+        }else {
+            showToast("网络未连接！");
+        }
+
+    }
+
+    private void postBook() {
+        try {
+            if(commitHandler == null ) {
                 initCommitHandler();
             }
             HttpTask task = new HttpTask(getActivity(),Constants.COMMITLINK,commitHandler,"CommitBook","post");
             HttpManager.startTask(task);
-        }else {
-            Toast.makeText(getActivity(),"网络未连接！",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG,"error in commit book task",e);
         }
-
     }
 
     private void initCommitHandler() {
@@ -386,12 +404,12 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                 }
                 switch (msg.what) {
                     case 0:
-                        Toast.makeText(getActivity(),"发布成功！",Toast.LENGTH_SHORT).show();
+                        showToast("发布成功！");
                         break;
                     case 1:
-                        Toast.makeText(getActivity(),"发布失败！",Toast.LENGTH_SHORT).show();
+                        showToast("发布失败！");
                         String result = (String) msg.obj;
-                        Log.d("commitBook",result);
+                        Log.e("commitBook",result);
                         result = null;
                         break;
                 }
@@ -426,36 +444,40 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         imgCover.setImageResource(R.drawable.def);
     }
 
-    private boolean canCommit(String coverUrl) {
-        if(coverUrl == null) return false;
+    private boolean canCommit() {
         CommitBookData commitData = CommitBookData.getInstance();
         CharSequence text = etBookName.getText();
         if(TextUtils.isEmpty(text)) {
             CommitBookData.clear();
+            showToast("请填写书名");
             return false;
         }
         commitData.setBookName(text.toString());
         text = etAuthor.getText();
         if(TextUtils.isEmpty(text)) {
             CommitBookData.clear();
+            showToast("请填写作者");
             return false;
         }
         commitData.setBookAuthor(text.toString());
         text = etPublisher.getText();
         if(TextUtils.isEmpty(text)) {
             CommitBookData.clear();
+            showToast("请填写出版社");
             return false;
         }
         commitData.setPublisher(text.toString());
         text = etNumber.getText();
         if(TextUtils.isEmpty(text)) {
             CommitBookData.clear();
+            showToast("请填写数量");
             return false;
         }
         commitData.setBookNumber(text.toString());
         text= etOPrice.getText();
         if(TextUtils.isEmpty(text)) {
             CommitBookData.clear();
+            showToast("请填写原价");
             return false;
         }
         commitData.setoPrice(text.toString());
@@ -482,6 +504,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             text = etSendCondition.getText();
             if(TextUtils.isEmpty(text)){
                 CommitBookData.clear();
+                showToast("请填写赠送条件");
                 return false ;
             }
             commitData.setSendCondition(text.toString());
@@ -492,6 +515,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             text = etSPrice.getText();
             if(TextUtils.isEmpty(text)){
                 CommitBookData.clear();
+                showToast("请填写售价或求购价");
                 return false ;
             }
             commitData.setsPrice(text.toString());
@@ -508,13 +532,16 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }else {
             commitData.setRemark("");
         }
-        commitData.setCoverUrl(coverUrl);
         if(isbn != null) {
             commitData.setIsbn(isbn);
         }else {
             commitData.setIsbn("");
         }
         return true;
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
     }
 
     private void showDialog() {
@@ -590,7 +617,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
 
     private void getBookInfo() {
         //检查联网状态
-        if(ConnectionDetector.isConnectingToInternet(getActivity())) {
+        if(MainActivity.netConnect) {
             //输入isbn号后利用豆瓣api获取书的信息
             if(isbnHan == null) {
                 initIsbnHan();
@@ -613,48 +640,30 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }
     }
 
-    private void upLoadPicture() {
-        File f = new File(picPath);  //要上传的文件
-        PutPolicy policy = new PutPolicy("shutuier",System.currentTimeMillis()+3600,1);
-        String token = null;
-        try {
-            token = policy.token(null);
-        } catch (AuthException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.d("SellFragment","token is " + token );
-        UploadManager uploadManager = new UploadManager();
-        uploadManager.put(f,null,token,
-                new UpCompletionHandler() {
-                    @Override
-                    public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
-                        if(jsonObject != null) {
-                            Log.d("uploadManager","JSONObject is " + jsonObject);
-                            //解析Json获得hash值
-                            if(jsonObject.has("hash")){
-                                try{
-                                    String hash = jsonObject.getString("hash");
-                                    Log.d("hash is " ,hash);
-                                    if(hash != null) {
-                                        if(canCommit(Constants.PICLINK + hash)) {
-                                            System.out.println(CommitBookData.getInstance().toString());
-                                            commitBook();
-                                        }else {
-                                            Toast.makeText(getActivity(),"信息不完整！",Toast.LENGTH_SHORT).show();
-                                            System.out.println(CommitBookData.getInstance().toString());
-                                        }
-                                    }
-                                }catch (Exception e) {
-                                    Log.e("SellFragment","error in get hash",e);
-                                }
+    private void initUpHandler() {
+        upHandler = new UpCompletionHandler() {
+            @Override
+            public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+                if(jsonObject != null) {
+                    //解析Json获得hash值
+                    if(jsonObject.has("hash")){
+                        try{
+                            String hash = jsonObject.getString("hash");
+                            if(hash != null) {
+                                String url  = Constants.PICLINK + hash;
+                                CommitBookData.getInstance().setCoverUrl(url);
+                                url = null;
+                                postBook();
                             }
-                        }else {
-                            Toast.makeText(getActivity(),"发布失败！请稍后再试。",Toast.LENGTH_SHORT).show();
+                        }catch (Exception e) {
+                            Log.e("SellFragment","error in get hash",e);
                         }
                     }
-                },null);
+                }else {
+                    showToast("发布失败！请稍后再试。");
+                }
+            }
+        };
     }
 
     //设置布局动画

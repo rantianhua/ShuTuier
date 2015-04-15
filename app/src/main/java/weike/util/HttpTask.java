@@ -21,8 +21,12 @@ import org.apache.http.util.EntityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import weike.data.ChangBookSateData;
 import weike.data.CommentData;
 import weike.data.CommitBookData;
+import weike.data.UserInfoData;
+import weike.fragment.BaseInfoFragment;
+import weike.fragment.HandleBookDialogFragment;
 import weike.shutuier.LoginActivity;
 
 /**
@@ -69,6 +73,7 @@ public class HttpTask implements Runnable {
     }
 
     private void doPost() {
+        Log.e("HttpTask","post url is" + url);
         List<NameValuePair> list = new ArrayList<>();
         if(from.equals("CommitBook")) {
             CommitBookData data = CommitBookData.getInstance();
@@ -111,8 +116,31 @@ public class HttpTask implements Runnable {
             list.add(new BasicNameValuePair("OpenId",sp.getString(Constants.UID,"")));
             list.add(new BasicNameValuePair("Sex", sp.getString(Constants.SEX,"")));
             list.add(new BasicNameValuePair("Head",sp.getString(Constants.USERURL, "")));
-            Log.e("list is " ,list.toString());
-        } else{
+            Log.e("list is ", list.toString());
+        } else if(from.equals(HandleBookDialogFragment.TAG)) {
+            ChangBookSateData data = ChangBookSateData.getInstance();
+            list.add(new BasicNameValuePair("ID",data.getId()));
+            list.add(new BasicNameValuePair("close",data.getClose()));
+            Log.e("list is ", list.toString());
+            ChangBookSateData.clear();
+        }else if(from.equals(BaseInfoFragment.TAG)) {
+            UserInfoData data = UserInfoData.getInstance();
+            list.add(new BasicNameValuePair("OpenId",
+                    con.getSharedPreferences(Constants.SP_USER,0)
+                    .getString(Constants.UID,"")));
+            list.add(new BasicNameValuePair("Head",data.getUserUrl()));
+            list.add(new BasicNameValuePair("thirdName",data.getNicName()));
+            list.add(new BasicNameValuePair("Sex",data.getSex()));
+            list.add(new BasicNameValuePair("birth",data.getBirthday()));
+            list.add(new BasicNameValuePair("Interest",data.getHobbit()));
+            list.add(new BasicNameValuePair("School",data.getSchool()));
+            list.add(new BasicNameValuePair("teleNum",data.getPhoneNumber()));
+            list.add(new BasicNameValuePair("qqNum",data.getQqNumber()));
+            list.add(new BasicNameValuePair("weixinNum",data.getWxNumber()));
+            list.add(new BasicNameValuePair("Mail",data.getEmail()));
+            Log.e("list is ", list.toString());
+        }
+        else{
             CommentData data = CommentData.getInstance();
             NameValuePair pair1 = new BasicNameValuePair("id_maker","1");
             NameValuePair pair2 = new BasicNameValuePair("content", data.getContent());
@@ -135,7 +163,9 @@ public class HttpTask implements Runnable {
             if(entity != null) {
                 content = EntityUtils.toString(entity);
                 Log.i("HTTPTask","content is  " + content);
-                if((from.equals("CommitBook")  || from.equals(LoginActivity.TAG) ) && message.what != 1) {
+                if((from.equals("CommitBook")  || from.equals(LoginActivity.TAG) )
+                        || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG)
+                        && message.what != 1) {
                     message.what =  0;
                     message.obj = content;
                 }else {
@@ -166,6 +196,7 @@ public class HttpTask implements Runnable {
     }
 
     private void doGet() {
+        Log.e("doget","url is " + url);
         get = new HttpGet(url);
         Message msg = handler.obtainMessage();
         try{
@@ -196,10 +227,11 @@ public class HttpTask implements Runnable {
             try{
                 Log.e("HttpTask","url is " + url);
                 if(url.contains(Constants.OLink)) {
-                    Log.e("HttpTask","开始解析数据");
                     Utils.getListData(content,from);
                 }else if(url.contains(Constants.DetailLink)) {
                     Utils.getDetailData(content);
+                }else if(url.contains(Constants.BASEMYCOMMIT)) {
+                    msg.obj = Utils.getMyCommitData(content);
                 }else {
                     Log.e("HttpTask","没有数据要数据");
                 }

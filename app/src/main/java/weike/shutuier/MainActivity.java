@@ -1,49 +1,47 @@
 package weike.shutuier;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.umeng.fb.FeedbackAgent;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import myinterface.UserInfoChangeListener;
+import weike.fragment.BaseInfoFragment;
 import weike.fragment.HomeFragment;
 import weike.fragment.MessageFragment;
-import weike.fragment.ScanFragment;
 import weike.fragment.SellFragment;
 import weike.fragment.SettingFragment;
+import weike.util.ConnectReceiver;
 import weike.util.Constants;
+import weike.util.FragmentLabel;
+import weike.util.GetUserPhotoWork;
 import weike.util.Utils;
 import weike.zing.CaptureActivity;
 import weike.zing.Intents;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener{
+public class MainActivity extends ActionBarActivity implements View.OnClickListener
+        ,ConnectReceiver.GetNetState,UserInfoChangeListener{
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
@@ -85,61 +83,84 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     RelativeLayout rlSwipe;
 
     private Resources resources = null;
-    private FragmentManager fm = null;
+    FragmentManager fm = null;
     private boolean havaItemSelected = false;   //标识是否有section处于选中状态
     private static final int REQUEST_CODE = 200;
-    private final String TAG = "MainActivity";
+    public static final String TAG = "MainActivity";
     private int sectionIconSize ;   //左侧图片的大小
-    private String userPhotoPath = Utils.getPicturePath() + Constants.USERICONFILE;
+    //网络状态接收器
+    private ConnectReceiver netReceiver = new ConnectReceiver(this);
+    public static boolean netConnect = false;    //记录接收的网络状态
+    private SharedPreferences sp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //注册广播接收器
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        this.registerReceiver(netReceiver,filter);
         resources = this.getResources();
         sectionIconSize = resources.getDimensionPixelSize(R.dimen.sectionIconSize);
+        sp = getSharedPreferences(Constants.SP_USER,0);
         initView();
+        FeedbackAgent agent = new FeedbackAgent(this);
+        agent.sync();
     }
 
     private void initView() {
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
+        setTitle(FragmentLabel.Home.getValue());
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open,
                 R.string.drawer_close){
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                if(fm  == null) {
+                    fm = getSupportFragmentManager();
+                }
                 if(rlCommit.isSelected()) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, SellFragment.getInstance()).commit();
+                    if(!getTitle().equals(FragmentLabel.Commit.getValue())) {
+                        //检查用户有没有登陆
+                        if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+                            Toast.makeText(MainActivity.this,"请先点击头像登陆！",Toast.LENGTH_SHORT).show();
+                        }else if(TextUtils.isEmpty(sp.getString(Constants.QQNumber,"")) &&
+                                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
+                                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
+                                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
+                            //先让用户完善联系方式
+                            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
+                                    .setNegativeButton("知道啦", null).create();
+                            dialog.setTitle("未完善联系方式");
+                            dialog.show();
+                        }else {
+                            fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
+                                .replace(R.id.contain,SellFragment.getInstance()).commit();
+                            setTitle(FragmentLabel.Commit.getValue());
+                        }
+                    }
                     return;
                 }
                 if(rlHome.isSelected()) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, HomeFragment.getInstance()).commit();
+                    if(!getTitle().equals(FragmentLabel.Home.getValue())) {
+                        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
+                            .replace(R.id.contain, HomeFragment.getInstance()).commit();
+                        setTitle(FragmentLabel.Home.getValue());
+                    }
                     return;
                 }
                 if(rlMessage.isSelected()) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, MessageFragment.getInstance()).commit();
-                    return;
-                }
-                if(rlSwipe.isSelected()) {
-                    startScan();
+                    if(!getTitle().equals(FragmentLabel.Message.getValue())) {
+                        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
+                            .replace(R.id.contain, MessageFragment.getInstance()).commit();
+                        setTitle(FragmentLabel.Message.getValue());
+                    }
                 }
             }
         };
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.action_search:
-                        Toast.makeText(MainActivity.this, "actionSearch", Toast.LENGTH_SHORT).show();
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
 
         //模糊背景图
         int width = Utils.getWindowWidth(this);
@@ -151,12 +172,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         userPhoto.setOnClickListener(this);
 
         //初始化fragment
-        fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.contain);
-        if(fragment == null) {
-            fragment = HomeFragment.getInstance();
-            fm.beginTransaction().add(R.id.contain,fragment).commit();
+        if(fm == null) {
+            fm = getSupportFragmentManager();
         }
+        fm.beginTransaction().add(R.id.contain,HomeFragment.getInstance()).commit();
 
         rlSetting.setOnClickListener(this);
         rlCommit.setOnClickListener(this);
@@ -167,82 +186,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         updateIcon(iconHome,R.drawable.section_home_icon,1);
         updateIcon(iconCommit,R.drawable.section_sell_icon,1);
-        updateIcon(iconMessage,R.drawable.calling_48,1);
+        updateIcon(iconMessage,R.drawable.calling,1);
         updateIcon(iconSwipe,R.drawable.scan,1);
     }
 
     private void updateUserInfo() {
         //检查用户是否已登陆
-        SharedPreferences sp = getSharedPreferences(Constants.SP_USER,0);
         if(sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-            //先检查本地是否已有图片
-            File f = new File(userPhotoPath);
-            if(f.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(userPhotoPath);
-                userPhoto.setImageBitmap(Utils.getCroppedBitmapDrawable(bitmap));
-            }else {
-                String url = sp.getString(Constants.USERURL,null) ;
-                if(url != null) {
-                    new GetBitmap().execute(url,null,null);
-                }
-            }
-            userName.setText(sp.getString(Constants.NICNAME,""));
+            new GetUserPhotoWork(userPhoto,this,true).execute();
+            userName.setText(sp.getString(Constants.NICNAME,"获取昵称失败"));
         }else {
-            userPhoto.setImageBitmap(BitmapFactory.decodeResource(resources,R.drawable.user));
+            userPhoto.setImageResource(R.drawable.user);
             userName.setText("您还未登陆！");
-        }
-    }
-
-    private class GetBitmap extends AsyncTask<String,Void,Bitmap>{
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            String url = params[0];
-            Bitmap bit = null;
-            URL myUrl;
-            HttpURLConnection conn = null;
-            try {
-                myUrl = new URL(url);
-                conn = (HttpURLConnection) myUrl
-                        .openConnection();
-                conn.setDoInput(true);
-                conn.connect();
-                InputStream is = conn.getInputStream();
-                bit =  BitmapFactory.decodeStream(is);
-                is.close();
-            } catch (IOException e) {
-                Log.e(TAG, "error in getUsrPhoto", e);
-            }finally {
-                if(conn != null) {
-                    conn.disconnect();
-                    conn = null;
-                }
-                myUrl = null;
-            }
-            if(bit != null) {
-                try {
-                    File f =new File(userPhotoPath);
-                    FileOutputStream out = new FileOutputStream(f);
-                    bit.compress(Bitmap.CompressFormat.JPEG,100,out);
-                    out.flush();
-                    out.close();
-                }catch (Exception e) {
-                    Log.e(TAG,"error in save photo",e);
-                }
-            }
-            return bit;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            if(bitmap != null) {
-                userPhoto.setImageBitmap(Utils.getCroppedBitmapDrawable(bitmap));
-            }
         }
     }
 
@@ -263,35 +218,39 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         // intent.putExtra(Intents.Scan.PROMPT_MESSAGE, "type your prompt message");
         intent.setClass(this, CaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        overridePendingTransition(R.anim.right_in,R.anim.left_out);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_photo:
-                Intent intent = new Intent(MainActivity.this,PersonalCenterActivity.class);
+                Intent intent = new Intent();
+                //判断用户有没有登陆
+                if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+                    //跳转到登陆界面
+                    intent.setClass(MainActivity.this,LoginActivity.class);
+                }else {
+                    BaseInfoFragment.userInfoListener = MainActivity.this;
+                    intent.setClass(MainActivity.this,PersonalCenterActivity.class);
+                }
                 startActivity(intent);
+                overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
             case R.id.rl_section_swipe:
                 if(!rlSwipe.isSelected()) {
-                    changeSection(rlSwipe,tvSwipe,iconSwipe,R.drawable.scan);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.contain, ScanFragment.getInstance()).commit();
-                }else {
-                    mDrawerLayout.closeDrawers();
+                    changeSection(rlSwipe, tvSwipe, iconSwipe, R.drawable.scan);
                 }
+                startScan();
                 break;
             case R.id.rl_section_setting:
-                getSupportFragmentManager().beginTransaction().replace(R.id.contain, SettingFragment.getInstance()).commit();
+                SettingFragment.userInfoListener = this;
+                startActivity(new Intent(MainActivity.this,SettingActivity.class));
+                overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
             case R.id.rl_section_message:
                 if(!rlMessage.isSelected()) {
-                    changeSection(rlMessage,tvMessage,iconMessage,R.drawable.calling_48);
-                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, MessageFragment.getInstance()).commit();
+                    changeSection(rlMessage,tvMessage,iconMessage,R.drawable.calling);
                 }else {
                     mDrawerLayout.closeDrawers();
                 }
@@ -299,7 +258,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.rl_section_commit:
                 if(!rlCommit.isSelected()) {
                     changeSection(rlCommit,tvCommit,iconCommit,R.drawable.section_sell_icon);
-                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, SellFragment.getInstance()).commit();
                 }else {
                     mDrawerLayout.closeDrawers();
                 }
@@ -307,7 +265,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.rl_section_home:
                 if(!rlHome.isSelected()) {
                     changeSection(rlHome,tvHome,iconHome,R.drawable.section_home_icon);
-                    //getSupportFragmentManager().beginTransaction().replace(R.id.contain, HomeFragment.getInstance()).commit();
                 }else {
                     mDrawerLayout.closeDrawers();
                 }
@@ -345,7 +302,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             return;
         }
         if(rlMessage.isSelected()) {
-            updateIcon(iconMessage,R.drawable.calling_48,1);
+            updateIcon(iconMessage,R.drawable.calling,1);
             rlMessage.setSelected(false);
             tvMessage.setActivated(false);
             return;
@@ -380,5 +337,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void sendState(boolean state) {
+        netConnect = state;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(netReceiver != null) {
+            this.unregisterReceiver(netReceiver);
+            netReceiver = null;
+        }
+    }
+
+    @Override
+    public void userInfoChanged() {
+        updateUserInfo();
     }
 }

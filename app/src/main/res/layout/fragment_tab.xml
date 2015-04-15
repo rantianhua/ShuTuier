@@ -19,14 +19,12 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
+        android:id="@+id/customer_progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/pb_loading"
-        android:indeterminateDrawable="@drawable/loading"
-        android:indeterminateOnly="true"
-        android:indeterminateBehavior="repeat"
-        android:layout_centerHorizontal="true"
+        android:indeterminateDrawable="@drawable/fram_loading"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:visibility="invisible"
         />
 

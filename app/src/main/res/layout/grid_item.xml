@@ -6,7 +6,8 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/img_grid_item"/>
+        android:id="@+id/img_grid_item"
+        android:scaleType="centerCrop"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,10 +22,11 @@
         android:textColor="@color/white"
         android:gravity="center"
         android:background="@color/tv_align_bg"
+        android:alpha="100"
         />
 
     <TextView
-        android:id="@+id/tv_name_grid"
+        android:id="@+id/tv_date_grid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
@@ -32,7 +34,7 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:layout_centerHorizontal="true"
-        android:text="复旦复华大家"
+        android:text="05-05 04:33"
         android:textSize="12sp"
         android:singleLine="true"/>
 

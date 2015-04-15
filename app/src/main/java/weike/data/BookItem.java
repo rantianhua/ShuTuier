@@ -19,6 +19,7 @@ public class BookItem {
     private int messageNumber;
     private int shareNumber;
     private String sendCondition;
+    private String subClassify;
 
     public int getId() {
         return id;
@@ -130,5 +131,13 @@ public class BookItem {
 
     public void setSendCondition(String sendCondition) {
         this.sendCondition = sendCondition;
+    }
+
+    public String getSubClassify() {
+        return subClassify;
+    }
+
+    public void setSubClassify(String subClassify) {
+        this.subClassify = subClassify;
     }
 }

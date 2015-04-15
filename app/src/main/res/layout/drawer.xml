@@ -69,7 +69,6 @@
                 android:layout_marginStart="45dp"
                 android:layout_marginLeft="45dp"
                 android:layout_centerVertical="true"
-                android:src="@drawable/section_home_icon"
                 />
 
             <TextView
@@ -104,7 +103,6 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/section_sell_icon"
                     />
 
                 <TextView
@@ -139,7 +137,6 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/calling_48"
                     />
 
                 <TextView
@@ -187,7 +184,6 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/scan"
                     />
 
                 <TextView

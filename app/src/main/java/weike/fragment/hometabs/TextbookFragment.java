@@ -1,9 +1,9 @@
 package weike.fragment.hometabs;
 
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +11,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +23,13 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -31,10 +37,9 @@ import weike.adapter.BookListAdapter;
 import weike.adapter.GridCollegeAdapter;
 import weike.data.BookItem;
 import weike.data.ListBookData;
-import weike.fragment.CollegesDialogFragment;
 import weike.shutuier.BookDetailActivity;
+import weike.shutuier.MainActivity;
 import weike.shutuier.R;
-import weike.util.ConnectionDetector;
 import weike.util.Constants;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
@@ -57,6 +62,8 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     RelativeLayout rlCollege;
     @InjectView(R.id.gridView_colleges)
     GridView gridView;
+    @InjectView(R.id.customer_progressbar_text_book)
+    ProgressBar pb;
 
     private static TextbookFragment fragment = null;
     private BookListAdapter adapter = null;
@@ -66,13 +73,14 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     private boolean isDatainited = false;
     private int action = 0;
     Animation rotate1 = null,rotate2;  //旋转动画
-    private CollegesDialogFragment collegesDialogFragment = null;
     private String[] colleges = {"全部","计算机院","通信工程","电子工程"
             ,"机电学院","物光学院","经管学院","数统学院","人文学院"
             ,"外国语学院","软件学院","微电子院","空间学院","材料与纳米",
             "国际教育","网络教育"};
-    private ValueAnimator translateIn = null,translateOut = null;
     private ScaleAnimation expand = null, fold = null;
+    private boolean  changeCollege = false;
+    private String preText  = null;
+    private List<BookItem> temp = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -103,6 +111,25 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
 
         showGrid.setOnClickListener(this);
         gridView.setVisibility(View.INVISIBLE);
+
+        tvCollege.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                preText = s.toString();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(!changeCollege && !preText.equals(s.toString())) {
+                    changeCollege = true;
+                }
+            }
+        });
     }
 
 
@@ -120,7 +147,8 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     }
 
     private void getData(){
-        if(ConnectionDetector.isConnectingToInternet(getActivity())){
+        if(MainActivity.netConnect){
+            upDatePb(true);
             if(handler == null) {
                 initHandler();
             }
@@ -132,6 +160,9 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         }
     }
 
+    private void upDatePb(boolean show) {
+        pb.setVisibility(show && !refreshLayout.isRefreshing() ? View.VISIBLE : View.INVISIBLE);
+    }
 
     private void initHandler() {
 
@@ -139,9 +170,10 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                upDatePb(false);
                 switch (msg.what) {
                     case 0:
-                        adapter.notifyDataSetChanged();
+                        adapter.updateData(data.getList());
                         break;
                     case 1:
                         Toast.makeText(getActivity(),"哎呀！下载出了问题",Toast.LENGTH_SHORT).show();
@@ -167,7 +199,6 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     public void onRefresh() {
         getData();
     }
-
 
     @Override
     public void onResume() {
@@ -295,6 +326,10 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     gridView.setVisibility(View.GONE);
+                    //更新listView的内容
+                    if(changeCollege) {
+                        upDateListData();
+                    }
                 }
 
                 @Override
@@ -349,6 +384,42 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         if(action == 1) {
             showGrid.startAnimation(rotate2);
             action = 0;
+        }
+    }
+
+    //更新ListView显示的内容
+    private void upDateListData() {
+        refreshLayout.setRefreshing(true);
+        new ChangeListData().execute();
+    }
+
+    private class ChangeListData extends AsyncTask<Void,Void,List<BookItem>> {
+        @Override
+        protected List<BookItem> doInBackground(Void... params) {
+            if(tvCollege.getText().equals("全部")) {
+                return data.getList();
+            }else {
+                temp.clear();
+                for(BookItem item : data.getList()) {
+                    if(item.getSubClassify().equals(tvCollege.getText().toString())) {
+                        temp.add(item);
+                    }
+                }
+                return temp;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<BookItem>  maps) {
+            super.onPostExecute(maps);
+            refreshLayout.setRefreshing(false);
+            changeCollege = false;
+            adapter.updateData(maps);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
     }
 

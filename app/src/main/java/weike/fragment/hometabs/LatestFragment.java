@@ -22,8 +22,8 @@ import weike.adapter.BookListAdapter;
 import weike.data.BookItem;
 import weike.data.ListBookData;
 import weike.shutuier.BookDetailActivity;
+import weike.shutuier.MainActivity;
 import weike.shutuier.R;
-import weike.util.ConnectionDetector;
 import weike.util.Constants;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
@@ -32,13 +32,12 @@ import weike.util.HttpTask;
  * Created by Rth on 2015/2/14.
  */
 public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnRefreshListener,AdapterView.OnItemClickListener {
-
-    @InjectView(R.id.pb_loading)
-    ProgressBar pb;
     @InjectView(R.id.listview)
     ListView listView;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout  refreshLayout = null;
+    @InjectView(R.id.customer_progressbar)
+    ProgressBar pb;
 
     private static LatestFragment fragment = null;
     private BookListAdapter adapter = null;
@@ -68,9 +67,6 @@ public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnR
         adapter = new BookListAdapter(data.getList(),getActivity());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
-        if(pb.getVisibility() == View.INVISIBLE){
-            pb.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -87,7 +83,8 @@ public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnR
     }
 
     private void getData(){
-        if(ConnectionDetector.isConnectingToInternet(getActivity())){
+        if(MainActivity.netConnect){
+            upDatePb(true);
             if(handler == null) {
                 initHandler();
             }
@@ -99,18 +96,20 @@ public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnR
         }
     }
 
+    private void upDatePb(boolean show) {
+        pb.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
 
     private void initHandler() {
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(pb.getVisibility() == View.VISIBLE) {
-                    pb.setVisibility(View.INVISIBLE);
-                }
+                upDatePb(false);
                 switch (msg.what) {
                     case 0:
-                        adapter.notifyDataSetChanged();
+                        adapter.updateData(data.getList());
                         break;
                     case 1:
                         Toast.makeText(getActivity(),"哎呀！下载出了问题",Toast.LENGTH_SHORT).show();

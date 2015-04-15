@@ -160,11 +160,38 @@
             android:singleLine="true"
             />
 
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/white"
+            android:text="@string/address"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:id="@+id/tv_user_address_label"
+            android:layout_below="@+id/tv_user_school_label"
+            android:layout_marginTop="1dp"
+            />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/tv_user_address_label"
+            android:layout_alignLeft="@+id/et_center_nicname"
+            android:layout_alignStart="@+id/et_center_nicname"
+            android:background="@color/transparent"
+            android:id="@+id/et_center_address"
+            android:textSize="14sp"
+            android:singleLine="true"
+            />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="@string/text_tip_contact"
-            android:layout_below="@+id/tv_user_school_label"
+            android:layout_below="@+id/tv_user_address_label"
             android:layout_marginTop="15dp"
             android:id="@+id/tv_tip_contact"
             android:background="@color/white"

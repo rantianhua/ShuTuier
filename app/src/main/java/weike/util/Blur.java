@@ -3,11 +3,6 @@ package weike.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Build;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 
 /**
@@ -20,20 +15,20 @@ public class Blur {
     @SuppressLint("NewApi")
     public static Bitmap fastblur(Context context, Bitmap sentBitmap, int radius) {
 
-        if (Build.VERSION.SDK_INT >= 16) {
-            Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
-
-            final RenderScript rs = RenderScript.create(context);
-            final Allocation input = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
-                    Allocation.USAGE_SCRIPT);
-            final Allocation output = Allocation.createTyped(rs, input.getType());
-            final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));    //xiaomishibai
-            script.setRadius(radius /* e.g. 3.f */);
-            script.setInput(input);
-            script.forEach(output);
-            output.copyTo(bitmap);
-            return bitmap;
-        }
+//        if (Build.VERSION.SDK_INT >= 16) {
+//            Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+//
+//            final RenderScript rs = RenderScript.create(context);
+//            final Allocation input = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
+//                    Allocation.USAGE_SCRIPT);
+//            final Allocation output = Allocation.createTyped(rs, input.getType());
+//            final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));    //xiaomishibai
+//            script.setRadius(radius /* e.g. 3.f */);
+//            script.setInput(input);
+//            script.forEach(output);
+//            output.copyTo(bitmap);
+//            return bitmap;
+//        }
         Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
 
         if (radius < 1) {
