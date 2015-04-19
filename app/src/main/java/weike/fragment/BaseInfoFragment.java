@@ -39,9 +39,8 @@ import java.io.File;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import weike.data.UserInfoData;
 import myinterface.UserInfoChangeListener;
-import weike.shutuier.MainActivity;
+import weike.data.UserInfoData;
 import weike.shutuier.R;
 import weike.util.Constants;
 import weike.util.GetUserPhotoWork;
@@ -90,7 +89,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private String takePicPath = null;         //拍摄图片的存储路径
     private boolean changeMessage = false;    //判断有没有修改头像
     private Handler saveHan = null; //保存用户信息的异步处理
-    private static String from = null;  //标记是谁启动的Fragment
     private ProgressDialog pd = null;
     public static UserInfoChangeListener userInfoListener;
 
@@ -197,13 +195,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private void saveBaseInfo() {
         //先暂存基本信息
         cacheUserInfo();
-        //根据启动来源做进一步判断
-        if(from.equals(MainActivity.TAG)) {
-            //此时检查联系方式是否完善
-            if(!checkContact()) {
-                return;
-            }
-        }
         if(pd == null) {
             pd = new ProgressDialog(getActivity());
         }
@@ -296,9 +287,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
                     if(userInfoListener != null) {
                         userInfoListener.userInfoChanged();
                     }
-                    if(from.equals(MainActivity.TAG)) {
-                        getFragmentManager().beginTransaction().replace(R.id.contain,SellFragment.getInstance()).commit();
-                    }
                 }else {
                     Toast.makeText(getActivity(),"保存失败",Toast.LENGTH_SHORT).show();
                     UserInfoData.recycle();
@@ -341,11 +329,10 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         UserInfoData.recycle();
     }
 
-    public static BaseInfoFragment getInstance(PersonalFragment.UpdateToolbar listener,String tag) {
+    public static BaseInfoFragment getInstance(PersonalFragment.UpdateToolbar listener) {
         if(listener != null) {
             toolbarListener = listener;
         }
-        from = tag;
         return new BaseInfoFragment();
     }
 

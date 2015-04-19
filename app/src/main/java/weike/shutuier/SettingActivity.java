@@ -3,6 +3,7 @@ package weike.shutuier;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -14,7 +15,7 @@ import weike.util.FragmentLabel;
  */
 public class SettingActivity extends ActionBarActivity {
 
-    @InjectView(R.id.toolbar)
+    @InjectView(R.id.toolbar_setting)
     Toolbar toolbar;
 
     @Override
@@ -30,5 +31,15 @@ public class SettingActivity extends ActionBarActivity {
         setTitle(FragmentLabel.Commit.getValue());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportFragmentManager().beginTransaction().add(R.id.container_setting, SettingFragment.getInstance()).commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }else {
+            return false;
+        }
     }
 }

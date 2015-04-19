@@ -13,7 +13,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.shutuier.R;
 import weike.util.GetUserPhotoWork;
-import weike.util.Utils;
 
 /**
  * Created by Rth on 2015/3/23.
@@ -58,7 +57,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
         tvMySell.setOnClickListener(this);
         tvMySend.setOnClickListener(this);
         showUserPhoto();
-        Utils.loadBlurBitmap(getActivity(), imgBg, R.drawable.center_bg, 25, 0, 0);
+        //Utils.loadBlurBitmap(getActivity(), imgBg, R.drawable.center_bg, 25, 0, 0);
     }
 
     private void showUserPhoto() {
@@ -74,7 +73,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_my_base_information:
-                changeFragment(BaseInfoFragment.getInstance(toolbarListener,TAG));
+                changeFragment(BaseInfoFragment.getInstance(toolbarListener));
                 toolbarListener.changeTitle(4);
                 break;
             case R.id.tv_my_send:

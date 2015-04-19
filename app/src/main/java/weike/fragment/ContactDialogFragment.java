@@ -150,7 +150,11 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     private void sendEmail(String s) {
         Uri uri = Uri.parse("mailto:" + s);
         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-        startActivity(it);
+        if(it.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(it);
+        }else {
+            Toast.makeText(getActivity(),"未安装可用的邮件应用",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openWx() {
@@ -184,7 +188,12 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     //开启QQ WPA会话
     private void startWPA(CharSequence text) {
         String url="mqqwpa://im/chat?chat_type=wpa&uin="+text.toString();
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        Intent qqWpa = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        if(qqWpa.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(qqWpa);
+        }else {
+            Toast.makeText(getActivity(),"未安装手机QQ",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateContacts(TextView tvContact) {

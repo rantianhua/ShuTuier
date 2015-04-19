@@ -70,12 +70,12 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     TextView tvRemark;
     @InjectView(R.id.ll_comments_list)
     LinearLayout ll;
-    @InjectView(R.id.tv_message_detail)
-    TextView tvMessageBottom;
+    @InjectView(R.id.rl_detail_liuyan)
+    RelativeLayout rlLiuyan;
     @InjectView(R.id.btn_want_buy)
     Button btnWantBuy;
-    @InjectView(R.id.tv_share_detail)
-    TextView tvShareBottom;
+    @InjectView(R.id.rl_detail_share)
+    RelativeLayout rlShare;
     @InjectView(R.id.ll_bottom_buy_action)
     LinearLayout llBuyAction;
     @InjectView(R.id.ll_btn_want_buy)
@@ -103,6 +103,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     @InjectView(R.id.tv_send_condition)
     TextView tvSendCondition;
 
+    private TextView tvLiuyanNumber,tvShareNumber;
+
     private Handler hanGetDetail = null,hanComment=null;
     private ImageLoader imageLoader;
     private Map<String,Integer> map;
@@ -120,6 +122,10 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     private void initView() {
         ButterKnife.inject(this);
+
+        tvShareNumber = (TextView) rlShare.findViewById(R.id.tv_share_number);
+        tvLiuyanNumber = (TextView) rlLiuyan.findViewById(R.id.tv_liuyan_number);
+
         pb.setVisibility(View.VISIBLE);
         if(hanGetDetail == null) {
             initHandler();
@@ -132,7 +138,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
         HttpManager.startTask(task);
         ListBookData data = ListBookData.getInstance(from);
-        item = (BookItem) data.getBookItem(itemId).get("item");
+        item = (BookItem) data.getBookItemById(itemId).get("item");
 
         if(imageLoader == null) {
             imageLoader = Mysingleton.getInstance(this).getImageLoader();
@@ -167,8 +173,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     //初始化底部视图
     private void initBottomView() {
-        tvMessageBottom.setOnClickListener(this);
-        tvShareBottom.setOnClickListener(this);
+        rlShare.setOnClickListener(this);
+        rlLiuyan.setOnClickListener(this);
         //根据书的状态改变不同的状态
         String status  = item.getStatue();
         if(!status.contains("出售")) {
@@ -207,7 +213,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         sb = null;
                         tvOwner.setText(BookOtherData.getInstance().getOwnerName());
                         try {
-                            imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.ic_launcher, R.drawable.ic_launcher));
+                            imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def));
                         } catch (Exception e) {
                             Log.e(TAG,"error in get UserIcon",e);
                         }
@@ -269,7 +275,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.tv_message_detail:
+            case R.id.rl_detail_liuyan:
                 //替换底部View
                changeBottomView(0);
                 break;
@@ -284,7 +290,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                     sendComment();
                 }
                 break;
-            case R.id.tv_share_detail:
+            case R.id.rl_detail_share:
                 ShareFragment.getInstance(item.getImgUrl(),itemId).show(getSupportFragmentManager(),"share");
                 break;
             case R.id.btn_want_buy:

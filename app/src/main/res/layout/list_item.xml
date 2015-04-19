@@ -138,31 +138,19 @@
             android:id="@+id/view_margin"
             />
 
-        <TextView
+        <include layout="@layout/view_liuyan"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:drawableLeft="@drawable/message"
-            android:drawableStart="@drawable/message"
-            android:id="@+id/tv_list_item_message"
-            android:gravity="center"
-            android:drawablePadding="8dp"
-            android:padding="5dp"
-            android:text="4"
             android:layout_toLeftOf="@+id/view_margin"
             android:layout_toStartOf="@+id/view_margin"
             android:layout_alignBottom="@+id/view_margin"
-            />
+            android:id="@+id/rl_list_item_liuyan"/>
 
-        <TextView
+
+        <include layout="@layout/view_share"
+            android:id="@+id/rl_list_item_share"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:drawableLeft="@drawable/share"
-            android:drawableStart="@drawable/share"
-            android:gravity="center"
-            android:text="4"
-            android:id="@+id/tv_list_item_share"
-            android:drawablePadding="8dp"
-            android:padding="5dp"
             android:layout_toRightOf="@+id/view_margin"
             android:layout_toEndOf="@+id/view_margin"
             android:layout_alignBottom="@+id/view_margin"/>

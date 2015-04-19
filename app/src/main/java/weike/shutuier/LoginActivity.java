@@ -5,7 +5,10 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,13 +16,15 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,10 @@ import com.tencent.connect.UserInfo;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import com.umeng.fb.FeedbackAgent;
+import com.umeng.fb.SyncListener;
+import com.umeng.fb.model.Conversation;
+import com.umeng.fb.model.Reply;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.controller.UMServiceFactory;
 import com.umeng.socialize.controller.UMSocialService;
@@ -38,10 +47,13 @@ import com.umeng.socialize.sso.UMSsoHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import myinterface.UserInfoChangeListener;
+import weike.data.UserInfoData;
 import weike.util.ConnectReceiver;
 import weike.util.Constants;
 import weike.util.HttpManager;
@@ -57,20 +69,14 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
     ImageView logo;
     @InjectView(R.id.tv_my_purpose)
     TextView tvMyPurpose;
-    @InjectView(R.id.rl_login_view)
-    RelativeLayout rlLogin;
+    @InjectView(R.id.ll_login_view)
+    LinearLayout llLogin;
     @InjectView(R.id.btn_just_look)
     Button btnLook;
-    @InjectView(R.id.img_login_bg)
-    ImageView imgLoginBg;
-    @InjectView(R.id.tv_login_qq)
-    TextView tvQQLogin;
-    @InjectView(R.id.tv_login_sina)
-    TextView tvSinaLogin;
-    @InjectView(R.id.tv_login_wx)
-    TextView tvWxLogin;
-    @InjectView(R.id.tv_login_renren)
-    TextView tvRRLogin;
+    @InjectView(R.id.img_qq_login)
+    ImageView imgQQLogin;
+    @InjectView(R.id.img_sina_login)
+    ImageView imgSinaLogin;
 
     public static final String TAG = "LoginActivity";
     private ProgressDialog pd = null;
@@ -80,6 +86,9 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
     //网络状态接收器
     private ConnectReceiver netReceiver = new ConnectReceiver(this);
     public static boolean netConnect = false ;    //记录接收的网络状态
+    private UserInfoData userInfo = UserInfoData.getInstance();
+    public static UserInfoChangeListener listener = null;
+    private Tencent tencent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +97,51 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(netReceiver,filter);
         initController();
+        feedbackNotice();
         initView();
+    }
+
+    //打开反馈通知
+    private void feedbackNotice() {
+        Conversation mComversation = new FeedbackAgent(this).getDefaultConversation();
+        mComversation.sync(new SyncListener() {
+            @Override
+            public void onSendUserReply(List<Reply> replyList) {
+            }
+            @Override
+            public void onReceiveDevReply(List<Reply> replyList) {
+                String content = "";
+                if(replyList.size() > 0) {
+                    if (replyList.size() == 1) {
+                        content = replyList.get(0).content;
+                    } else {
+                        content = "有 " +  replyList.size() + "条反馈";
+                    }
+                    try {
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        String tickerText = "有新的回复";
+                        Intent intentToLaunch = new Intent(LoginActivity.this, FeedbackActivity.class);//将CustomActivity替换成自定义Activity类名
+                        intentToLaunch.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        int requestCode = (int) SystemClock.uptimeMillis();
+                        PendingIntent contentIntent = PendingIntent.getActivity(LoginActivity.this, requestCode,
+                                intentToLaunch, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        int smallIcon = getPackageManager().getPackageInfo(
+                                getPackageName(), 0).applicationInfo.icon;
+
+                        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                                LoginActivity.this)
+                                .setSmallIcon(smallIcon)
+                                .setContentTitle(tickerText).setTicker(tickerText)
+                                .setContentText(content).setAutoCancel(true)
+                                .setContentIntent(contentIntent);
+                        notificationManager.notify(0, mBuilder.build());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     private void initController() {
@@ -99,14 +152,12 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
     private void initView() {
         ButterKnife.inject(this);
         btnLook.setOnClickListener(this);
-        tvQQLogin.setOnClickListener(this);
-        tvSinaLogin.setOnClickListener(this);
-        tvWxLogin.setOnClickListener(this);
-        tvRRLogin.setOnClickListener(this);
+        imgQQLogin.setOnClickListener(this);
+        imgSinaLogin.setOnClickListener(this);
         if(sp == null) {
             sp = getSharedPreferences(weike.util.Constants.SP_USER, 0);
         }
-        rlLogin.setVisibility(View.INVISIBLE);
+        llLogin.setVisibility(View.INVISIBLE);
         //判断用户是否登陆
         if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
             //用户未登陆
@@ -154,13 +205,13 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
             loginViewAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    rlLogin.setTranslationY((Float) animation.getAnimatedValue());
+                    llLogin.setTranslationY((Float) animation.getAnimatedValue());
                 }
             });
             loginViewAnim.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    rlLogin.setVisibility(View.VISIBLE);
+                    llLogin.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -230,38 +281,31 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_just_look:
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                LoginActivity.this.finish();
-                overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                goToMainActivity();
                 break;
-            case R.id.tv_login_qq:
-                saveLoginWay(Constants.QQ);
+            case R.id.img_qq_login:
+                userInfo.setLoginWay(Constants.QQ);
                 if(netConnect) {
                     qqLogin();
                 }else {
                     showToast("网络不可用");
                 }
                 break;
-            case R.id.tv_login_sina:
-                saveLoginWay(Constants.SINA);
+            case R.id.img_sina_login:
+                userInfo.setLoginWay(Constants.SINA);
                 doLogin(SHARE_MEDIA.SINA);
-                break;
-            case R.id.tv_login_wx:
-                saveLoginWay(Constants.WX);
-                doLogin(SHARE_MEDIA.WEIXIN);
-                break;
-            case R.id.tv_login_renren:
-                doLogin(SHARE_MEDIA.RENREN);
                 break;
             default:
                 break;
         }
     }
 
-    private void saveLoginWay(String way){
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(Constants.LOGIN_WAY,way);
-        editor.apply();
+    private void goToMainActivity() {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        LoginActivity.this.finish();
+        overridePendingTransition(R.anim.right_in,R.anim.left_out);
     }
 
     private void showToast(String message) {
@@ -315,18 +359,13 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
             @Override
             public void onComplete(int i, Map<String, Object> info) {
                 if(i == 200 && info != null) {
-                    String nicName = (String)info.get("screen_name");
-                    String url  = (String) info.get("profile_image_url");
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(weike.util.Constants.NICNAME,nicName);
-                    editor.putString(weike.util.Constants.USERURL,url);
-                    String sex = null;
-                    long uid = (long)info.get("uid");
+                    userInfo.setUserUrl((String) info.get("profile_image_url"));
+                    userInfo.setNicName( (String)info.get("screen_name"));
                     int n = (int) info.get("gender");
-                    sex = (n == 1 ? "男" : "女");
-                    editor.putString(weike.util.Constants.UID,String.valueOf(uid));
-                    editor.putString(weike.util.Constants.SEX,sex);
-                    editor.apply();
+                    String sex =  (n == 1 ? "男" : "女");
+                    userInfo.setSex(sex);
+                    long uid = (long)info.get("uid");
+                    userInfo.setOpenId(String.valueOf(uid));
                     Log.e(TAG, info.toString());
                     finishLogin();
                 }else {
@@ -355,15 +394,12 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
             if(pd.isShowing()) {
                 pd.dismiss();
             }
-            if(msg.obj.equals("true")) {
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
-                editor.apply();
-                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                startActivity(intent);
-                LoginActivity.this.finish();
-                overridePendingTransition(R.anim.right_in,R.anim.left_out);
-            }else{
+            if(msg.what == 0) {
+                if(listener != null) {
+                    listener.userInfoChanged();
+                }
+                goToMainActivity();
+            }else {
                 showToast("登陆失败！");
             }
         }
@@ -377,6 +413,12 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
         if(ssoHandler != null){
             ssoHandler.authorizeCallBack(requestCode, resultCode, data);
         }
+        if(requestCode == com.tencent.connect.common.Constants.REQUEST_API) {
+            if (resultCode == com.tencent.connect.common.Constants.RESULT_LOGIN) {
+                tencent.handleLoginData(data, qqLoginListener);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -390,6 +432,37 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
         }
     }
 
+    private IUiListener qqLoginListener = new IUiListener() {
+        @Override
+        public void onComplete(Object o) {
+            try {
+                JSONObject object = (JSONObject)o;
+                String uid = object.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
+                if(!TextUtils.isEmpty(uid)) {
+                    userInfo.setOpenId(uid);
+                }
+                //获取qq用户基本信息
+                if(pd == null) {
+                    pd = new ProgressDialog(LoginActivity.this);
+                }
+                pd.setMessage("正在获取信息...");
+                getQQInfo(tencent);
+            } catch (JSONException e) {
+                Log.e(TAG,"error in get ak",e);
+            }
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+
+        }
+
+        @Override
+        public void onCancel() {
+
+        }
+    };
+
     //qq登陆，因为一些特殊原因，单独写出qq登陆
     private void qqLogin() {
         if(pd == null) {
@@ -397,40 +470,9 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
         }
         pd.setMessage("正在跳转至QQ...");
         pd.show();
-        final Tencent tencent = Tencent.createInstance("1104326437",this);
+        tencent = Tencent.createInstance("1104326437",this);
         if(tencent != null && !tencent.isSessionValid()) {
-            tencent.login(this,"all",new IUiListener() {
-                @Override
-                public void onComplete(Object o) {
-                    try {
-                        JSONObject object = (JSONObject)o;
-                        String uid = object.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
-                        if(!TextUtils.isEmpty(uid)) {
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putString(Constants.UID,uid);
-                            editor.apply();
-                        }
-                        //获取qq用户基本信息
-                        if(pd == null) {
-                            pd = new ProgressDialog(LoginActivity.this);
-                        }
-                        pd.setMessage("正在获取信息...");
-                        getQQInfo(tencent);
-                    } catch (JSONException e) {
-                        Log.e(TAG,"error in get ak",e);
-                    }
-                }
-
-                @Override
-                public void onError(UiError uiError) {
-
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
+            tencent.login(this,"all",qqLoginListener);
         }
     }
 
@@ -451,16 +493,9 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
                             }
                             String sex = json.getString(weike.util.Constants.SEX);
                             Log.e(TAG, nicName + "----" + iconUrl + "---" + sex);
-                            SharedPreferences.Editor editor = sp.edit();
-                            if(!TextUtils.isEmpty(nicName) && !TextUtils.isEmpty(iconUrl) && !TextUtils.isEmpty(sex)) {
-                                editor.putString(Constants.NICNAME,nicName);
-                                editor.putString(Constants.USERURL,iconUrl);
-                                editor.putString(weike.util.Constants.SEX,sex);
-                                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
-                            }else {
-                                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,false);
-                            }
-                            editor.apply();
+                            userInfo.setNicName(nicName);
+                            userInfo.setUserUrl(iconUrl);
+                            userInfo.setSex(sex);
                         }catch (Exception e) {
                             Log.e(TAG,"error in get qq useinfo ",e);
                         }
@@ -493,5 +528,9 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
             this.unregisterReceiver(netReceiver);
             netReceiver = null;
         }
+        if(listener != null) {
+            listener = null;
+        }
+        UserInfoData.recycle();
     }
 }

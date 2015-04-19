@@ -1,7 +1,6 @@
 package weike.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -75,82 +74,84 @@ public class HttpTask implements Runnable {
     private void doPost() {
         Log.e("HttpTask","post url is" + url);
         List<NameValuePair> list = new ArrayList<>();
-        if(from.equals("CommitBook")) {
-            CommitBookData data = CommitBookData.getInstance();
-            NameValuePair pair1 = new BasicNameValuePair("publisher","1");
-            NameValuePair pair2 = new BasicNameValuePair("Name",data.getBookName());
-            NameValuePair pair3 = new BasicNameValuePair("Author", data.getBookAuthor());
-            NameValuePair pair4 = new BasicNameValuePair("Press",data.getPublisher());
-            NameValuePair pair5 = new BasicNameValuePair("Oprice",data.getoPrice());
-            NameValuePair pair6 = new BasicNameValuePair("Sprice",data.getsPrice());
-            NameValuePair pair7 = new BasicNameValuePair("Number", data.getBookNumber());
-            NameValuePair pair8 = new BasicNameValuePair("Menu",data.getMainClassify());
-            NameValuePair pair9 = new BasicNameValuePair("subMenu",data.getSubClassify());
-            NameValuePair pair10 = new BasicNameValuePair("Other",data.getRemark());
-            NameValuePair pair11= new BasicNameValuePair("InternetImg",data.getCoverUrl());
-            NameValuePair pair12= new BasicNameValuePair("new", data.getHowOld());
-            NameValuePair pair13= new BasicNameValuePair("Status",data.getStatus());
-            NameValuePair pair14= new BasicNameValuePair("Prule", data.getSendCondition());
-            NameValuePair pair15= new BasicNameValuePair("detail",data.getDescription());
-            NameValuePair pair16= new BasicNameValuePair("ISBN",data.getIsbn());
-            list.add(pair1);
-            list.add(pair2);
-            list.add(pair3);
-            list.add(pair4);
-            list.add(pair5);
-            list.add(pair6);
-            list.add(pair7);
-            list.add(pair8);
-            list.add(pair9);
-            list.add(pair10);
-            list.add(pair11);
-            list.add(pair12);
-            list.add(pair13);
-            list.add(pair14);
-            list.add(pair15);
-            list.add(pair16);
-            CommitBookData.clear();
-        }else if(from.equals(LoginActivity.TAG)){
-            SharedPreferences sp = con.getSharedPreferences(Constants.SP_USER,0);
-            list.add(new BasicNameValuePair("thirdName",sp.getString(Constants.NICNAME,"")));
-            list.add(new BasicNameValuePair("OpenId",sp.getString(Constants.UID,"")));
-            list.add(new BasicNameValuePair("Sex", sp.getString(Constants.SEX,"")));
-            list.add(new BasicNameValuePair("Head",sp.getString(Constants.USERURL, "")));
-            Log.e("list is ", list.toString());
-        } else if(from.equals(HandleBookDialogFragment.TAG)) {
-            ChangBookSateData data = ChangBookSateData.getInstance();
-            list.add(new BasicNameValuePair("ID",data.getId()));
-            list.add(new BasicNameValuePair("close",data.getClose()));
-            Log.e("list is ", list.toString());
-            ChangBookSateData.clear();
-        }else if(from.equals(BaseInfoFragment.TAG)) {
-            UserInfoData data = UserInfoData.getInstance();
-            list.add(new BasicNameValuePair("OpenId",
-                    con.getSharedPreferences(Constants.SP_USER,0)
-                    .getString(Constants.UID,"")));
-            list.add(new BasicNameValuePair("Head",data.getUserUrl()));
-            list.add(new BasicNameValuePair("thirdName",data.getNicName()));
-            list.add(new BasicNameValuePair("Sex",data.getSex()));
-            list.add(new BasicNameValuePair("birth",data.getBirthday()));
-            list.add(new BasicNameValuePair("Interest",data.getHobbit()));
-            list.add(new BasicNameValuePair("School",data.getSchool()));
-            list.add(new BasicNameValuePair("teleNum",data.getPhoneNumber()));
-            list.add(new BasicNameValuePair("qqNum",data.getQqNumber()));
-            list.add(new BasicNameValuePair("weixinNum",data.getWxNumber()));
-            list.add(new BasicNameValuePair("Mail",data.getEmail()));
-            Log.e("list is ", list.toString());
-        }
-        else{
-            CommentData data = CommentData.getInstance();
-            NameValuePair pair1 = new BasicNameValuePair("id_maker","1");
-            NameValuePair pair2 = new BasicNameValuePair("content", data.getContent());
-            NameValuePair pair3 = new BasicNameValuePair("id_book", String.valueOf(data.getBookId()));
-            NameValuePair pair4 = new BasicNameValuePair("send_time",data.getSendTime());
-            list.add(pair1);
-            list.add(pair2);
-            list.add(pair3);
-            list.add(pair4);
-            CommentData.clear();
+        switch (from) {
+            case "CommitBook":
+                CommitBookData data = CommitBookData.getInstance();
+                NameValuePair pair1 = new BasicNameValuePair("publisher","1");
+                NameValuePair pair2 = new BasicNameValuePair("Name",data.getBookName());
+                NameValuePair pair3 = new BasicNameValuePair("Author", data.getBookAuthor());
+                NameValuePair pair4 = new BasicNameValuePair("Press",data.getPublisher());
+                NameValuePair pair5 = new BasicNameValuePair("Oprice",data.getoPrice());
+                NameValuePair pair6 = new BasicNameValuePair("Sprice",data.getsPrice());
+                NameValuePair pair7 = new BasicNameValuePair("Number", data.getBookNumber());
+                NameValuePair pair8 = new BasicNameValuePair("Menu",data.getMainClassify());
+                NameValuePair pair9 = new BasicNameValuePair("subMenu",data.getSubClassify());
+                NameValuePair pair10 = new BasicNameValuePair("Other",data.getRemark());
+                NameValuePair pair11= new BasicNameValuePair("InternetImg",data.getCoverUrl());
+                NameValuePair pair12= new BasicNameValuePair("new", data.getHowOld());
+                NameValuePair pair13= new BasicNameValuePair("Status",data.getStatus());
+                NameValuePair pair14= new BasicNameValuePair("Prule", data.getSendCondition());
+                NameValuePair pair15= new BasicNameValuePair("detail",data.getDescription());
+                NameValuePair pair16= new BasicNameValuePair("ISBN",data.getIsbn());
+                list.add(pair1);
+                list.add(pair2);
+                list.add(pair3);
+                list.add(pair4);
+                list.add(pair5);
+                list.add(pair6);
+                list.add(pair7);
+                list.add(pair8);
+                list.add(pair9);
+                list.add(pair10);
+                list.add(pair11);
+                list.add(pair12);
+                list.add(pair13);
+                list.add(pair14);
+                list.add(pair15);
+                list.add(pair16);
+                CommitBookData.clear();
+                break;
+            case LoginActivity.TAG:
+                UserInfoData dataInfo = UserInfoData.getInstance();
+                list.add(new BasicNameValuePair("thirdName",dataInfo.getNicName()));
+                list.add(new BasicNameValuePair("OpenId",dataInfo.getOpenId()));
+                list.add(new BasicNameValuePair("Sex", dataInfo.getSex()));
+                list.add(new BasicNameValuePair("Head",dataInfo.getUserUrl()));
+                Log.e("list is ", list.toString());
+                break;
+            case HandleBookDialogFragment.TAG:
+                ChangBookSateData dataHandleBook = ChangBookSateData.getInstance();
+                list.add(new BasicNameValuePair("ID",dataHandleBook.getId()));
+                list.add(new BasicNameValuePair("close",dataHandleBook.getClose()));
+                Log.e("list is ", list.toString());
+                ChangBookSateData.clear();
+                break;
+            case BaseInfoFragment.TAG:
+                UserInfoData dataBaseInfo = UserInfoData.getInstance();
+                list.add(new BasicNameValuePair("OpenId",
+                        con.getSharedPreferences(Constants.SP_USER,0)
+                                .getString(Constants.UID,"")));
+                list.add(new BasicNameValuePair("Head",dataBaseInfo.getUserUrl()));
+                list.add(new BasicNameValuePair("thirdName",dataBaseInfo.getNicName()));
+                list.add(new BasicNameValuePair("Sex",dataBaseInfo.getSex()));
+                list.add(new BasicNameValuePair("birth",dataBaseInfo.getBirthday()));
+                list.add(new BasicNameValuePair("Interest",dataBaseInfo.getHobbit()));
+                list.add(new BasicNameValuePair("School",dataBaseInfo.getSchool()));
+                list.add(new BasicNameValuePair("teleNum",dataBaseInfo.getPhoneNumber()));
+                list.add(new BasicNameValuePair("qqNum",dataBaseInfo.getQqNumber()));
+                list.add(new BasicNameValuePair("weixinNum",dataBaseInfo.getWxNumber()));
+                list.add(new BasicNameValuePair("Mail",dataBaseInfo.getEmail()));
+                Log.e("list is ", list.toString());
+                break;
+            default:
+                CommentData dataComment = CommentData.getInstance();
+                list.add(new BasicNameValuePair("id_maker","1"));
+                list.add(new BasicNameValuePair("content", dataComment.getContent()));
+                list.add( new BasicNameValuePair("id_book", String.valueOf(dataComment.getBookId())));
+                list.add(new BasicNameValuePair("send_time",dataComment.getSendTime()));
+                CommentData.clear();
+                break;
+
         }
         Message message = handler.obtainMessage();
         try{
@@ -163,12 +164,18 @@ public class HttpTask implements Runnable {
             if(entity != null) {
                 content = EntityUtils.toString(entity);
                 Log.i("HTTPTask","content is  " + content);
-                if((from.equals("CommitBook")  || from.equals(LoginActivity.TAG) )
-                        || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG)
+                if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG))
                         && message.what != 1) {
                     message.what =  0;
                     message.obj = content;
-                }else {
+                }else if(from.equals(LoginActivity.TAG) && message.what != 1) {
+                    if(Utils.loginSuccess(content,con)) {
+                        message.what = 0;
+                    }else {
+                        message.what = 1;
+                    }
+                }
+                else {
                     if(Utils.isCommentSucceed(content) && message.what != 1){
                         message.what = 0;
                     }

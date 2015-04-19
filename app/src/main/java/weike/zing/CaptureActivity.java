@@ -16,13 +16,14 @@
 
 package weike.zing;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -51,7 +52,7 @@ import weike.zing.camera.CameraManager;
  * @author Sean Owen
  */
 @SuppressWarnings("unchecked")
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public final class CaptureActivity extends ActionBarActivity implements SurfaceHolder.Callback {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
 
@@ -86,6 +87,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_zxing_capture);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("扫条码");
 
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
@@ -329,5 +333,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     public void drawViewfinder() {
         viewfinderView.drawViewfinder();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }else {
+            return false;
+        }
     }
 }

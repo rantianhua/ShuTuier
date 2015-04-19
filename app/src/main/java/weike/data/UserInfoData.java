@@ -7,6 +7,7 @@ public class UserInfoData {
 
     private static UserInfoData data = null;
 
+    private String OpenId = "";
     private String userUrl = "";
     private String nicName = "";
     private String sex = "";
@@ -18,6 +19,15 @@ public class UserInfoData {
     private String phoneNumber = "";
     private String wxNumber = "";
     private String email = "";
+    private String loginWay = "";
+
+    public String getLoginWay() {
+        return loginWay;
+    }
+
+    public void setLoginWay(String loginWay) {
+        this.loginWay = loginWay;
+    }
 
     public String getSex() {
         return sex;
@@ -105,6 +115,14 @@ public class UserInfoData {
 
     public void setUserUrl(String userUrl) {
         this.userUrl = userUrl;
+    }
+
+    public String getOpenId() {
+        return OpenId;
+    }
+
+    public void setOpenId(String openId) {
+        OpenId = openId;
     }
 
     public static UserInfoData getInstance() {

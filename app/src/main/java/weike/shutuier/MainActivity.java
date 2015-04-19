@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -15,13 +16,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.umeng.fb.FeedbackAgent;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -35,7 +35,6 @@ import weike.util.ConnectReceiver;
 import weike.util.Constants;
 import weike.util.FragmentLabel;
 import weike.util.GetUserPhotoWork;
-import weike.util.Utils;
 import weike.zing.CaptureActivity;
 import weike.zing.Intents;
 
@@ -43,7 +42,7 @@ import weike.zing.Intents;
 public class MainActivity extends ActionBarActivity implements View.OnClickListener
         ,ConnectReceiver.GetNetState,UserInfoChangeListener{
 
-    @InjectView(R.id.toolbar)
+    @InjectView(R.id.toolbar_main)
     Toolbar toolbar;
     @InjectView(R.id.drawer)
     DrawerLayout mDrawerLayout;
@@ -92,6 +91,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private ConnectReceiver netReceiver = new ConnectReceiver(this);
     public static boolean netConnect = false;    //记录接收的网络状态
     private SharedPreferences sp = null;
+    private String result = null;   //记录扫一扫的结果
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,8 +104,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         sectionIconSize = resources.getDimensionPixelSize(R.dimen.sectionIconSize);
         sp = getSharedPreferences(Constants.SP_USER,0);
         initView();
-        FeedbackAgent agent = new FeedbackAgent(this);
-        agent.sync();
     }
 
     private void initView() {
@@ -117,44 +115,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                if(fm  == null) {
-                    fm = getSupportFragmentManager();
-                }
                 if(rlCommit.isSelected()) {
-                    if(!getTitle().equals(FragmentLabel.Commit.getValue())) {
-                        //检查用户有没有登陆
-                        if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-                            Toast.makeText(MainActivity.this,"请先点击头像登陆！",Toast.LENGTH_SHORT).show();
-                        }else if(TextUtils.isEmpty(sp.getString(Constants.QQNumber,"")) &&
-                                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
-                                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
-                                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
-                            //先让用户完善联系方式
-                            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
-                                    .setNegativeButton("知道啦", null).create();
-                            dialog.setTitle("未完善联系方式");
-                            dialog.show();
-                        }else {
-                            fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
-                                .replace(R.id.contain,SellFragment.getInstance()).commit();
-                            setTitle(FragmentLabel.Commit.getValue());
-                        }
-                    }
+                    replaceFragments(SellFragment.getInstance(result),FragmentLabel.Commit.getValue());
+                    result = null;
                     return;
                 }
                 if(rlHome.isSelected()) {
                     if(!getTitle().equals(FragmentLabel.Home.getValue())) {
-                        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
-                            .replace(R.id.contain, HomeFragment.getInstance()).commit();
-                        setTitle(FragmentLabel.Home.getValue());
+                        replaceFragments(HomeFragment.getInstance(), FragmentLabel.Home.getValue());
                     }
                     return;
                 }
                 if(rlMessage.isSelected()) {
                     if(!getTitle().equals(FragmentLabel.Message.getValue())) {
-                        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
-                            .replace(R.id.contain, MessageFragment.getInstance()).commit();
-                        setTitle(FragmentLabel.Message.getValue());
+                        replaceFragments(MessageFragment.getInstance(), FragmentLabel.Message.getValue());
                     }
                 }
             }
@@ -162,10 +136,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        //模糊背景图
-        int width = Utils.getWindowWidth(this);
-        int height = resources.getDimensionPixelSize(R.dimen.userSpace);
-        Utils.loadBlurBitmap(this,userBg,R.drawable.user_bg,25,width,height);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_search:
+                        //启动搜索界面
+                        startActivity(new Intent(MainActivity.this,SearchActivity.class));
+                        overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
 
         //显示DrawerLayout中的基本用户信息
         updateUserInfo();
@@ -183,11 +167,47 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         rlMessage.setOnClickListener(this);
         rlSetting.setOnClickListener(this);
         rlSwipe.setOnClickListener(this);
+    }
 
-        updateIcon(iconHome,R.drawable.section_home_icon,1);
-        updateIcon(iconCommit,R.drawable.section_sell_icon,1);
-        updateIcon(iconMessage,R.drawable.calling,1);
-        updateIcon(iconSwipe,R.drawable.scan,1);
+    private void replaceFragments(Fragment fragment,String title) {
+//        if(fragment instanceof  SellFragment) {
+//            if(remindLogin()) return;
+//            if(remindContact()) return;
+//        }
+        if(fm  == null) {
+            fm = getSupportFragmentManager();
+        }
+        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
+                .replace(R.id.contain,fragment).commit();
+        if(title != null) {
+            setTitle(title);
+        }
+    }
+
+    //检查并提醒登陆
+    private boolean remindLogin() {
+        if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+            Toast.makeText(MainActivity.this,"请先点击头像登陆并完善基本信息！",Toast.LENGTH_SHORT).show();
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    //检查并提醒完善联系方式
+    private boolean remindContact() {
+        if(TextUtils.isEmpty(sp.getString(Constants.QQNumber, "")) &&
+                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
+                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
+                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
+            //先让用户完善联系方式
+            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
+                    .setNegativeButton("知道啦", null).create();
+            dialog.setTitle("未完善联系方式");
+            dialog.show();
+            return true;
+        }
+        return false;
     }
 
     private void updateUserInfo() {
@@ -196,7 +216,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             new GetUserPhotoWork(userPhoto,this,true).execute();
             userName.setText(sp.getString(Constants.NICNAME,"获取昵称失败"));
         }else {
-            userPhoto.setImageResource(R.drawable.user);
+            userPhoto.setImageResource(R.drawable.user_def);
             userName.setText("您还未登陆！");
         }
     }
@@ -211,11 +231,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private void startScan() {
         Intent intent = new Intent();
         intent.setAction(Intents.Scan.ACTION);
-        intent.putExtra(Intents.Scan.MODE, Intents.Scan.PRODUCT_MODE);
+        intent.putExtra(Intents.Scan.MODE, Intents.Scan.EAN13_MODE);
         intent.putExtra(Intents.Scan.CHARACTER_SET, "UTF-8");
-//        intent.putExtra(Intents.Scan.WIDTH, 800);
-//        intent.putExtra(Intents.Scan.HEIGHT, 600);
-        // intent.putExtra(Intents.Scan.PROMPT_MESSAGE, "type your prompt message");
+        intent.putExtra(Intents.Scan.WIDTH, 225);
+        intent.putExtra(Intents.Scan.HEIGHT, 360);
         intent.setClass(this, CaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
         overridePendingTransition(R.anim.right_in,R.anim.left_out);
@@ -227,20 +246,27 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.user_photo:
                 Intent intent = new Intent();
                 //判断用户有没有登陆
-                if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-                    //跳转到登陆界面
-                    intent.setClass(MainActivity.this,LoginActivity.class);
-                }else {
-                    BaseInfoFragment.userInfoListener = MainActivity.this;
-                    intent.setClass(MainActivity.this,PersonalCenterActivity.class);
-                }
+//                if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+//                    //跳转到登陆界面
+//                    intent.setClass(MainActivity.this,LoginActivity.class);
+//                }else {
+//                    BaseInfoFragment.userInfoListener = MainActivity.this;
+//                    intent.setClass(MainActivity.this,PersonalCenterActivity.class);
+//                }
+                BaseInfoFragment.userInfoListener = MainActivity.this;
+                intent.setClass(MainActivity.this,PersonalCenterActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
             case R.id.rl_section_swipe:
                 if(!rlSwipe.isSelected()) {
-                    changeSection(rlSwipe, tvSwipe, iconSwipe, R.drawable.scan);
+                    changeSection(rlSwipe, tvSwipe, iconSwipe);
                 }
+//                if(!remindLogin() && !remindContact()) {
+//                    startScan();
+//                }else {
+//                    mDrawerLayout.closeDrawers();
+//                }
                 startScan();
                 break;
             case R.id.rl_section_setting:
@@ -250,24 +276,21 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case R.id.rl_section_message:
                 if(!rlMessage.isSelected()) {
-                    changeSection(rlMessage,tvMessage,iconMessage,R.drawable.calling);
-                }else {
-                    mDrawerLayout.closeDrawers();
+                    changeSection(rlMessage,tvMessage,iconMessage);
                 }
+                mDrawerLayout.closeDrawers();
                 break;
             case R.id.rl_section_commit:
                 if(!rlCommit.isSelected()) {
-                    changeSection(rlCommit,tvCommit,iconCommit,R.drawable.section_sell_icon);
-                }else {
-                    mDrawerLayout.closeDrawers();
+                    changeSection(rlCommit,tvCommit,iconCommit);
                 }
+                mDrawerLayout.closeDrawers();
                 break;
             case R.id.rl_section_home:
                 if(!rlHome.isSelected()) {
-                    changeSection(rlHome,tvHome,iconHome,R.drawable.section_home_icon);
-                }else {
-                    mDrawerLayout.closeDrawers();
+                    changeSection(rlHome,tvHome,iconHome);
                 }
+                mDrawerLayout.closeDrawers();
                 break;
             default:
                 break;
@@ -275,65 +298,57 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     //改变section的状态
-    private void changeSection(RelativeLayout rl, TextView tv, ImageView img,int drawId) {
+    private void changeSection(RelativeLayout rl, TextView tv, ImageView img) {
         //恢复选中的section
         if(!havaItemSelected) {
             havaItemSelected = true;
         }else {
             backToUnSelected();
         }
-        updateIcon(img,drawId,0);
+        //updateIcon(img, drawId, 0);
+        img.setSelected(true);
         rl.setSelected(true);
         tv.setActivated(true);
-        mDrawerLayout.closeDrawers();
     }
 
     private void backToUnSelected() {
         if(rlHome.isSelected()) {
-            updateIcon(iconHome,R.drawable.section_home_icon,1);
+            iconHome.setSelected(false);
             rlHome.setSelected(false);
             tvHome.setActivated(false);
             return;
         }
         if(rlCommit.isSelected()) {
-            updateIcon(iconCommit,R.drawable.section_sell_icon,1);
+            iconCommit.setSelected(false);
             rlCommit.setSelected(false);
             tvCommit.setActivated(false);
             return;
         }
         if(rlMessage.isSelected()) {
-            updateIcon(iconMessage,R.drawable.calling,1);
+            iconMessage.setSelected(false);
             rlMessage.setSelected(false);
             tvMessage.setActivated(false);
             return;
         }
         if(rlSwipe.isSelected()) {
-            updateIcon(iconSwipe,R.drawable.scan,1);
+            iconSwipe.setSelected(false);
+            //updateIcon(iconSwipe,R.drawable.scan,1);
             rlSwipe.setSelected(false);
             tvSwipe.setActivated(false);
         }
     }
 
-    //更新左侧图标的颜色，mode作为标识，1表示更改icon为未选中时的颜色，0相反
-    private void updateIcon(ImageView icon,int drawableId, int mode) {
-        if(mode == 0) {
-            Utils.loadBitmap(resources,icon,drawableId,sectionIconSize,sectionIconSize,R.color.white);
-        }else {
-            Utils.loadBitmap(resources,icon,drawableId,sectionIconSize,sectionIconSize,R.color.section_selected);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (null != data && requestCode == REQUEST_CODE) {
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    data.setClass(this, CaptureResultActivity.class);
-                    startActivity(data);
-                    break;
-                default:
-                    break;
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            result = data.getStringExtra(Intents.Scan.RESULT);
+            if(TextUtils.isEmpty(result)) {
+                Toast.makeText(this,"未扫描出结果",Toast.LENGTH_SHORT).show();
+            }else {
+                changeSection(rlCommit,tvCommit,iconCommit);
+                mDrawerLayout.closeDrawers();
             }
+            data = null;
         }else {
             super.onActivityResult(requestCode, resultCode, data);
         }

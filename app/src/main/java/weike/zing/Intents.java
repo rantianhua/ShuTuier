@@ -75,6 +75,12 @@ public final class Intents {
         public static final String PDF417_MODE = "PDF417_MODE";
 
         /**
+         * Decode oly EAN13
+         */
+
+        public static final String EAN13_MODE = "EAN13_MODE";
+
+        /**
          * Comma-separated list of formats to scan for. The values must match the names of
          * {@link com.google.zxing.BarcodeFormat}s, e.g. {@link com.google.zxing.BarcodeFormat#EAN_13}.
          * Example: "EAN_13,EAN_8,QR_CODE". This overrides {@link #MODE}.

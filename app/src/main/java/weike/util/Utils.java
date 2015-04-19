@@ -1,6 +1,7 @@
 package weike.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +23,9 @@ import android.widget.ImageView;
 
 import com.google.gson.stream.JsonReader;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,6 +36,7 @@ import java.util.Map;
 import weike.data.BookItem;
 import weike.data.BookOtherData;
 import weike.data.ListBookData;
+import weike.data.UserInfoData;
 
 /**
  * Created by Rth on 2015/2/9.
@@ -414,6 +419,15 @@ public class Utils {
         return dm.widthPixels;
     }
 
+    //得到屏幕的高度
+    public static int getWindowHeight(Context context) {
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager manager = (WindowManager) context
+                .getSystemService(Context.WINDOW_SERVICE);
+        manager.getDefaultDisplay().getMetrics(dm);
+        return dm.heightPixels;
+    }
+
     public static void loadBlurBitmap(final Context con, final ImageView userBg, final int user_bg, final int radius,final int w,final int h) {
 
         new AsyncTask<Integer,String,Bitmap>() {
@@ -465,5 +479,44 @@ public class Utils {
             }
         }
         return list;
+    }
+
+    public static boolean loginSuccess(String content,Context con) {
+        if(TextUtils.isEmpty(content)) {
+            return false;
+        }else {
+            Log.e("loginSuccess",content);
+            JSONObject json = null;
+            try {
+                json = new JSONObject(content);
+                //将用户信息保存在本地
+                SharedPreferences sp = con.getSharedPreferences(Constants.SP_USER,0);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(Constants.UID, UserInfoData.getInstance().getOpenId());
+                editor.putString(Constants.LOGIN_WAY, UserInfoData.getInstance().getLoginWay());
+                editor.putString(Constants.USERURL,json.getString("Head"));
+                editor.putString(Constants.NICNAME,json.getString("thirdName"));
+                editor.putString(Constants.SEX,json.getString("Sex"));
+                editor.putString(Constants.Birthday,json.getString("birth"));
+                editor.putString(Constants.Hobbit,json.getString("Interest"));
+                editor.putString(Constants.School,json.getString("School"));
+                editor.putString(Constants.PhoneNumber,json.getString("teleNum"));
+                editor.putString(Constants.QQNumber,json.getString("qqNum"));
+                editor.putString(Constants.WxNumber,json.getString("weixinNum"));
+                editor.putString(Constants.Email,json.getString("Mail"));
+                editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
+                editor.apply();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                if(json != null) {
+                    json  = null;
+                }
+                return false;
+            }
+            if(json != null) {
+                json  = null;
+            }
+            return true;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package weike.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.tauth.Tencent;
-import com.umeng.fb.FeedbackAgent;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.bean.SocializeEntity;
 import com.umeng.socialize.controller.UMServiceFactory;
@@ -25,6 +25,7 @@ import java.io.File;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import myinterface.UserInfoChangeListener;
+import weike.shutuier.FeedbackActivity;
 import weike.shutuier.R;
 import weike.util.Constants;
 import weike.util.Utils;
@@ -80,8 +81,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
             case R.id.tv_setting_about_us:
                 break;
             case R.id.tv_setting_your_idea:
-                FeedbackAgent agent = new FeedbackAgent(getActivity());
-                agent.startFeedbackActivity();
+                startActivity(new Intent(getActivity(), FeedbackActivity.class));
+                getActivity().overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
             case R.id.btn_logout:
                 logout();

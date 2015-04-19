@@ -138,7 +138,7 @@
             android:layout_gravity="center_vertical"
             android:background="@null"
             android:singleLine="true"
-            android:inputType="number"/>
+            android:inputType="numberDecimal"/>
 
     </TableRow>
 
@@ -237,7 +237,7 @@
             android:background="@null"
             android:singleLine="true"
             android:hint="@string/hint_sell_price"
-            android:inputType="number"/>
+            android:inputType="numberDecimal"/>
 
     </TableRow>
 
@@ -294,7 +294,7 @@
             android:layout_weight="2"
             android:layout_gravity="center_vertical"
             android:background="@null"
-            android:maxLength="200"
+            android:maxLength="1000"
             android:minLines="5"
             android:maxLines="8"
             android:gravity="top"

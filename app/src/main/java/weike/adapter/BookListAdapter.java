@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -67,8 +68,10 @@ public class BookListAdapter extends BaseAdapter {
                 holder.tvStatue = (TextView) convertView.findViewById(R.id.textview_item_goal);
                 holder.tvOPrice = (TextView) convertView.findViewById(R.id.textview_item_origin_price);
                 holder.tvSPrice = (TextView) convertView.findViewById(R.id.textview_item_sell_price);
-                holder.tvSNum = (TextView) convertView.findViewById(R.id.tv_list_item_share);
-                holder.tvMNum = (TextView) convertView.findViewById(R.id.tv_list_item_message);
+                RelativeLayout rlShare = (RelativeLayout) convertView.findViewById(R.id.rl_list_item_share);
+                RelativeLayout rlLiuyan = (RelativeLayout) convertView.findViewById(R.id.rl_list_item_liuyan);
+                holder.tvSNum = (TextView) rlShare.findViewById(R.id.tv_share_number);
+                holder.tvMNum = (TextView) rlLiuyan.findViewById(R.id.tv_liuyan_number);
                 convertView.setTag(holder);
             }else {
                 holder =(ViewHolder) convertView.getTag();

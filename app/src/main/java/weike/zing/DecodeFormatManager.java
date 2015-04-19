@@ -38,15 +38,15 @@ final class DecodeFormatManager {
     static final Set<BarcodeFormat> DATA_MATRIX_FORMATS = EnumSet.of(BarcodeFormat.DATA_MATRIX);
     static final Set<BarcodeFormat> AZTEC_FORMATS = EnumSet.of(BarcodeFormat.AZTEC);
     static final Set<BarcodeFormat> PDF417_FORMATS = EnumSet.of(BarcodeFormat.PDF_417);
+    static final Set<BarcodeFormat> EAN13_FORMATS = EnumSet.of(BarcodeFormat.EAN_13);
 
     static {
-//        PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.UPC_A,
-//                BarcodeFormat.UPC_E,
-//                BarcodeFormat.EAN_13,
-//                BarcodeFormat.EAN_8,
-//                BarcodeFormat.RSS_14,
-//                BarcodeFormat.RSS_EXPANDED);
-        PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.EAN_13,BarcodeFormat.QR_CODE);
+        PRODUCT_FORMATS = EnumSet.of(BarcodeFormat.UPC_A,
+                BarcodeFormat.UPC_E,
+                BarcodeFormat.EAN_13,
+                BarcodeFormat.EAN_8,
+                BarcodeFormat.RSS_14,
+                BarcodeFormat.RSS_EXPANDED);
         INDUSTRIAL_FORMATS = EnumSet.of(BarcodeFormat.CODE_39,
                 BarcodeFormat.CODE_93,
                 BarcodeFormat.CODE_128,
@@ -66,6 +66,7 @@ final class DecodeFormatManager {
         FORMATS_FOR_MODE.put(Intents.Scan.DATA_MATRIX_MODE, DATA_MATRIX_FORMATS);
         FORMATS_FOR_MODE.put(Intents.Scan.AZTEC_MODE, AZTEC_FORMATS);
         FORMATS_FOR_MODE.put(Intents.Scan.PDF417_MODE, PDF417_FORMATS);
+        FORMATS_FOR_MODE.put(Intents.Scan.EAN13_MODE, EAN13_FORMATS);
     }
 
     private DecodeFormatManager() {

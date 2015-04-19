@@ -3,6 +3,7 @@ package weike.shutuier;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -65,6 +66,16 @@ public class PersonalCenterActivity extends ActionBarActivity implements Persona
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }else {
+            return false;
         }
     }
 }

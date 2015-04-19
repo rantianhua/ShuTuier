@@ -33,6 +33,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
+                android:src="@drawable/user_bg"
                 android:scaleType="centerCrop" />
 
             <ImageView
@@ -47,7 +48,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:text="Be Winner"
                 android:layout_below="@+id/user_photo"
                 android:layout_marginTop="16dp"
                 android:layout_centerHorizontal="true"
@@ -69,6 +69,8 @@
                 android:layout_marginStart="45dp"
                 android:layout_marginLeft="45dp"
                 android:layout_centerVertical="true"
+                android:src="@drawable/img_section_home"
+                android:scaleType="centerCrop"
                 />
 
             <TextView
@@ -103,6 +105,8 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
+                    android:src="@drawable/img_section_commit"
+                    android:scaleType="centerCrop"
                     />
 
                 <TextView
@@ -137,6 +141,8 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
+                    android:src="@drawable/img_section_message"
+                    android:scaleType="centerCrop"
                     />
 
                 <TextView
@@ -184,6 +190,8 @@
                     android:layout_marginStart="45dp"
                     android:layout_marginLeft="45dp"
                     android:layout_centerVertical="true"
+                    android:src="@drawable/img_section_scan"
+                    android:scaleType="centerCrop"
                     />
 
                 <TextView
@@ -229,7 +237,8 @@
             android:layout_marginStart="40dp"
             android:layout_marginLeft="40dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/section_setting_icon"
+            android:src="@drawable/setting"
+            android:scaleType="centerCrop"
             />
 
         <TextView

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_feedback"
+        android:layout_above="@+id/view_line_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listview_feedback"
+            android:divider="@color/transparent"
+            android:dividerHeight="20dp"
+            />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/list_item_bottom"
+        android:layout_above="@+id/rl_send_repley"
+        android:id="@+id/view_line_feedback"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/rl_send_repley"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="@string/send_feedback"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_send_feedback_bg"
+            android:id="@+id/btn_feedback_send"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:id="@+id/et_feedback"
+            android:background="@drawable/et_feedback"
+            android:layout_toLeftOf="@+id/btn_feedback_send"
+            android:layout_toStartOf="@+id/btn_feedback_send"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_centerVertical="true"
+            android:hint="@string/hint_feedback"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>

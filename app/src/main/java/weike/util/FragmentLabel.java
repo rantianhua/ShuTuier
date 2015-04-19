@@ -4,6 +4,7 @@ package weike.util;
  * Created by Rth on 2015/4/15.
  */
 public enum FragmentLabel {
+
     Home("首页"),
     Commit("发布"),
     Message("消息"),

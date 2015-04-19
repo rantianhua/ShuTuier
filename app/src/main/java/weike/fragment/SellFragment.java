@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -55,9 +56,9 @@ import weike.util.Utils;
 /**
  * Created by Rth on 2015/2/28.
  */
-public class SellFragment extends Fragment implements AdapterView.OnItemSelectedListener,View.OnClickListener{
+public class SellFragment extends Fragment implements AdapterView.OnItemSelectedListener,View.OnClickListener
+        ,View.OnTouchListener{
 
-    private static SellFragment sellFragment = null;
     private EditText etBookName,etAuthor,
             etPublisher,etOPrice,etSPrice,etDescription,etRemarks,etNumber,etSendCondition;
     private Spinner mainClassify,subClassify,howOld,college;
@@ -76,7 +77,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private final int REQUEST_PIC_WAY = 40;
     private ProgressDialog pd = null;
     private   ArrayAdapter<String> arrayAdapter = null; //subClassify的适配器
-    private String isbn = null; //记录isbn号
+    private static String isbn = null; //记录isbn号
     private String mainCf = "教材";   //记录选择的主分类
     private String subCf = "全部";    //记录选择的子分类
     private String oOrn = "全新"; //记录选择的新旧程度
@@ -89,6 +90,9 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chushou,container,false);
         initView(v) ;
+        if(isbn != null) {
+            getBookInfo();
+        }
         return v;
     }
 
@@ -125,6 +129,10 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         btnIsbn.setOnClickListener(this);
         btnSend.setOnClickListener(this);
         btnReset.setOnClickListener(this);
+
+        etSendCondition.setOnTouchListener(this);
+        etDescription.setOnTouchListener(this);
+        etRemarks.setOnTouchListener(this);
 
         mainClassify.setOnItemSelectedListener(this);
         subClassify.setOnItemSelectedListener(this);
@@ -172,7 +180,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                     etDescription.setText(map.get("summary"));
                     etAuthor.setText(map.get("author"));
                     String originPrice = map.get("price");
-                    Log.i("origin_price","it's length is " + originPrice.length() );
+                    originPrice = originPrice.replace("元","");
                     etOPrice.setText(originPrice);
                     etBookName.setText(map.get("title"));
                     etPublisher.setText(map.get("publisher"));
@@ -195,11 +203,9 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         data = null;
     }
 
-    public static SellFragment getInstance(){
-        if(sellFragment == null) {
-            sellFragment = new SellFragment();
-        }
-        return sellFragment;
+    public static SellFragment getInstance(String isbn){
+        SellFragment.isbn = isbn;
+        return new SellFragment();
     }
 
     @Override
@@ -534,6 +540,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }
         if(isbn != null) {
             commitData.setIsbn(isbn);
+            isbn = null;
         }else {
             commitData.setIsbn("");
         }
@@ -674,5 +681,21 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         layoutTransition.setAnimator(LayoutTransition.APPEARING,layoutTransition.getAnimator(LayoutTransition.APPEARING));
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, layoutTransition.getAnimator(LayoutTransition.DISAPPEARING));
         tableInput.setLayoutTransition(layoutTransition);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        reset();
+        if(isbn != null) {
+            isbn = null;
+        }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        //让EditText可以获取滚动事件
+        v.getParent().requestDisallowInterceptTouchEvent(true);
+        return false;
     }
 }

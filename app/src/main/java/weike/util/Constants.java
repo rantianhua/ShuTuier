@@ -5,21 +5,22 @@ package weike.util;
  */
 public class Constants {
 
-    public static final String OLink = "http://www.tengshufang.com/API/Index/index/name/";
-    public static final String DetailLink = "http://www.tengshufang.com/API/Index/item/id/";
-    public static final String ShareLink = "http://www.tengshufang.com/Home/Index/single/id/";
-    public static String CommentsLink = "http://www.tengshufang.com/API/Index/mark.html";
-    public static String COMMITLINK = "http://www.tengshufang.com/API/Index/publish.html";
-    public static String LOGINLINK = "http://www.tengshufang.com/API/Index/login.html";
+    public static final String OLink = "http://abc.tengshufang.com/API/Index/index/name/";
+    public static final String DetailLink = "http://abc.tengshufang.com/API/Index/item/id/";
+    public static final String ShareLink = "http://abc.tengshufang.com/Home/Index/single/id/";
+    public static String CommentsLink = "http://abc.tengshufang.com/API/Index/mark.html";
+    public static String COMMITLINK = "http://abc.tengshufang.com/API/Index/publish.html";
+    public static String LOGINLINK = "http://abc.tengshufang.com/API/Index/login.html";
     public static String PICLINK = "http://7xi56i.com1.z0.glb.clouddn.com/";
-    public static String BASEMYCOMMIT = "http://www.tengshufang.com/API/Index/itemStatus/Id/";
-    public static final String CHANGEBOOK = "http://www.tengshufang.com/API/Index/change";
-    public static final String CHANGEUSERINFO = "http://www.tengshufang.com/API/Index/info";
+    public static String BASEMYCOMMIT = "http://abc.tengshufang.com/API/Index/itemStatus/Id/";
+    public static final String CHANGEBOOK = "http://abc.tengshufang.com/API/Index/change";
+    public static final String CHANGEUSERINFO = "http://abc.tengshufang.com/API/Index/info";
     public static final String TYPE_1 = "textbook";     //表示来自TextbookFragment中的请求
     public static final String TYPE_2 = "program";      //表示来自ProgramFragment中的请求
     public static final String TYPE_3 = "kaoyan";       //表示来自KaoyanFragment中的请求
     public static final String TYPE_4 = "give";     //表示来自GiveFragment中的请求
     public static final String TYPE_5= "latest";
+    public static final String TYPE_6= "search_result";
     public static  String EXTRA_ITEM_ID = "itemID";
     public static final String REQUEST_FROM_FRAGMENT = "whichFragment";
     public static final int BookDetailFragme_RequestCode = 1;
@@ -67,4 +68,6 @@ public class Constants {
     public static final String QQ = "qq";
     public static final String WX = "wx";
     public static final String SINA = "sina";
+    public static final String SP_SEARCH_RECORD = "search_record";
+    public static final String RECORD_SET = "record_set";
 }

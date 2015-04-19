@@ -34,70 +34,77 @@
         android:textSize="20sp"
         android:id="@+id/tv_my_purpose"/>
 
-    <RelativeLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/login_view_height"
-        android:id="@+id/rl_login_view"
+        android:id="@+id/ll_login_view"
         android:background="@color/white"
         android:layout_alignParentBottom="true"
+        android:orientation="vertical"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/ll_login_choice1"
-            android:layout_marginTop="20dp">
+            android:orientation="horizontal">
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/qq_login"
-                android:text="@string/qq_login"
-                android:textSize="12sp"
-                android:gravity="center"
-                android:drawablePadding="5dp"
-                android:background="@drawable/login_tv_bg"
-                android:id="@+id/tv_login_qq"
-                />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/ll_login_choice1"
+                android:layout_marginTop="15dp"
+                >
 
-            <TextView
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/qq_login"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/img_qq_login"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/qq_login"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:layout_below="@+id/img_qq_login"
+                    android:layout_marginTop="10dp"
+                    android:layout_centerHorizontal="true"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/sina_login"
-                android:text="@string/sina_login"
-                android:textSize="12sp"
-                android:drawablePadding="5dp"
-                android:gravity="center"
-                android:background="@drawable/login_tv_bg"
-                android:id="@+id/tv_login_sina"
-                />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/wx_login"
-                android:text="@string/wx_login"
-                android:textSize="12sp"
-                android:gravity="center"
-                android:background="@drawable/login_tv_bg"
-                android:drawablePadding="5dp"
-                android:id="@+id/tv_login_wx"
-                />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/renren_login"
-                android:text="@string/renren_login"
-                android:textSize="12sp"
-                android:gravity="center"
-                android:background="@drawable/login_tv_bg"
-                android:drawablePadding="5dp"
-                android:id="@+id/tv_login_renren"
-                />
+                android:layout_marginTop="15dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/sina_rect"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/img_sina_login"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sina_login"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/img_sina_login"
+                    android:layout_marginTop="10dp"
+                    />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
@@ -105,7 +112,6 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/blue"
-            android:layout_below="@+id/ll_login_choice1"
             android:layout_marginTop="10dp"
             android:id="@+id/view_line"
             />
@@ -117,12 +123,11 @@
             android:text="@string/just_look"
             android:textSize="12sp"
             android:textColor="@color/section_selected"
-            android:layout_below="@+id/view_line"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:background="@drawable/btn_just_look"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/btn_just_look"/>
+            android:id="@+id/btn_just_look"
+            android:layout_gravity="center"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

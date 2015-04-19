@@ -13,7 +13,7 @@ import weike.util.Constants;
 public class ListBookData {
 
     private  List<BookItem> list; //每个item的数据源
-    private static ListBookData data_1,data_2,data_3,data_4,data_5;   //5个单一实例
+    private static ListBookData data_1,data_2,data_3,data_4,data_5,data_6;   //6个单一实例
 
 
     private ListBookData() {
@@ -54,6 +54,12 @@ public class ListBookData {
                 }
                 data = data_5;
                 break;
+            case Constants.TYPE_6:
+                if(data_6 == null) {
+                    data_6 = new ListBookData();
+                }
+                data = data_6;
+                break;
         }
         return data;
     }
@@ -65,7 +71,7 @@ public class ListBookData {
     //向list中添加记录，若list中已有要添加的记录，则用新的替换掉
     public void addItems(BookItem item) {
         if(item != null) {
-            Map<String,Object> map = getBookItem(item.getId());
+            Map<String,Object> map = getBookItemById(item.getId());
             if(map != null) {
                 int i = (int)map.get("position");
                 list.remove(i);
@@ -77,7 +83,7 @@ public class ListBookData {
         }
     }
 
-    public Map<String,Object> getBookItem(int id) {
+    public Map<String,Object> getBookItemById(int id) {
         int i = -1;
         for(BookItem item : list) {
             i ++;
@@ -89,5 +95,40 @@ public class ListBookData {
             }
         }
         return null;
+    }
+
+    public static void recycle(String type) {
+        switch (type) {
+            case Constants.TYPE_1:
+                if(data_1 != null) {
+                    data_1 =null;
+                }
+                break;
+            case Constants.TYPE_2:
+                if(data_2 != null) {
+                    data_2 = null;
+                }
+                break;
+            case Constants.TYPE_3:
+                if(data_3 != null) {
+                    data_3 = null;
+                }
+                break;
+            case Constants.TYPE_4:
+                if(data_4 != null) {
+                    data_4 = null;
+                }
+                break;
+            case Constants.TYPE_5:
+                if(data_5 != null) {
+                    data_5 = null;
+                }
+                break;
+            case Constants.TYPE_6:
+                if(data_6 != null) {
+                    data_6 = null;
+                }
+                break;
+        }
     }
 }

@@ -33,6 +33,7 @@
     <string name="how_sell">出售方式：</string>
     <string name="pay">付款</string>
     <string name="send">赠送</string>
+    <string name="send_feedback">发送</string>
     <string name="sell_price">售价：</string>
     <string name="all_description">详细介绍：</string>
     <string name="remarks">备注：</string>
@@ -132,4 +133,7 @@
     <string name="update_version">版本更新</string>
     <string name="your_idea">意见反馈</string>
     <string name="login_out">登出</string>
+    <string name="hint_feedback">写下你的意见或想法</string>
+    <string name="search">搜索</string>
+    <string name="et_search">输入书名或ISBN号搜索</string>
 </resources>
