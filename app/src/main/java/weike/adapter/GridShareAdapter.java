@@ -20,11 +20,13 @@ public class GridShareAdapter extends BaseAdapter {
     private Integer[] shareIcon = null;
     private Resources res = null;
     private LayoutInflater inflater = null;
+    private int size ;
 
     public GridShareAdapter(Context con,String[] tv,Integer[] icon) {
         shareTv = tv;
         shareIcon = icon;
         res = con.getResources();
+        size = res.getDimensionPixelSize(R.dimen.grid_share_item_size);
         inflater = LayoutInflater.from(con);
     }
 
@@ -51,7 +53,7 @@ public class GridShareAdapter extends BaseAdapter {
         TextView view = (TextView) convertView;
         view.setText(shareTv[position]);
         Drawable icon = res.getDrawable(shareIcon[position]);
-        icon.setBounds(0, 0, icon.getMinimumWidth(), icon.getMinimumHeight());
+        icon.setBounds(0, 0, size, size);
         view.setCompoundDrawables(null,icon,null,null);
         return view;
     }

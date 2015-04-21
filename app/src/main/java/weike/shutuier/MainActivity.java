@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,12 +80,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @InjectView(R.id.rl_section_swipe)
     RelativeLayout rlSwipe;
 
-    private Resources resources = null;
     FragmentManager fm = null;
     private boolean havaItemSelected = false;   //标识是否有section处于选中状态
     private static final int REQUEST_CODE = 200;
     public static final String TAG = "MainActivity";
-    private int sectionIconSize ;   //左侧图片的大小
     //网络状态接收器
     private ConnectReceiver netReceiver = new ConnectReceiver(this);
     public static boolean netConnect = false;    //记录接收的网络状态
@@ -100,8 +97,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         //注册广播接收器
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(netReceiver,filter);
-        resources = this.getResources();
-        sectionIconSize = resources.getDimensionPixelSize(R.dimen.sectionIconSize);
         sp = getSharedPreferences(Constants.SP_USER,0);
         initView();
     }
@@ -115,7 +110,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                if(rlCommit.isSelected()) {
+                if(rlCommit.isSelected() &&  (result != null || !getTitle().equals(FragmentLabel.Commit.getValue()))) {
                     replaceFragments(SellFragment.getInstance(result),FragmentLabel.Commit.getValue());
                     result = null;
                     return;
@@ -170,10 +165,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     private void replaceFragments(Fragment fragment,String title) {
-//        if(fragment instanceof  SellFragment) {
-//            if(remindLogin()) return;
-//            if(remindContact()) return;
-//        }
+        if(fragment instanceof  SellFragment) {
+            if(remindLogin()) return;
+            if(remindContact()) return;
+        }
         if(fm  == null) {
             fm = getSupportFragmentManager();
         }
@@ -233,8 +228,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         intent.setAction(Intents.Scan.ACTION);
         intent.putExtra(Intents.Scan.MODE, Intents.Scan.EAN13_MODE);
         intent.putExtra(Intents.Scan.CHARACTER_SET, "UTF-8");
-        intent.putExtra(Intents.Scan.WIDTH, 225);
-        intent.putExtra(Intents.Scan.HEIGHT, 360);
+        intent.putExtra(Intents.Scan.WIDTH, 320);
+        intent.putExtra(Intents.Scan.HEIGHT, 380);
         intent.setClass(this, CaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
         overridePendingTransition(R.anim.right_in,R.anim.left_out);
@@ -246,15 +241,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.user_photo:
                 Intent intent = new Intent();
                 //判断用户有没有登陆
-//                if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-//                    //跳转到登陆界面
-//                    intent.setClass(MainActivity.this,LoginActivity.class);
-//                }else {
-//                    BaseInfoFragment.userInfoListener = MainActivity.this;
-//                    intent.setClass(MainActivity.this,PersonalCenterActivity.class);
-//                }
-                BaseInfoFragment.userInfoListener = MainActivity.this;
-                intent.setClass(MainActivity.this,PersonalCenterActivity.class);
+                if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+                    //跳转到登陆界面
+                    intent.setClass(MainActivity.this,LoginActivity.class);
+                }else {
+                    BaseInfoFragment.userInfoListener = MainActivity.this;
+                    intent.setClass(MainActivity.this,PersonalCenterActivity.class);
+                }
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
@@ -262,12 +255,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 if(!rlSwipe.isSelected()) {
                     changeSection(rlSwipe, tvSwipe, iconSwipe);
                 }
-//                if(!remindLogin() && !remindContact()) {
-//                    startScan();
-//                }else {
-//                    mDrawerLayout.closeDrawers();
-//                }
-                startScan();
+                if(!remindLogin() && !remindContact()) {
+                    startScan();
+                }else {
+                    mDrawerLayout.closeDrawers();
+                }
                 break;
             case R.id.rl_section_setting:
                 SettingFragment.userInfoListener = this;
@@ -305,7 +297,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }else {
             backToUnSelected();
         }
-        //updateIcon(img, drawId, 0);
         img.setSelected(true);
         rl.setSelected(true);
         tv.setActivated(true);
@@ -332,7 +323,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         if(rlSwipe.isSelected()) {
             iconSwipe.setSelected(false);
-            //updateIcon(iconSwipe,R.drawable.scan,1);
             rlSwipe.setSelected(false);
             tvSwipe.setActivated(false);
         }
@@ -371,5 +361,40 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void userInfoChanged() {
         updateUserInfo();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //启动服务
+        //startService(new Intent(this, LocalMessageServer.class));
+//        bindService(new Intent(this, LocalMessageServer.class),new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName name, IBinder service) {
+//
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//
+//            }
+//        },BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        //stopService(new Intent(this,LocalMessageServer.class));
+//        unbindService(new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName name, IBinder service) {
+//
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName name) {
+//
+//            }
+//        });
     }
 }

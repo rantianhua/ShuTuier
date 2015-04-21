@@ -62,8 +62,8 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     RelativeLayout rlCollege;
     @InjectView(R.id.gridView_colleges)
     GridView gridView;
-    @InjectView(R.id.customer_progressbar_text_book)
-    ProgressBar pb;
+    @InjectView(R.id.rl_tab_textbook_loading)
+    RelativeLayout rlLoading;
 
     private static TextbookFragment fragment = null;
     private BookListAdapter adapter = null;
@@ -81,6 +81,8 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     private boolean  changeCollege = false;
     private String preText  = null;
     private List<BookItem> temp = new ArrayList<>();
+    private ProgressBar pb = null;
+    private TextView tvMessage = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -98,6 +100,11 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
 
     private void initView( View v) {
         ButterKnife.inject(this, v);
+
+        rlLoading.setVisibility(View.VISIBLE);
+        pb = (ProgressBar) rlLoading.findViewById(R.id.progressBar_loading);
+        tvMessage = (TextView) rlLoading.findViewById(R.id.tv_loading);
+
         refreshLayout.setColorSchemeResources(R.color.section_selected);
         refreshLayout.setOnRefreshListener(this);
         adapter = new BookListAdapter(data.getList(),getActivity());
@@ -138,6 +145,8 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         super.onViewCreated(view, savedInstanceState);
         if(!isDatainited) {
             initData();
+        }else {
+            stopLoading();
         }
     }
 
@@ -148,7 +157,6 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
 
     private void getData(){
         if(MainActivity.netConnect){
-            upDatePb(true);
             if(handler == null) {
                 initHandler();
             }
@@ -156,12 +164,9 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
             HttpTask textbookTask = new HttpTask(getActivity(),dataLink,handler,Constants.TYPE_1,null);
             HttpManager.startTask(textbookTask);
         }else {
+            stopLoading();
             Toast.makeText(getActivity(),"网络不可用",Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void upDatePb(boolean show) {
-        pb.setVisibility(show && !refreshLayout.isRefreshing() ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void initHandler() {
@@ -170,10 +175,11 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                upDatePb(false);
+                stopLoading();
                 switch (msg.what) {
                     case 0:
                         adapter.updateData(data.getList());
+                        checkNULLData();
                         break;
                     case 1:
                         Toast.makeText(getActivity(),"哎呀！下载出了问题",Toast.LENGTH_SHORT).show();
@@ -188,6 +194,22 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         };
     }
 
+    private void checkNULLData() {
+        //检查数据源是否为空
+        if(adapter.getCount() == 0) {
+            remindNullData();
+        }
+    }
+
+    private void remindNullData() {
+        //提示用户没有加载到数据
+        if(rlLoading.getVisibility() == View.INVISIBLE) {
+            rlLoading.setVisibility(View.VISIBLE);
+        }
+        pb.setVisibility(View.INVISIBLE);
+        tvMessage.setText("暂时没有数据，稍后刷新试试。");
+    }
+
     public static TextbookFragment getInstance() {
         if(fragment == null) {
             fragment = new TextbookFragment();
@@ -195,19 +217,15 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
         return fragment;
     }
 
+    private void stopLoading() {
+        if(rlLoading.getVisibility() == View.VISIBLE) rlLoading.setVisibility(View.INVISIBLE);
+        if(refreshLayout.isRefreshing()) refreshLayout.setRefreshing(false);
+    }
+
     @Override
     public void onRefresh() {
+        stopLoading();
         getData();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     @Override

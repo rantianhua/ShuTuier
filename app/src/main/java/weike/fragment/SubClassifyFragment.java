@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +155,10 @@ public class SubClassifyFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        TextView tv = (TextView)view;
-        Toast.makeText(getActivity(),tv.getText().toString(),Toast.LENGTH_SHORT).show();
+        TextView tv = (TextView) view;
+        getFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.right_in,R.anim.left_out)
+                .replace(R.id.container_search,SearchResultFragment.getInstance(tv.getText().toString()))
+                .commit();
     }
 }

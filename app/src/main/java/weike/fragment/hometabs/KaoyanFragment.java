@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.ButterKnife;
@@ -34,8 +36,8 @@ import weike.util.HttpTask;
 public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener{
 
-    @InjectView(R.id.customer_progressbar)
-    ProgressBar pb;
+    @InjectView(R.id.rl_tab_loading)
+    RelativeLayout rlLoading;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout refreshLayout;
     @InjectView(R.id.listview)
@@ -47,6 +49,8 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private ListBookData data = null;
     private Handler handler = null;
     private Boolean isDataInited = false;
+    private ProgressBar pb = null;
+    private TextView tvMessage = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,11 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     private void initView(View v) {
         ButterKnife.inject(this,v);
+
+        rlLoading.setVisibility(View.VISIBLE);
+        pb = (ProgressBar) rlLoading.findViewById(R.id.progressBar_loading);
+        tvMessage = (TextView) rlLoading.findViewById(R.id.tv_loading);
+
         refreshLayout.setColorSchemeResources(R.color.section_selected);
         refreshLayout.setOnRefreshListener(this);
         adapter = new BookListAdapter(data.getList(),getActivity());
@@ -75,6 +84,8 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
         super.onViewCreated(view, savedInstanceState);
         if(!isDataInited) {
             initData();
+        }else {
+            stopLoading();
         }
     }
 
@@ -85,7 +96,6 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     private void getData(){
         if(MainActivity.netConnect) {
-            upDatePb(true);
             if(handler == null) {
                 initHandler();
             }
@@ -93,12 +103,9 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
             HttpTask textbookTask = new HttpTask(getActivity(),dataLink,handler,Constants.TYPE_3,null);
             HttpManager.startTask(textbookTask);
         }else {
+            stopLoading();
             Toast.makeText(getActivity(),"网络不可用",Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void upDatePb(boolean show) {
-        pb.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void initHandler() {
@@ -106,11 +113,11 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                upDatePb(false);
-                if(refreshLayout.isRefreshing()) refreshLayout.setRefreshing(false);
+                stopLoading();
                 switch (msg.what) {
                     case 0:
                         adapter.updateData(data.getList());
+                        checkNULLData();
                         break;
                     case 1:
                         Toast.makeText(getActivity(), "哎呀！下载出了问题", Toast.LENGTH_SHORT).show();
@@ -125,6 +132,23 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
         };
     }
 
+    private void checkNULLData() {
+        //检查数据源是否为空
+        if(adapter.getCount() == 0) {
+            remindNullData();
+        }
+    }
+
+    private void remindNullData() {
+        //提示用户没有加载到数据
+        if(rlLoading.getVisibility() == View.INVISIBLE) {
+            rlLoading.setVisibility(View.VISIBLE);
+        }
+        pb.setVisibility(View.INVISIBLE);
+        tvMessage.setText("暂时没有数据，稍后刷新试试。");
+    }
+
+
     public static KaoyanFragment getInstance(){
         if(fragment == null) {
             fragment = new KaoyanFragment();
@@ -132,8 +156,14 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
         return fragment;
     }
 
+    private void stopLoading() {
+        if(rlLoading.getVisibility() == View.VISIBLE) rlLoading.setVisibility(View.INVISIBLE);
+        if(refreshLayout.isRefreshing()) refreshLayout.setRefreshing(false);
+    }
+
     @Override
     public void onRefresh() {
+        stopLoading();
         getData();
     }
 

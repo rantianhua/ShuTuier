@@ -7,5 +7,5 @@
     android:gravity="center"
     android:horizontalSpacing="15dp"
     android:background="@color/white"
-    android:paddingTop="5dp"
+    android:paddingTop="15dp"
     android:paddingBottom="5dp"/>

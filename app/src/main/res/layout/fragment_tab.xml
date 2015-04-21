@@ -18,14 +18,11 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <ProgressBar
-        android:id="@+id/customer_progressbar"
+    <include layout="@layout/view_loding_data"
+        android:id="@+id/rl_tab_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateDrawable="@drawable/fram_loading"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="invisible"
-        />
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

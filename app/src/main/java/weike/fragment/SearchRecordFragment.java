@@ -1,5 +1,6 @@
 package weike.fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,13 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -123,6 +124,12 @@ public class SearchRecordFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
+    //关闭软键盘
+    private void hideSoftKeys() {
+        InputMethodManager im = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        im.hideSoftInputFromWindow(etSearch.getWindowToken(),0);
+    }
+
     //保存搜索的历史记录
     private void saveSearchHistory(String s) {
         if(!TextUtils.isEmpty(s)) {
@@ -138,8 +145,8 @@ public class SearchRecordFragment extends Fragment implements AdapterView.OnItem
             editor.clear();
             editor.putStringSet(Constants.RECORD_SET,newSet);
             editor.apply();
+            gotoSearch(s);
             etSearch.setText("");
-            changeFragment(new SearchResultFragment());
         }
     }
 
@@ -153,7 +160,13 @@ public class SearchRecordFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TextView tv = (TextView)view;
-        Toast.makeText(getActivity(),tv.getText().toString(),Toast.LENGTH_SHORT).show();
+        gotoSearch(tv.getText().toString());
+    }
+
+    //进入结果页面搜索输入搜索
+    private void gotoSearch(String s) {
+        hideSoftKeys();
+        changeFragment(SearchResultFragment.getInstance(s));
     }
 
 

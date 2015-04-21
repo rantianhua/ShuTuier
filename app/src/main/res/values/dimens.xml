@@ -17,5 +17,8 @@
     <dimen name="rl_college_height">38dp</dimen>
     <dimen name="imgwidth_listitem">120dp</dimen>
     <dimen name="imgheight_listitem">160dp</dimen>
+    <dimen name="dialog_contact_img_size">40dp</dimen>
     <dimen name="dialog_handle_book_height">40dp</dimen>
+    <dimen name="grid_share_item_size">50dp</dimen>
+    <dimen name="arrow_setting_size">20dp</dimen>
 </resources>

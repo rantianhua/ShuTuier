@@ -29,14 +29,10 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+        android:layout_height="70dp"
+        android:paddingLeft="15dp"
         android:gravity="center_vertical|start"
         android:id="@+id/tv_contact_phone"
-        android:drawableStart="@drawable/phone"
-        android:drawableLeft="@drawable/phone"
-        android:drawablePadding="10dp"
-        android:layout_centerVertical="true"
         android:layout_below="@+id/line_contact_title"
         />
 
@@ -49,13 +45,10 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:drawableLeft="@drawable/qq_round"
-        android:drawableStart="@drawable/qq_round"
+        android:layout_height="70dp"
+        android:paddingLeft="15dp"
         android:gravity="center_vertical"
         android:id="@+id/tv_contact_qq"
-        android:drawablePadding="10dp"
         android:layout_below="@+id/line_contact_one"
         android:background="@drawable/tv_contact_bg"/>
 
@@ -68,11 +61,8 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:drawablePadding="10dp"
-        android:drawableLeft="@drawable/wx_round"
-        android:drawableStart="@drawable/wx_round"
+        android:layout_height="70dp"
+        android:paddingLeft="15dp"
         android:gravity="center_vertical"
         android:id="@+id/tv_contact_wx"
         android:layout_below="@+id/line_contact_two"
@@ -87,12 +77,9 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:drawableLeft="@drawable/email"
-        android:drawableStart="@drawable/email"
+        android:layout_height="70dp"
+        android:paddingLeft="15dp"
         android:gravity="center_vertical"
-        android:drawablePadding="10dp"
         android:id="@+id/tv_contact_email"
         android:layout_below="@+id/line_contact_three"
         android:background="@drawable/tv_contact_bg"/>
@@ -147,41 +134,44 @@
             />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/call"
         android:layout_alignBottom="@+id/tv_contact_phone"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="19dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="30dp"
         android:layout_marginEnd="30dp"
         android:id="@+id/img_contact_call"
-        android:visibility="visible"/>
+        android:scaleType="centerCrop"
+        android:visibility="invisible"/>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/add"
         android:layout_alignBottom="@+id/img_contact_call"
         android:layout_toLeftOf="@+id/img_contact_call"
         android:layout_toStartOf="@+id/img_contact_call"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
         android:id="@+id/img_contact_add"
-        android:visibility="visible"/>
+        android:visibility="invisible"
+        android:scaleType="centerCrop"/>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/sms"
         android:layout_alignBottom="@+id/img_contact_call"
         android:layout_toLeftOf="@+id/img_contact_add"
         android:layout_toStartOf="@+id/img_contact_add"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
         android:id="@+id/img_contact_sms"
-        android:visibility="visible"
+        android:visibility="invisible"
+        android:scaleType="centerCrop"
         />
 
 </RelativeLayout>

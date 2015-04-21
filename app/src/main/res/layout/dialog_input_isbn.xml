@@ -11,8 +11,9 @@
         android:text="@string/tv_input_isbn"
         android:gravity="center"
         android:singleLine="true"
-        android:textColor="@color/green_light"
-        android:id="@+id/tv_isbn_label"/>
+        android:textColor="@color/black"
+        android:id="@+id/tv_isbn_label"
+        android:textSize="16sp"/>
 
     <EditText
         android:layout_width="match_parent"

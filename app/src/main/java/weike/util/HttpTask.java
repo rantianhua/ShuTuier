@@ -233,7 +233,7 @@ public class HttpTask implements Runnable {
         if(msg.what != 1) {
             try{
                 Log.e("HttpTask","url is " + url);
-                if(url.contains(Constants.OLink)) {
+                if(url.contains(Constants.OLink) || url.contains(Constants.SEARCHLINK)) {
                     Utils.getListData(content,from);
                 }else if(url.contains(Constants.DetailLink)) {
                     Utils.getDetailData(content);

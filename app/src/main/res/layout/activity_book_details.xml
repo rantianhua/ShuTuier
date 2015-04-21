@@ -32,7 +32,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="书名：射雕英雄传"
                 android:id="@+id/tv_book_name"
                 android:layout_below="@+id/margin1"
                 android:layout_centerHorizontal="true"
@@ -42,7 +41,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="作者：金庸"
                 android:id="@+id/tv_book_author"
                 android:layout_below="@+id/tv_book_name"
                 android:layout_marginTop="8dp"
@@ -55,7 +53,6 @@
                 android:id="@+id/tv_book_details_isbn"
                 android:layout_below="@+id/tv_book_author"
                 android:layout_marginTop="8dp"
-                android:text="ISBN号：9787806553312"
                 android:layout_centerHorizontal="true"
                 />
 
@@ -63,7 +60,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_book_details_publisher"
-                android:text="出版社：天华出版社"
                 android:layout_below="@+id/tv_book_details_isbn"
                 android:layout_marginTop="8dp"
                 android:layout_centerHorizontal="true"
@@ -81,7 +77,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_book_details_origin_price"
-                android:text="45"
                 android:textStyle="italic"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
@@ -95,7 +90,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_book_details_sell_price"
-                android:text="32"
                 android:textSize="18sp"
                 android:layout_toLeftOf="@+id/tv_book_details_origin_price"
                 android:layout_toStartOf="@+id/tv_book_details_origin_price"
@@ -113,6 +107,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
+                android:scaleType="centerCrop"
                 />
 
             <TextView
@@ -123,7 +118,6 @@
                 android:layout_toEndOf="@+id/img_book_details_user"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:text="Be Winner"
                 android:layout_alignBottom="@+id/img_book_details_user"
                 android:layout_alignTop="@+id/img_book_details_user"
                 android:gravity="center_vertical"
@@ -145,7 +139,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_book_details_decription"
-                android:text="1、金庸武侠宗师地位奠基之作 2、最受学生、家长及老师欢迎和推荐的金庸作品之一：侠之大者，为国为民 3、新加坡中学华文文学课程选读作品 4、央视科教频道《读书》栏目寒假特别节目《我的一本课外书》推荐书目 "
                 android:layout_below="@+id/tv_description"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
@@ -195,7 +188,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_book_details_remark"
-                android:text="1、金庸武侠宗师地位奠基之作 2、最受学生、家长及老师欢迎和推荐的金庸作品之一：侠之大者，为国为民 3、新加坡中学华文文学课程选读作品 4、央视科教频道《读书》栏目寒假特别节目《我的一本课外书》推荐书目 "
                 android:layout_below="@+id/tv_remark"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"

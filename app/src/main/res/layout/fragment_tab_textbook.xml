@@ -6,7 +6,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/rl_college_height"
-        android:id="@+id/rl_college">
+        android:id="@+id/rl_college"
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -43,13 +44,21 @@
 
     </RelativeLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/list_item_bottom"
+        android:layout_below="@+id/rl_college"
+        android:id="@+id/view_line_textbook_1"
+        />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent" android:id="@+id/swipe_container"
         android:layout_height="match_parent"
         android:paddingLeft="5dp"
         android:paddingEnd="5dp"
         android:paddingRight="5dp"
-        android:layout_below="@+id/rl_college"
+        android:layout_below="@+id/view_line_textbook_1"
         >
 
         <ListView
@@ -72,16 +81,14 @@
         android:focusableInTouchMode="true"
         android:background="@color/white"
         android:layout_below="@+id/rl_college"
-        />
-
-    <ProgressBar
-        android:id="@+id/customer_progressbar_text_book"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminateDrawable="@drawable/fram_loading"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:visibility="invisible"
         />
+
+    <include layout="@layout/view_loding_data"
+        android:id="@+id/rl_tab_textbook_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

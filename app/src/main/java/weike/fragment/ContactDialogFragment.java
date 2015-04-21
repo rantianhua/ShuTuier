@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -64,12 +65,18 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     private Status status = Status.CLOSE;
     private String TAG = "Contact";
     private Animation scaleBig = null,scaleSmall = null;
+    private int drawableSize;
 
     //枚举类，表示电话的子菜单的状态
     public enum Status{
         CLOSE,OPEN
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        drawableSize = getResources().getDimensionPixelSize(R.dimen.dialog_contact_img_size);
+    }
 
     @NonNull
     @Override
@@ -86,9 +93,25 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
         ButterKnife.inject(this, v);
         tvEnd.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
+        Drawable qq = getResources().getDrawable(R.drawable.qq_round);
+        qq.setBounds(0,0,drawableSize,drawableSize);
+        tvQQ.setCompoundDrawables(qq,null,null,null);
+        tvQQ.setCompoundDrawablePadding(20);
         tvQQ.setText("1348748184");
+        Drawable phone = getResources().getDrawable(R.drawable.phone);
+        phone.setBounds(0,0,drawableSize,drawableSize);
+        tvPhone.setCompoundDrawables(phone,null,null,null);
+        tvPhone.setCompoundDrawablePadding(20);
         tvPhone.setText("15929733174");
+        Drawable wx = getResources().getDrawable(R.drawable.wx_round);
+        wx.setBounds(0,0,drawableSize,drawableSize);
+        tvWx.setCompoundDrawables(wx,null,null,null);
+        tvWx.setCompoundDrawablePadding(20);
         tvWx.setText("rth");
+        Drawable email = getResources().getDrawable(R.drawable.email);
+        email.setBounds(0,0,drawableSize,drawableSize);
+        tvEmail.setCompoundDrawables(email,null,null,null);
+        tvEmail.setCompoundDrawablePadding(20);
         tvEmail.setText("15953163807@163.com");
         tvQQ.setOnClickListener(this);
         tvPhone.setOnClickListener(this);
@@ -119,7 +142,7 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
             case R.id.tv_contact_phone:
                 unSelectContact();
                 popMenuItems();
-                tvEnd.setText("取消");
+                tvEnd.setText("结束");
                 break;
             case R.id.tv_contact_qq:
                 updateContacts(tvQQ);

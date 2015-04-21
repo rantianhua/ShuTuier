@@ -31,7 +31,8 @@
     </style>
 
     <style name="Animation.Isbn.Translucent.Style" parent="@android:style/Animation.Translucent">
-        <item name="android:windowEnterAnimation">@anim/dialog_isbn</item>
+        <item name="android:windowEnterAnimation">@anim/dialog_isbn_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_isbn_out</item>
     </style>
 
     <style name="dialog_cover" parent="@android:style/Theme.Dialog">

@@ -8,4 +8,12 @@
         android:id="@+id/listview_search_classifys"
         />
 
+    <include layout="@layout/view_loding_data"
+        android:id="@+id/rl_loading_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
+
 </RelativeLayout>

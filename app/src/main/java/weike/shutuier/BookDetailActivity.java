@@ -35,6 +35,7 @@ import weike.data.ListBookData;
 import weike.fragment.ContactDialogFragment;
 import weike.fragment.ShareFragment;
 import weike.util.Constants;
+import weike.util.GetUserPhotoWork;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
 import weike.util.Mysingleton;
@@ -72,7 +73,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     LinearLayout ll;
     @InjectView(R.id.rl_detail_liuyan)
     RelativeLayout rlLiuyan;
-    @InjectView(R.id.btn_want_buy)
+    @InjectView(R.id.btn_contact_him)
     Button btnWantBuy;
     @InjectView(R.id.rl_detail_share)
     RelativeLayout rlShare;
@@ -80,18 +81,6 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     LinearLayout llBuyAction;
     @InjectView(R.id.ll_btn_want_buy)
     LinearLayout llWntBuy;
-    @InjectView(R.id.ll_btn_have_sell)
-    LinearLayout llHaveSell;
-    @InjectView(R.id.btn_have_sell)
-    Button haveSell;
-    @InjectView(R.id.ll_btn_ask_give)
-    LinearLayout llAskGive;
-    @InjectView(R.id.btn_ask_give)
-    Button askGive;
-    @InjectView(R.id.ll_btn_give_he)
-    LinearLayout llGiveHe;
-    @InjectView(R.id.btn_give_he)
-    Button giveHe;
     @InjectView(R.id.rl_bottom_commend)
     RelativeLayout rlBottomCommend;
     @InjectView(R.id.btn_back)
@@ -102,6 +91,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     Button btnSend;
     @InjectView(R.id.tv_send_condition)
     TextView tvSendCondition;
+    @InjectView(R.id.tv_send_condition_label)
+    TextView tvSenConditionLabel;
 
     private TextView tvLiuyanNumber,tvShareNumber;
 
@@ -177,18 +168,9 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         rlLiuyan.setOnClickListener(this);
         //根据书的状态改变不同的状态
         String status  = item.getStatue();
-        if(!status.contains("出售")) {
-            llWntBuy.setVisibility(View.GONE);
-        }
-        if(!status.contains("求购")){
-            llHaveSell.setVisibility(View.GONE);
-        }
-        if(!status.contains("赠送") || status.contains("求赠送")){
-            llAskGive.setVisibility(View.GONE);
+        if(!status.contains("赠送")){
             tvSendCondition.setVisibility(View.INVISIBLE);
-        }
-        if(!status.contains("求赠送")) {
-            llGiveHe.setVisibility(View.GONE);
+            tvSenConditionLabel.setVisibility(View.INVISIBLE);
         }
         btnBack.setOnClickListener(this);
         btnSend.setOnClickListener(this);
@@ -203,9 +185,6 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 super.handleMessage(msg);
                 pb.setVisibility(View.GONE);
                 btnWantBuy.setOnClickListener(BookDetailActivity.this);
-                haveSell.setOnClickListener(BookDetailActivity.this);
-                giveHe.setOnClickListener(BookDetailActivity.this);
-                askGive.setOnClickListener(BookDetailActivity.this);
                 switch (msg.what) {
                     case 0:
                         StringBuilder sb = new StringBuilder();
@@ -238,8 +217,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     //评论成功后的操作
     private void afterComment() {
-        ll.addView(initCommentsView("我",comment,
-                "http://c.hiphotos.baidu.com/image/pic/item/f3d3572c11dfa9ec78e256df60d0f703908fc12e.jpg",getTime()),0);
+        ll.addView(initCommentsView("我",comment,null,getTime()),0);
         changeBottomView(1);
     }
 
@@ -253,13 +231,17 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         tvName.setText(name);
         tvContent.setText(content);
         tvSendTime.setText(time);
-        if(imageLoader == null) {
-            imageLoader = Mysingleton.getInstance(this).getImageLoader();
-        }
-        try {
-            imageLoader.get(headUrl,ImageLoader.getImageListener(imageView,R.drawable.def,R.drawable.def),20,20);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(headUrl != null) {
+            if(imageLoader == null) {
+                imageLoader = Mysingleton.getInstance(this).getImageLoader();
+            }
+            try {
+                imageLoader.get(headUrl,ImageLoader.getImageListener(imageView,R.drawable.def,R.drawable.def),20,20);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            new GetUserPhotoWork(imageView,this,false);
         }
         return v;
     }
@@ -293,16 +275,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
             case R.id.rl_detail_share:
                 ShareFragment.getInstance(item.getImgUrl(),itemId).show(getSupportFragmentManager(),"share");
                 break;
-            case R.id.btn_want_buy:
-                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
-                break;
-            case R.id.btn_have_sell:
-                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
-                break;
-            case R.id.btn_give_he:
-                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
-                break;
-            case R.id.btn_ask_give:
+            case R.id.btn_contact_him:
                 new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
                 break;
             default:
@@ -368,7 +341,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     //得到当前时间并格式化
     private String getTime(){
-        SimpleDateFormat format = new SimpleDateFormat("mm-dd  hh:mm");
+        SimpleDateFormat format = new SimpleDateFormat("MM-dd  HH:mm");
         return format.format(new Date());
     }
 

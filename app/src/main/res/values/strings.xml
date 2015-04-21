@@ -41,10 +41,7 @@
     <string name="modify_cover">更换封面</string>
     <string name="reset">重置</string>
     <string name="release">发布</string>
-    <string name="want_buy">我想买</string>
-    <string name="have_sell">我有卖</string>
-   <string name="ask_give">求送</string>
-    <string name="give_he">送给他</string>
+    <string name="contact_him">联系他</string>
     <string name="send_comments">发送</string>
     <string name="back">返回</string>
     <string name="hint_comments">最多150字</string>
@@ -136,4 +133,5 @@
     <string name="hint_feedback">写下你的意见或想法</string>
     <string name="search">搜索</string>
     <string name="et_search">输入书名或ISBN号搜索</string>
+    <string name="loading">正在加载&#8230;</string>
 </resources>

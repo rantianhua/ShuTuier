@@ -28,7 +28,7 @@ public class SettingActivity extends ActionBarActivity {
     private void initView() {
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-        setTitle(FragmentLabel.Commit.getValue());
+        setTitle(FragmentLabel.Setting.getValue());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportFragmentManager().beginTransaction().add(R.id.container_setting, SettingFragment.getInstance()).commit();
     }

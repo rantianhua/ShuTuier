@@ -7,13 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -43,25 +39,6 @@ import weike.data.UserInfoData;
  */
 public class Utils {
 
-
-    //得到显示用户头像的ImageView的大小
-    public static Point getUserPhotoSize(Resources res) {
-        int size = (int) (64 * res.getDisplayMetrics().density);
-        return new Point(size,size);
-    }
-
-    public static int getDrawerWidth(Resources res) {
-        return (int) res.getDisplayMetrics().widthPixels;
-    }
-
-
-    public static Point getBackgroundSize(Resources res) {
-        int width = getDrawerWidth(res);
-
-        int height = (9 * width) / 16;
-
-        return new Point(width,height);
-    }
 
     public static Bitmap getCroppedBitmapDrawable(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
@@ -119,13 +96,6 @@ public class Utils {
         return inSampleSize;
     }
 
-    public static void recycleDrawable(Drawable drawable) {
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            bitmapDrawable.getBitmap().recycle();
-        }
-    }
-
     public static void loadBitmap(Resources res,ImageView view,int resId,int reqWidth,int reqHeight,int colorId) {
         BitmapWorkerTask task = new BitmapWorkerTask(res,view,reqWidth,reqHeight,colorId);
         task.execute(resId);
@@ -146,8 +116,7 @@ public class Utils {
     }
 
     public static void getListData(String content,final String from) {
-        if(content != null) {
-            if(content.equals("null")) return;
+        if(!TextUtils.isEmpty(content)) {
             JsonReader reader = null;
             try{
                 reader = new JsonReader(new StringReader(content));
@@ -426,31 +395,6 @@ public class Utils {
                 .getSystemService(Context.WINDOW_SERVICE);
         manager.getDefaultDisplay().getMetrics(dm);
         return dm.heightPixels;
-    }
-
-    public static void loadBlurBitmap(final Context con, final ImageView userBg, final int user_bg, final int radius,final int w,final int h) {
-
-        new AsyncTask<Integer,String,Bitmap>() {
-            @Override
-            protected void onPostExecute(Bitmap o) {
-                if(o != null) {
-                    userBg.setImageBitmap(o);
-                }
-            }
-
-            @Override
-            protected Bitmap doInBackground(Integer[] params) {
-                int picId = params[0];
-                //先取图片的缩略图在进行高斯模糊处理
-                //decodeSampleBitmapFromResource(con.getResources(), picId, w, h)
-                return Blur.fastblur(con, BitmapFactory.decodeResource(con.getResources(), user_bg), radius);
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-        }.execute(user_bg,null,null);
     }
 
     public static String getMyCommitUrl(String id,String type) {

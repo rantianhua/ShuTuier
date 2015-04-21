@@ -5,31 +5,19 @@
     android:baselineAligned="false"
    >
 
-    <LinearLayout
+    <include layout="@layout/view_share"
+        android:id="@+id/rl_detail_share"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
-        android:gravity="center"
-        >
+        />
 
-        <include layout="@layout/view_share"
-            android:id="@+id/rl_detail_share"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <include layout="@layout/view_liuyan"
+        android:id="@+id/rl_detail_liuyan"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
-        android:gravity="center"
-        >
-
-        <include layout="@layout/view_liuyan"
-            android:id="@+id/rl_detail_liuyan"
-            />
-
-    </LinearLayout>
+        />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -40,67 +28,10 @@
         >
 
         <Button
-            android:id="@+id/btn_want_buy"
+            android:id="@+id/btn_contact_him"
             android:layout_width="70dp"
             android:layout_height="28dp"
-            android:text="@string/want_buy"
-            android:textColor="@color/btn_want"
-            android:background="@drawable/btn_want"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:id="@+id/ll_btn_have_sell"
-        >
-
-        <Button
-            android:id="@+id/btn_have_sell"
-            android:layout_width="70dp"
-            android:layout_height="28dp"
-            android:text="@string/have_sell"
-            android:textColor="@color/btn_want"
-            android:background="@drawable/btn_want"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:id="@+id/ll_btn_ask_give"
-        >
-
-        <Button
-            android:id="@+id/btn_ask_give"
-            android:layout_width="70dp"
-            android:layout_height="28dp"
-            android:text="@string/ask_give"
-            android:textColor="@color/btn_want"
-            android:background="@drawable/btn_want"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:id="@+id/ll_btn_give_he"
-        >
-
-        <Button
-            android:id="@+id/btn_give_he"
-            android:layout_width="70dp"
-            android:layout_height="28dp"
-            android:text="@string/give_he"
+            android:text="@string/contact_him"
             android:textColor="@color/btn_want"
             android:background="@drawable/btn_want"
             />

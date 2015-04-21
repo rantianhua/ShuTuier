@@ -47,6 +47,7 @@ import com.umeng.socialize.sso.UMSsoHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +59,7 @@ import weike.util.ConnectReceiver;
 import weike.util.Constants;
 import weike.util.HttpManager;
 import weike.util.HttpTask;
+import weike.util.Utils;
 
 /**
  * Created by Rth on 2015/3/8.
@@ -158,6 +160,19 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
             sp = getSharedPreferences(weike.util.Constants.SP_USER, 0);
         }
         llLogin.setVisibility(View.INVISIBLE);
+        if(sp.getBoolean(Constants.APP_FORST_OPEN,true)) {
+            try {
+                File file = new File(Utils.getPicturePath() + Constants.USERICONFILE);
+                if(file.exists()) {
+                    file.delete();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(Constants.APP_FORST_OPEN,false);
+            editor.apply();
+        }
         //判断用户是否登陆
         if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
             //用户未登陆

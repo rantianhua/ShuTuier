@@ -27,6 +27,9 @@ import com.umeng.socialize.sso.SinaSsoHandler;
 import com.umeng.socialize.sso.TencentWBSsoHandler;
 import com.umeng.socialize.sso.UMQQSsoHandler;
 import com.umeng.socialize.sso.UMSsoHandler;
+import com.umeng.socialize.weixin.controller.UMWXHandler;
+import com.umeng.socialize.weixin.media.CircleShareContent;
+import com.umeng.socialize.weixin.media.WeiXinShareContent;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -60,10 +63,12 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
     private void initContentView(View v) {
         ButterKnife.inject(this,v);
         String[] tvs = {"QQ好友","QQ空间","微博","腾讯微博","微信","朋友圈"};
-        Integer[] icons = {R.drawable.umeng_socialize_qq_on,
-            R.drawable.umeng_socialize_qzone_on,R.drawable.umeng_socialize_sina_on,
-            R.drawable.umeng_socialize_tx_on,R.drawable.umeng_socialize_wechat,
-            R.drawable.umeng_socialize_wxcircle};
+        Integer[] icons = {R.drawable.qq_round,
+            R.drawable.q_zone,
+            R.drawable.sina_round,
+            R.drawable.qq_weibo,
+            R.drawable.wx_round,
+            R.drawable.wx_friends};
         GridShareAdapter adapter = new GridShareAdapter(getActivity(),tvs,icons);
         share.setAdapter(adapter);
         share.setOnItemClickListener(this);
@@ -94,6 +99,16 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
         controller.getConfig().setSsoHandler(new SinaSsoHandler());
         //设置腾讯微博SSO handler
         controller.getConfig().setSsoHandler(new TencentWBSsoHandler());
+
+        String appId = "wxd2033153d9e5d21c";
+        String appSecret = "9e07451fa60ee561bd688565aa5112cd";
+        // 添加微信平台
+        UMWXHandler wxHandler = new UMWXHandler(getActivity(),appId,appSecret);
+        wxHandler.addToSocialSDK();
+        // 支持微信朋友圈
+        UMWXHandler wxCircleHandler = new UMWXHandler(getActivity(),appId,appSecret);
+        wxCircleHandler.setToCircle(true);
+        wxCircleHandler.addToSocialSDK();
     }
 
     @Override
@@ -145,10 +160,29 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
                 break;
             case 4:
                 //威信好友分享
+                //设置微信好友分享内容
+                WeiXinShareContent weixinContent = new WeiXinShareContent();
+                //设置分享文字
+                weixinContent.setShareContent("以书会友，以书交友");
+                //设置title
+                weixinContent.setTitle("藤书坊");
+                //设置分享内容跳转URL
+                weixinContent.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                //设置分享图片
+                weixinContent.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
+                controller.setShareMedia(weixinContent);
                 shareMessage(SHARE_MEDIA.WEIXIN);
                 break;
             case 5:
                 //朋友圈分享
+                //设置微信朋友圈分享内容
+                CircleShareContent circleMedia = new CircleShareContent();
+                circleMedia.setShareContent("以书会友，以书交友");
+                //设置朋友圈title
+                circleMedia.setTitle("藤书坊");
+                circleMedia.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
+                circleMedia.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                controller.setShareMedia(circleMedia);
                 shareMessage(SHARE_MEDIA.WEIXIN_CIRCLE);
                 break;
             default:
@@ -157,10 +191,6 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
     }
 
     private void shareMessage(SHARE_MEDIA media) {
-//        // 图片分享内容
-//        controller.setShareMedia(new UMImage(getActivity(),getArguments().getString(IMGURL)));
-//        //文字分享内容
-//        controller.setShareContent("测试分享");
         controller.postShare(getActivity(), media, mShareListener);
     }
 

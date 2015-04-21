@@ -2,6 +2,7 @@ package weike.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -47,6 +48,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     @InjectView(R.id.tv_setting_version)
     TextView tvVersion;
 
+    private int arrowNextSize;
+
     //友盟授权接口
     UMSocialService controller = UMServiceFactory.getUMSocialService("com.umeng.login");
     public static UserInfoChangeListener userInfoListener;
@@ -54,6 +57,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        arrowNextSize = getResources().getDimensionPixelSize(R.dimen.arrow_setting_size);
     }
 
     @Override
@@ -65,7 +69,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
 
     private void initView(View v) {
         ButterKnife.inject(this,v);
+        Drawable arrow = getResources().getDrawable(R.drawable.arrow_next);
+        arrow.setBounds(0,0,arrowNextSize,arrowNextSize);
+        tvAboutUs.setCompoundDrawables(null,null,arrow,null);
         tvAboutUs.setOnClickListener(this);
+        tvIdea.setCompoundDrawables(null,null,arrow,null);
         tvIdea.setOnClickListener(this);
         rlVersion.setOnClickListener(this);
         btnLogout.setOnClickListener(this);
