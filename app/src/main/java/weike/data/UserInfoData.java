@@ -6,13 +6,11 @@ package weike.data;
 public class UserInfoData {
 
     private static UserInfoData data = null;
-
     private String OpenId = "";
     private String userUrl = "";
     private String nicName = "";
     private String sex = "";
     private String birthday = "";
-    private String hobbit = "";
     private String school = "西安电子科技大学";
     private String address = "";
     private String qqNumber = "";
@@ -43,14 +41,6 @@ public class UserInfoData {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
-    }
-
-    public String getHobbit() {
-        return hobbit;
-    }
-
-    public void setHobbit(String hobbit) {
-        this.hobbit = hobbit;
     }
 
     public String getSchool() {

@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -23,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -96,9 +99,26 @@ public class Utils {
         return inSampleSize;
     }
 
-    public static void loadBitmap(Resources res,ImageView view,int resId,int reqWidth,int reqHeight,int colorId) {
-        BitmapWorkerTask task = new BitmapWorkerTask(res,view,reqWidth,reqHeight,colorId);
-        task.execute(resId);
+    public static void recycleBitmap(ImageView imageView) {
+        if(imageView == null) return;
+        Drawable drawable = imageView.getDrawable();
+        if(drawable != null && drawable instanceof BitmapDrawable) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            if(bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+    }
+
+    public static Bitmap showTakenPictures(String path,int reqWidth,int reqHeight) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        // 调用上面定义的方法计算inSampleSize值
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(path,options);
     }
 
     //提取透明位图
@@ -388,15 +408,6 @@ public class Utils {
         return dm.widthPixels;
     }
 
-    //得到屏幕的高度
-    public static int getWindowHeight(Context context) {
-        DisplayMetrics dm = new DisplayMetrics();
-        WindowManager manager = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        manager.getDefaultDisplay().getMetrics(dm);
-        return dm.heightPixels;
-    }
-
     public static String getMyCommitUrl(String id,String type) {
         return Constants.BASEMYCOMMIT + id + "/name/"  + type;
     }
@@ -442,7 +453,6 @@ public class Utils {
                 editor.putString(Constants.NICNAME,json.getString("thirdName"));
                 editor.putString(Constants.SEX,json.getString("Sex"));
                 editor.putString(Constants.Birthday,json.getString("birth"));
-                editor.putString(Constants.Hobbit,json.getString("Interest"));
                 editor.putString(Constants.School,json.getString("School"));
                 editor.putString(Constants.PhoneNumber,json.getString("teleNum"));
                 editor.putString(Constants.QQNumber,json.getString("qqNum"));
@@ -461,6 +471,18 @@ public class Utils {
                 json  = null;
             }
             return true;
+        }
+    }
+
+    //生成缩略图文件
+    public static void haveSimpleFile(String pic,int w,int h) {
+        try {
+            Bitmap bitmap = Utils.showTakenPictures(pic,w,h);
+            if(bitmap != null) {
+                FileOutputStream outputStream = new FileOutputStream(new File(Utils.getPicturePath()+Constants.TEMP_PIC));
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+            }
+        }catch (Exception e) {
         }
     }
 }

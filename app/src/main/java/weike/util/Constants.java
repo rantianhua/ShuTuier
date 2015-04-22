@@ -16,6 +16,7 @@ public class Constants {
     public static final String CHANGEBOOK = "http://abc.tengshufang.com/API/Index/change";
     public static final String CHANGEUSERINFO = "http://abc.tengshufang.com/API/Index/info";
     public static final String SEARCHLINK = "http://abc.tengshufang.com/API/Index/search/content/";
+    public static final String SHARENOTIFYLINK = "http://abc.tengshufang.com/API/Index/share/bookID/";
     public static final String TYPE_1 = "textbook";     //表示来自TextbookFragment中的请求
     public static final String TYPE_2 = "program";      //表示来自ProgramFragment中的请求
     public static final String TYPE_3 = "kaoyan";       //表示来自KaoyanFragment中的请求
@@ -72,4 +73,5 @@ public class Constants {
     public static final String SP_SEARCH_RECORD = "search_record";
     public static final String RECORD_SET = "record_set";
     public static final String APP_FORST_OPEN = "open";
+    public static final String TEMP_PIC = "/temp.png";
 }

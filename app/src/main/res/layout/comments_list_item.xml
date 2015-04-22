@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/img_comment_photo"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/comment_list_user_size"
+        android:layout_height="@dimen/comment_list_user_size"
         android:background="@color/material_blue_grey_800"/>
 
     <TextView

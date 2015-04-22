@@ -164,6 +164,7 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onRefresh() {
         stopLoading();
+        data.getList().clear();
         getData();
     }
 

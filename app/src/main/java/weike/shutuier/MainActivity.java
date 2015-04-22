@@ -208,7 +208,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private void updateUserInfo() {
         //检查用户是否已登陆
         if(sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-            new GetUserPhotoWork(userPhoto,this,true).execute();
+            new GetUserPhotoWork(userPhoto,this,true,getResources().getDimensionPixelSize(R.dimen.user_icon_size),
+                    getResources().getDimensionPixelSize(R.dimen.user_icon_size)).execute();
             userName.setText(sp.getString(Constants.NICNAME,"获取昵称失败"));
         }else {
             userPhoto.setImageResource(R.drawable.user_def);
@@ -228,8 +229,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         intent.setAction(Intents.Scan.ACTION);
         intent.putExtra(Intents.Scan.MODE, Intents.Scan.EAN13_MODE);
         intent.putExtra(Intents.Scan.CHARACTER_SET, "UTF-8");
-        intent.putExtra(Intents.Scan.WIDTH, 320);
-        intent.putExtra(Intents.Scan.HEIGHT, 380);
         intent.setClass(this, CaptureActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
         overridePendingTransition(R.anim.right_in,R.anim.left_out);

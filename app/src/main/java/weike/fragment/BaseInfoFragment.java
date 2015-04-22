@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,8 +61,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     EditText etSex;
     @InjectView(R.id.et_center_birthday)
     EditText etBirthday;
-    @InjectView(R.id.et_center_hobbit)
-    EditText etHobbit;
     @InjectView(R.id.et_center_school)
     EditText etSchool;
     @InjectView(R.id.et_center_phone)
@@ -110,7 +107,10 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private void initView(View v) {
         ButterKnife.inject(this,v);
         //显示头像
-        new GetUserPhotoWork(userIcon,getActivity(),false).execute();
+        new GetUserPhotoWork(userIcon,getActivity(),false,
+                getResources().getDimensionPixelSize(R.dimen.base_info_user_size),
+                getResources().getDimensionPixelSize(R.dimen.base_info_user_size))
+                .execute();
 
         etNicName.setText(sp.getString(Constants.NICNAME,""));
         etSex.setText(sp.getString(Constants.SEX,"男"));
@@ -118,7 +118,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         if(!TextUtils.isEmpty(birthday)) {
             etBirthday.setText(birthday);
         }
-        etHobbit.setText(sp.getString(Constants.Hobbit,""));
         etQQ.setText(sp.getString(Constants.QQNumber,""));
         etPhone.setText(sp.getString(Constants.PhoneNumber,""));
         etWx.setText(sp.getString(Constants.WxNumber,""));
@@ -126,7 +125,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         etSex.addTextChangedListener(textWatcher);
         etNicName.addTextChangedListener(textWatcher);
         etBirthday.addTextChangedListener(textWatcher);
-        etHobbit.addTextChangedListener(textWatcher);
         etQQ.addTextChangedListener(textWatcher);
         etPhone.addTextChangedListener(textWatcher);
         etEmail.addTextChangedListener(textWatcher);
@@ -140,7 +138,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         etNicName.setEnabled(mode);
         etSex.setEnabled(mode);
         etBirthday.setEnabled(mode);
-        etHobbit.setEnabled(mode);
         etSchool.setEnabled(false);
         etPhone.setEnabled(mode);
         etQQ.setEnabled(mode);
@@ -204,7 +201,9 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         if(!uploadPicPath.equals(sp.getString(Constants.USERURL,""))) {
             //上传新头像到七牛
             try{
-                new UploadPicture(uploadPicPath,upHandler).upToQiNiu();
+                Utils.haveSimpleFile(uploadPicPath,getResources().getDimensionPixelSize(R.dimen.dialog_contact_img_size),
+                        getResources().getDimensionPixelSize(R.dimen.dialog_contact_img_size));
+                new UploadPicture(Utils.getPicturePath()+Constants.TEMP_PIC,upHandler).upToQiNiu();
             }catch (Exception e) {
                 Log.e(TAG,"error in upload user icon" ,e);
                 //删除暂存数据
@@ -215,21 +214,15 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    private boolean checkContact() {
-        if(TextUtils.isEmpty(etPhone.getText()) && TextUtils.isEmpty(etQQ.getText())
-            && TextUtils.isEmpty(etWx.getText()) && TextUtils.isEmpty(etEmail.getText())) {
-            Toast.makeText(getActivity(),"至少填写一种联系方式",Toast.LENGTH_SHORT).show();
-            return false;
-        }else {
-            return true;
-        }
-    }
-
-
     //上传图片到七牛的异步Handler
     private UpCompletionHandler upHandler = new UpCompletionHandler() {
         @Override
         public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+            try {
+                new File(Utils.getPicturePath()+Constants.TEMP_PIC).delete();
+            }catch (Exception e) {
+
+            }
             if(jsonObject != null) {
                 //解析Json获得hash值
                 if(jsonObject.has("hash")){
@@ -301,7 +294,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         data.setNicName(etNicName.getText().toString());
         data.setSex(etSex.getText().toString());
         data.setBirthday(etBirthday.getText().toString());
-        data.setHobbit(etHobbit.getText().toString());
         data.setAddress(etAddress.getText().toString());
         data.setQqNumber(etQQ.getText().toString());
         data.setPhoneNumber(etPhone.getText().toString());
@@ -317,7 +309,6 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         editor.putString(Constants.NICNAME,newData.getNicName());
         editor.putString(Constants.SEX,newData.getSex());
         editor.putString(Constants.Birthday,newData.getBirthday());
-        editor.putString(Constants.Hobbit,newData.getHobbit());
         editor.putString(Constants.School,newData.getSchool());
         editor.putString(Constants.Address,newData.getAddress());
         editor.putString(Constants.QQNumber,newData.getQqNumber());
@@ -377,7 +368,9 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     //显示新的头像
     private void updateCover(String path) {
         if(path != null) {
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            Utils.recycleBitmap(userIcon);
+            int size = getResources().getDimensionPixelSize(R.dimen.dialog_contact_img_size);
+            Bitmap bitmap = Utils.showTakenPictures(path, size, size);
             if(bitmap != null) {
                 userIcon.setImageBitmap(bitmap);
                 changeMessage = true;

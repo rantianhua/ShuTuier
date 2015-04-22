@@ -3,6 +3,9 @@ package weike.fragment;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
@@ -12,7 +15,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.bean.SocializeEntity;
@@ -36,6 +38,8 @@ import butterknife.InjectView;
 import weike.adapter.GridShareAdapter;
 import weike.shutuier.R;
 import weike.util.Constants;
+import weike.util.HttpManager;
+import weike.util.HttpTask;
 
 /**
  * Created by Rth on 2015/4/3.
@@ -48,6 +52,7 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
     final UMSocialService controller  = UMServiceFactory.getUMSocialService("com.umeng.share");
     private static final String IMGURL = "imgUrl";
     private static final String ITEMID  = "itemId";
+    private  final String TAG = getClass().getSimpleName();
 
     @NonNull
     @Override
@@ -191,33 +196,29 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
     }
 
     private void shareMessage(SHARE_MEDIA media) {
-        controller.postShare(getActivity(), media, mShareListener);
+        controller.postShare(getActivity(), media, new SocializeListeners.SnsPostListener() {
+            @Override
+            public void onStart() {
+                notifyServer();
+            }
+
+            @Override
+            public void onComplete(SHARE_MEDIA share_media, int i, SocializeEntity socializeEntity) {
+            }
+        });
+        this.dismiss();
     }
 
-    /**
-     * 分享监听器
-     */
-    SocializeListeners.SnsPostListener mShareListener = new SocializeListeners.SnsPostListener() {
-
-        @Override
-        public void onStart() {
-
-        }
-
-        @Override
-        public void onComplete(SHARE_MEDIA platform, int stCode,
-                               SocializeEntity entity) {
-            if (stCode == 200) {
-                Toast.makeText(getActivity(), "分享成功", Toast.LENGTH_SHORT)
-                        .show();
-            } else {
-                Toast.makeText(getActivity(),
-                        "分享失败 : error code : " + stCode, Toast.LENGTH_SHORT)
-                        .show();
+    private void notifyServer() {
+        String url = Constants.SHARENOTIFYLINK+getArguments().getInt(ITEMID);
+        HttpTask task = new HttpTask(getActivity(),url,new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
             }
-        }
-    };
-
+        },TAG, null);
+        HttpManager.startTask(task);
+    }
 
     public static ShareFragment getInstance(String iconUrl,int id) {
         ShareFragment fragment = new ShareFragment();
@@ -226,5 +227,10 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
         bundle.putInt(ITEMID,id);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

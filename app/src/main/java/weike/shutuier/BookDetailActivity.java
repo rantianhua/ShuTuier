@@ -2,6 +2,7 @@ package weike.shutuier;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +25,6 @@ import com.android.volley.toolbox.ImageLoader;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -73,14 +73,12 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     LinearLayout ll;
     @InjectView(R.id.rl_detail_liuyan)
     RelativeLayout rlLiuyan;
-    @InjectView(R.id.btn_contact_him)
-    Button btnWantBuy;
     @InjectView(R.id.rl_detail_share)
     RelativeLayout rlShare;
+    @InjectView(R.id.btn_contact_him)
+    Button btnWantBuy;
     @InjectView(R.id.ll_bottom_buy_action)
     LinearLayout llBuyAction;
-    @InjectView(R.id.ll_btn_want_buy)
-    LinearLayout llWntBuy;
     @InjectView(R.id.rl_bottom_commend)
     RelativeLayout rlBottomCommend;
     @InjectView(R.id.btn_back)
@@ -93,30 +91,30 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     TextView tvSendCondition;
     @InjectView(R.id.tv_send_condition_label)
     TextView tvSenConditionLabel;
-
-    private TextView tvLiuyanNumber,tvShareNumber;
+    @InjectView(R.id.tv_share_number)
+    TextView tvShareNumber;
+    @InjectView(R.id.tv_liuyan_number)
+    TextView tvLiuyanNumber;
 
     private Handler hanGetDetail = null,hanComment=null;
     private ImageLoader imageLoader;
-    private Map<String,Integer> map;
     private int itemId;
     private String comment = null;
     public static final String TAG = "BookDetailActivity";
     private BookItem item = null;
+    private int ownerSize,commenterSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_details);
+        ownerSize = getResources().getDimensionPixelSize(R.dimen.item_title_photo);
+        commenterSize = getResources().getDimensionPixelSize(R.dimen.comment_list_user_size);
         initView();
     }
 
     private void initView() {
         ButterKnife.inject(this);
-
-        tvShareNumber = (TextView) rlShare.findViewById(R.id.tv_share_number);
-        tvLiuyanNumber = (TextView) rlLiuyan.findViewById(R.id.tv_liuyan_number);
-
         pb.setVisibility(View.VISIBLE);
         if(hanGetDetail == null) {
             initHandler();
@@ -158,6 +156,9 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         tvSPrice.setText(builder);
         tvDetail.setText(item.getDetail());
         tvRemark.setText(item.getRemark());
+        tvShareNumber.setText(item.getShareNumber()+"");
+        tvLiuyanNumber.setText(item.getMessageNumber()+ "");
+        builder.delete(0,builder.length());
         builder = null;
         initBottomView();
     }
@@ -192,7 +193,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         sb = null;
                         tvOwner.setText(BookOtherData.getInstance().getOwnerName());
                         try {
-                            imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def));
+                            imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def),
+                                    ownerSize,ownerSize);
                         } catch (Exception e) {
                             Log.e(TAG,"error in get UserIcon",e);
                         }
@@ -236,12 +238,13 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 imageLoader = Mysingleton.getInstance(this).getImageLoader();
             }
             try {
-                imageLoader.get(headUrl,ImageLoader.getImageListener(imageView,R.drawable.def,R.drawable.def),20,20);
+                imageLoader.get(headUrl,ImageLoader.getImageListener(imageView,R.drawable.def,R.drawable.def)
+                        ,commenterSize,commenterSize);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }else {
-            new GetUserPhotoWork(imageView,this,false);
+            new GetUserPhotoWork(imageView,this,false,commenterSize,commenterSize);
         }
         return v;
     }
@@ -249,7 +252,6 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     @Override
     public void onStop() {
         super.onStop();
-        map = null;
         imageLoader = null;
         BookOtherData.getInstance().getList().clear();
     }
@@ -265,15 +267,19 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 changeBottomView(1);
                 break;
             case R.id.btn_send_comment:
-                CharSequence str = etCommend.getText();
-                if(!TextUtils.isEmpty(str)) {
-                    comment = str.toString();
-                    str = null;
-                    sendComment();
+                if(!checkLogin()) {
+                    CharSequence str = etCommend.getText();
+                    if(!TextUtils.isEmpty(str)) {
+                        comment = str.toString();
+                        str = null;
+                        sendComment();
+                    }
                 }
                 break;
             case R.id.rl_detail_share:
-                ShareFragment.getInstance(item.getImgUrl(),itemId).show(getSupportFragmentManager(),"share");
+                if(!checkLogin()) {
+                    goToShare();
+                }
                 break;
             case R.id.btn_contact_him:
                 new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
@@ -281,6 +287,25 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
             default:
                 break;
         }
+    }
+
+    private boolean checkLogin() {
+        SharedPreferences sp = getSharedPreferences(Constants.SP_USER,0) ;
+        if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
+            showToast("您还为登录！");
+            return true;
+        }
+        return false;
+    }
+
+    private void goToShare() {
+        ShareFragment.getInstance(item.getImgUrl(),itemId).show(getSupportFragmentManager(),"share");
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this,
+                message, Toast.LENGTH_SHORT)
+                .show();
     }
 
     //改变底部试图

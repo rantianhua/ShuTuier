@@ -163,6 +163,7 @@ public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         if(rlLoading.getVisibility() == View.VISIBLE) rlLoading.setVisibility(View.INVISIBLE);
+        data.getList().clear();
         getData();
     }
 

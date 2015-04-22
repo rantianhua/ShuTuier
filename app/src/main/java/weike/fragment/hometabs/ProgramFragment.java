@@ -163,6 +163,7 @@ public class ProgramFragment extends Fragment  implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         stopLoading();
+        data.getList().clear();
         getData();
     }
 

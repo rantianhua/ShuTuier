@@ -111,23 +111,24 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
                 callUserInfoListener();
                 break;
             case Constants.WX:
-                controller.deleteOauth(getActivity(), SHARE_MEDIA.WEIXIN,
-                        listeners);
+                logOut(SHARE_MEDIA.WEIXIN);
                 break;
             case Constants.SINA:
-                controller.deleteOauth(getActivity(), SHARE_MEDIA.SINA,
-                        listeners);
+                logOut( SHARE_MEDIA.SINA);
                 break;
             default:
                 break;
         }
     }
 
+    private void logOut(SHARE_MEDIA media) {
+        controller.deleteOauth(getActivity(),media,
+                listeners);
+    }
+
     private void callUserInfoListener() {
         if(userInfoListener != null) {
             userInfoListener.userInfoChanged();
-        }else {
-            Toast.makeText(getActivity(),"userInfoListener is null",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -146,7 +147,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
                 clearLocal();
                 callUserInfoListener();
             } else {
-                Toast.makeText(getActivity(), "登出失败",
+                Toast.makeText(getActivity(), "登出失败" + status,
                         Toast.LENGTH_SHORT).show();
             }
         }

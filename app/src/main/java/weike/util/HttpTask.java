@@ -135,7 +135,6 @@ public class HttpTask implements Runnable {
                 list.add(new BasicNameValuePair("thirdName",dataBaseInfo.getNicName()));
                 list.add(new BasicNameValuePair("Sex",dataBaseInfo.getSex()));
                 list.add(new BasicNameValuePair("birth",dataBaseInfo.getBirthday()));
-                list.add(new BasicNameValuePair("Interest",dataBaseInfo.getHobbit()));
                 list.add(new BasicNameValuePair("School",dataBaseInfo.getSchool()));
                 list.add(new BasicNameValuePair("teleNum",dataBaseInfo.getPhoneNumber()));
                 list.add(new BasicNameValuePair("qqNum",dataBaseInfo.getQqNumber()));
@@ -153,53 +152,55 @@ public class HttpTask implements Runnable {
                 break;
 
         }
-        Message message = handler.obtainMessage();
-        try{
-            HttpEntity  httpEntity = new UrlEncodedFormEntity(list, HTTP.UTF_8);
-            post = new HttpPost(url);
-            post.addHeader("charset",HTTP.UTF_8);
-            post.setEntity(httpEntity);
-            response = client.execute(post);
-            entity = response.getEntity();
-            if(entity != null) {
-                content = EntityUtils.toString(entity);
-                Log.i("HTTPTask","content is  " + content);
-                if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG))
-                        && message.what != 1) {
-                    message.what =  0;
-                    message.obj = content;
-                }else if(from.equals(LoginActivity.TAG) && message.what != 1) {
-                    if(Utils.loginSuccess(content,con)) {
-                        message.what = 0;
-                    }else {
-                        message.what = 1;
+        if(handler != null) {
+            Message message = handler.obtainMessage();
+            try{
+                HttpEntity  httpEntity = new UrlEncodedFormEntity(list, HTTP.UTF_8);
+                post = new HttpPost(url);
+                post.addHeader("charset",HTTP.UTF_8);
+                post.setEntity(httpEntity);
+                response = client.execute(post);
+                entity = response.getEntity();
+                if(entity != null) {
+                    content = EntityUtils.toString(entity);
+                    Log.i("HTTPTask","content is  " + content);
+                    if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG))
+                            && message.what != 1) {
+                        message.what =  0;
+                        message.obj = content;
+                    }else if(from.equals(LoginActivity.TAG) && message.what != 1) {
+                        if(Utils.loginSuccess(content,con)) {
+                            message.what = 0;
+                        }else {
+                            message.what = 1;
+                        }
+                    }
+                    else {
+                        if(Utils.isCommentSucceed(content) && message.what != 1){
+                            message.what = 0;
+                        }
                     }
                 }
-                else {
-                    if(Utils.isCommentSucceed(content) && message.what != 1){
-                        message.what = 0;
-                    }
+            }catch (Exception e) {
+                message.what = 1;
+                Log.e("HttpTask","error in dopost");
+                e.printStackTrace();
+            }finally {
+                if(entity != null) {
+                    entity = null;
                 }
+                if(response != null) {
+                    response = null;
+                }
+                if(post != null) {
+                    post.abort();
+                    post = null;
+                }
+                list.clear();
+                list = null;
             }
-        }catch (Exception e) {
-            message.what = 1;
-            Log.e("HttpTask","error in dopost");
-            e.printStackTrace();
-        }finally {
-            if(entity != null) {
-                entity = null;
-            }
-            if(response != null) {
-                response = null;
-            }
-            if(post != null) {
-                post.abort();
-                post = null;
-            }
-            list.clear();
-            list = null;
+            handler.sendMessage(message);
         }
-        handler.sendMessage(message);
     }
 
     private void doGet() {

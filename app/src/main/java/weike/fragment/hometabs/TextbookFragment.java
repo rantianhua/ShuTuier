@@ -225,6 +225,7 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     @Override
     public void onRefresh() {
         stopLoading();
+        data.getList().clear();
         getData();
     }
 

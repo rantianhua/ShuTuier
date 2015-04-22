@@ -70,17 +70,19 @@ public class ListBookData {
 
     //向list中添加记录，若list中已有要添加的记录，则用新的替换掉
     public void addItems(BookItem item) {
-        if(item != null) {
-            Map<String,Object> map = getBookItemById(item.getId());
-            if(map != null) {
-                int i = (int)map.get("position");
-                list.remove(i);
-                list.add(i, item);
-                map = null;
-            }else{
-                list.add(item);
-            }
-        }
+       //list.clear();
+        list.add(item);
+//        if(item != null) {
+//            Map<String,Object> map = getBookItemById(item.getId());
+//            if(map != null) {
+//                int i = (int)map.get("position");
+//                list.remove(i);
+//                list.add(i, item);
+//                map = null;
+//            }else{
+//
+//            }
+//        }
     }
 
     public Map<String,Object> getBookItemById(int id) {

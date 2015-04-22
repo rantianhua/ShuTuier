@@ -21,6 +21,7 @@ public class CommitBookData {
     private String remark;
     private String coverUrl;
     private String isbn;
+    private String uid;
 
     @Override
     public String toString() {
@@ -253,4 +254,11 @@ public class CommitBookData {
         }
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 }

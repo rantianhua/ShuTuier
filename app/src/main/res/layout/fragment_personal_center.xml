@@ -21,8 +21,8 @@
                 />
 
             <ImageView
-                android:layout_width="90dp"
-                android:layout_height="90dp"
+                android:layout_width="@dimen/img_center_user_size"
+                android:layout_height="@dimen/img_center_user_size"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:id="@+id/img_user_photo"

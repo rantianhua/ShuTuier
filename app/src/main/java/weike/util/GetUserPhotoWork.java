@@ -27,12 +27,15 @@ public class GetUserPhotoWork extends AsyncTask<Void,Void,Bitmap>{
     private final WeakReference<ImageView> imageViewWeakReference;
     private Context  context = null;
     private boolean round;
+    private int reqWidth,reqHeight;
 
-    public GetUserPhotoWork(ImageView img,Context con,boolean round) {
+    public GetUserPhotoWork(ImageView img,Context con,boolean round,int w,int h) {
         //确保imageView会被回收
         imageViewWeakReference = new WeakReference<>(img);
         context = con;
         this.round = round;
+        reqHeight = h;
+        reqWidth = w;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class GetUserPhotoWork extends AsyncTask<Void,Void,Bitmap>{
         try {
             File f  = new File(path);
             if(f.exists()) {
-                bitmap = BitmapFactory.decodeFile(path);
+                bitmap = Utils.showTakenPictures(path,reqWidth,reqHeight);
                 Log.e(TAG,"从本地文件中获取头像");
             }else {
                 SharedPreferences sp = context.getSharedPreferences(Constants.SP_USER,0);

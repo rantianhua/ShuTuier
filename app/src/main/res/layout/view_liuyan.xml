@@ -20,7 +20,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_centerVertical="true"
-        android:text="3"
-        android:id="@+id/tv_liuyan_number"/>
+        android:id="@+id/tv_liuyan_number"
+        android:tag="liuyan"/>
 
 </RelativeLayout>

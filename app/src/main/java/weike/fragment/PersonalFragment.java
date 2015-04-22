@@ -57,11 +57,13 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
         tvMySell.setOnClickListener(this);
         tvMySend.setOnClickListener(this);
         showUserPhoto();
-        //Utils.loadBlurBitmap(getActivity(), imgBg, R.drawable.center_bg, 25, 0, 0);
     }
 
     private void showUserPhoto() {
-        new GetUserPhotoWork(userPhoto,getActivity(),true).execute();
+        new GetUserPhotoWork(userPhoto,getActivity(),true,
+                getResources().getDimensionPixelSize(R.dimen.img_center_user_size),
+                getResources().getDimensionPixelSize(R.dimen.img_center_user_size))
+                .execute();
     }
 
     public static PersonalFragment getInstance(UpdateToolbar listener) {

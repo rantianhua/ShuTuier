@@ -4,9 +4,9 @@ import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -372,7 +372,9 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                         initUpHandler();
                     }
                     try{
-                        new UploadPicture(pic,upHandler).upToQiNiu();
+                        Utils.haveSimpleFile(pic,getResources().getDimensionPixelSize(R.dimen.img_cover_width),
+                                getResources().getDimensionPixelSize(R.dimen.img_cover_height));
+                        new UploadPicture(Utils.getPicturePath()+Constants.TEMP_PIC,upHandler).upToQiNiu();
                     }catch (Exception e) {
                         Log.e(TAG,"error in commit book",e);
                     }
@@ -410,6 +412,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                 }
                 switch (msg.what) {
                     case 0:
+                        reset();
                         showToast("发布成功！");
                         break;
                     case 1:
@@ -544,6 +547,8 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }else {
             commitData.setIsbn("");
         }
+        SharedPreferences sp = getActivity().getSharedPreferences(Constants.SP_USER,0);
+        commitData.setUid(sp.getString(Constants.UID,""));
         return true;
     }
 
@@ -616,8 +621,13 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private void updateCover() {
         coverDouBanUrl = null;
         //获取照片
-        Bitmap bitmap = BitmapFactory.decodeFile(picPath);
-        imgCover.setImageBitmap(bitmap);
+        Utils.recycleBitmap(imgCover);
+        Bitmap bitmap = Utils.showTakenPictures(picPath,
+                getResources().getDimensionPixelSize(R.dimen.img_cover_width),
+                getResources().getDimensionPixelSize(R.dimen.img_cover_height));
+        if(bitmap != null) {
+            imgCover.setImageBitmap(bitmap);
+        }
         if(!btnAddCover.getText().toString().equals("更改封面"))
             btnAddCover.setText("更改封面");
     }
@@ -651,6 +661,12 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         upHandler = new UpCompletionHandler() {
             @Override
             public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+                try{
+                    File file = new File(Utils.getPicturePath()+Constants.TEMP_PIC);
+                    file.delete();
+                }catch (Exception e) {
+
+                }
                 if(jsonObject != null) {
                     //解析Json获得hash值
                     if(jsonObject.has("hash")){

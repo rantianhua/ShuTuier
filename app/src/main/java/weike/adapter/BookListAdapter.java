@@ -35,7 +35,7 @@ public class BookListAdapter extends BaseAdapter {
         this.context = con;
         loader = Mysingleton.getInstance(con).getImageLoader();
         w = con.getResources().getDimensionPixelSize(R.dimen.imgwidth_listitem);
-        h = con.getResources().getDimensionPixelSize(R.dimen.imgwidth_listitem);
+        h = con.getResources().getDimensionPixelSize(R.dimen.imgheight_listitem);
     }
 
         @Override
