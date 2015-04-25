@@ -220,11 +220,11 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
         HttpManager.startTask(task);
     }
 
-    public static ShareFragment getInstance(String iconUrl,int id) {
+    public static ShareFragment getInstance(String iconUrl,String id) {
         ShareFragment fragment = new ShareFragment();
         Bundle bundle = new Bundle();
         bundle.putString(IMGURL,iconUrl);
-        bundle.putInt(ITEMID,id);
+        bundle.putString(ITEMID,id);
         fragment.setArguments(bundle);
         return fragment;
     }

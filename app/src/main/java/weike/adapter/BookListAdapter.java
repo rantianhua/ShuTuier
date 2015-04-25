@@ -79,11 +79,59 @@ public class BookListAdapter extends BaseAdapter {
             try {
                 BookItem item = list.get(position);
                 holder.tvName.setText(item.getBookName());
-                holder.tvHowOld.setText(item.getHowOld());
+                String howOld = "全新";
+                switch (item.getHowOld()) {
+                    case "10":
+                        howOld = "全新";
+                        break;
+                    case "9":
+                        howOld = "九成新";
+                        break;
+                    case "8":
+                        howOld = "八成新";
+                        break;
+                    case "7":
+                        howOld = "七成新";
+                        break;
+                    case "6":
+                        howOld = "六成新";
+                        break;
+                    case "5":
+                        howOld = "五成新";
+                        break;
+                    case "4":
+                        howOld = "四成新";
+                        break;
+                    case "3":
+                        howOld = "三成以下";
+                        break;
+                }
+                holder.tvHowOld.setText(howOld);
                 holder.tvAuthor.setText(item.getAuthorName());
                 holder.tvPublisher.setText(item.getPublisher());
                 holder.tvDetail.setText(item.getDetail());
-                holder.tvStatue.setText(item.getStatue());
+                String status = "出售";
+                switch (status) {
+                    case "0":
+                        status = "出售";
+                        break;
+                    case "1":
+                        status = "求购";
+                       break;
+                    case "2":
+                        status = "赠送";
+                        break;
+                    case "3":
+                        status = "求送";
+                        break;
+                    case "4":
+                        status = "出售/赠送";
+                        break;
+                    case "5":
+                        status = "求购/赠送";
+                        break;
+                }
+                holder.tvStatue.setText(status);
                 holder.tvOPrice.setText("￥"+item.getOriginPrice());
                 holder.tvSPrice.setText("￥"+item.getSellPrice());
                 holder.tvSNum.setText(item.getShareNumber()+"");

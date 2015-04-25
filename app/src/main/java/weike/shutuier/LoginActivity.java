@@ -379,8 +379,7 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
                     int n = (int) info.get("gender");
                     String sex =  (n == 1 ? "男" : "女");
                     userInfo.setSex(sex);
-                    long uid = (long)info.get("uid");
-                    userInfo.setOpenId(String.valueOf(uid));
+                    userInfo.setOpenId(String.valueOf(info.get("uid")));
                     Log.e(TAG, info.toString());
                     finishLogin();
                 }else {
@@ -485,7 +484,7 @@ public class LoginActivity extends Activity implements View.OnClickListener,Conn
         }
         pd.setMessage("正在跳转至QQ...");
         pd.show();
-        tencent = Tencent.createInstance("1104326437",this);
+        tencent = Tencent.createInstance("101196425",this);
         if(tencent != null && !tencent.isSessionValid()) {
             tencent.login(this,"all",qqLoginListener);
         }

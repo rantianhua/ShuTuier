@@ -5,7 +5,7 @@ package weike.data;
  */
 public class BookItem {
 
-    private int id;
+    private String id;
     private String imgUrl = null;
     private String bookName = null;
     private String howOld = null;
@@ -16,16 +16,16 @@ public class BookItem {
     private String statue = null;
     private String originPrice;
     private String sellPrice;
-    private int messageNumber;
-    private int shareNumber;
+    private String messageNumber;
+    private String shareNumber;
     private String sendCondition;
     private String subClassify;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -101,19 +101,19 @@ public class BookItem {
         this.sellPrice = sellPrice;
     }
 
-    public int getMessageNumber() {
+    public String getMessageNumber() {
         return messageNumber;
     }
 
-    public void setMessageNumber(int messageNumber) {
+    public void setMessageNumber(String messageNumber) {
         this.messageNumber = messageNumber;
     }
 
-    public int getShareNumber() {
+    public String getShareNumber() {
         return shareNumber;
     }
 
-    public void setShareNumber(int shareNumber) {
+    public void setShareNumber(String shareNumber) {
         this.shareNumber = shareNumber;
     }
 

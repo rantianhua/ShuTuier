@@ -68,7 +68,7 @@ public class TextbookFragment extends Fragment   implements SwipeRefreshLayout.O
     private static TextbookFragment fragment = null;
     private BookListAdapter adapter = null;
     private ListBookData data = null;
-    private final String dataLink = Constants.OLink + "教材";
+    private final String dataLink = Constants.OLink + "0";
     private Handler handler = null;
     private boolean isDatainited = false;
     private int action = 0;

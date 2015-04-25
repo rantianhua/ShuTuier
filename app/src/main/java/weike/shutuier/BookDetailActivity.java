@@ -98,7 +98,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     private Handler hanGetDetail = null,hanComment=null;
     private ImageLoader imageLoader;
-    private int itemId;
+    private String itemId;
     private String comment = null;
     public static final String TAG = "BookDetailActivity";
     private BookItem item = null;
@@ -121,7 +121,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         }
 
         Intent intent = getIntent();
-        itemId = intent.getIntExtra(Constants.EXTRA_ITEM_ID, 0);
+        itemId = intent.getStringExtra(Constants.EXTRA_ITEM_ID);
         String linkUrl = Constants.DetailLink + itemId;
         final String from = intent.getStringExtra(Constants.REQUEST_FROM_FRAGMENT);
         HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
@@ -156,8 +156,6 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         tvSPrice.setText(builder);
         tvDetail.setText(item.getDetail());
         tvRemark.setText(item.getRemark());
-        tvShareNumber.setText(item.getShareNumber()+"");
-        tvLiuyanNumber.setText(item.getMessageNumber()+ "");
         builder.delete(0,builder.length());
         builder = null;
         initBottomView();
@@ -192,6 +190,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         tvIsbn.setText(sb.append("ISBN号：").append(BookOtherData.getInstance().getISBN()));
                         sb = null;
                         tvOwner.setText(BookOtherData.getInstance().getOwnerName());
+                        tvShareNumber.setText(BookOtherData.getInstance().getShareNumber());
+                        tvLiuyanNumber.setText(BookOtherData.getInstance().getMarkNumber());
                         try {
                             imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def),
                                     ownerSize,ownerSize);
@@ -329,6 +329,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         imm.hideSoftInputFromWindow(etCommend.getWindowToken(),0);
         imm = null;
         CommentData data = CommentData.getInstance();
+        data.setUid(getSharedPreferences(Constants.SP_USER,0).getString(Constants.UID,""));
         data.setBookId(itemId);
         data.setSendTime(getTime());
         data.setContent(comment);

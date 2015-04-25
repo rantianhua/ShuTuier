@@ -44,7 +44,7 @@ public class KaoyanFragment extends Fragment implements SwipeRefreshLayout.OnRef
     ListView listView;
 
     private static KaoyanFragment fragment = null;
-    private final String dataLink = Constants.OLink+"考研";
+    private final String dataLink = Constants.OLink+"2";
     private BookListAdapter adapter = null;
     private ListBookData data = null;
     private Handler handler = null;

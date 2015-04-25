@@ -5,12 +5,18 @@ package weike.util;
  */
 public class Constants {
 
-    public static final String OLink = "http://abc.tengshufang.com/API/Index/index/name/";
-    public static final String DetailLink = "http://abc.tengshufang.com/API/Index/item/id/";
-    public static final String ShareLink = "http://abc.tengshufang.com/Home/Index/single/id/";
-    public static String CommentsLink = "http://abc.tengshufang.com/API/Index/mark.html";
-    public static String COMMITLINK = "http://abc.tengshufang.com/API/Index/publish.html";
-    public static String LOGINLINK = "http://abc.tengshufang.com/API/Index/login.html";
+//    public static final String OLink = "http://abc.tengshufang.com/API/Index/index/name/";
+    public static final String OLink = "http://172.30.123.5:8080/API/get?mode=";
+//    public static final String DetailLink = "http://abc.tengshufang.com/API/Index/item/id/";
+    public static final String DetailLink = "http://172.30.123.5:8080/API/item?id=";
+//    public static final String ShareLink = "http://abc.tengshufang.com/Home/Index/single/id/";
+    public static final String ShareLink = "http://172.30.123.5:8080/Home/single?id=";
+//    public static String CommentsLink = "http://abc.tengshufang.com/API/Index/mark.html";
+    public static String CommentsLink = "http://172.30.123.5:8080/API/mark";
+//    public static String COMMITLINK = "http://abc.tengshufang.com/API/Index/publish.html";
+    public static String COMMITLINK = "http://172.30.123.5:8080/API/Index/publish";
+//    public static String LOGINLINK = "http://abc.tengshufang.com/API/Index/login.html";
+    public static String LOGINLINK = "http://172.30.123.5:8080/API/login";
     public static String PICLINK = "http://7xi56i.com1.z0.glb.clouddn.com/";
     public static String BASEMYCOMMIT = "http://abc.tengshufang.com/API/Index/itemStatus/Id/";
     public static final String CHANGEBOOK = "http://abc.tengshufang.com/API/Index/change";

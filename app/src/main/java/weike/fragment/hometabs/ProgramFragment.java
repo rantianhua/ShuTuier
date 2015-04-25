@@ -44,7 +44,7 @@ public class ProgramFragment extends Fragment  implements SwipeRefreshLayout.OnR
     ListView listView;
 
     private static ProgramFragment fragment = null;
-    private final String dataLink = Constants.OLink+"编程";
+    private final String dataLink = Constants.OLink+"1";
     private BookListAdapter adapter = null;
     private ListBookData data = null;
     private Handler handler = null;

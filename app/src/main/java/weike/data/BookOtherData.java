@@ -16,6 +16,8 @@ public class BookOtherData {
     private String qqNumber;
     private String teleNumber;
     private String mail;
+    private String shareNumber;
+    private String markNumber;
 
     private List<Map<String,String>> list;  //评论列表
 
@@ -23,6 +25,22 @@ public class BookOtherData {
 
     private BookOtherData() {
         list = new ArrayList<>();
+    }
+
+    public String getShareNumber() {
+        return shareNumber;
+    }
+
+    public void setShareNumber(String shareNumber) {
+        this.shareNumber = shareNumber;
+    }
+
+    public String getMarkNumber() {
+        return markNumber;
+    }
+
+    public void setMarkNumber(String markNumber) {
+        this.markNumber = markNumber;
     }
 
     public String getHeadUrl() {

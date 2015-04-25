@@ -147,12 +147,12 @@ public class Utils {
                     BookItem item = new BookItem();
                     while (reader.hasNext()) {
                         String key = reader.nextName();
-                        Object value = null;
-                        if(key.equals("ID") || key.equals("collection") || key.equals("mark") || key.equals("share")) {
-                            value = reader.nextInt();
-                        }else{
-                            value = reader.nextString();
-                        }
+                        String value = reader.nextString();
+//                        if(key.equals("ID") || key.equals("collection") || key.equals("mark") || key.equals("share")) {
+//                            value = reader.nextInt();
+//                        }else{
+//                            value = reader.nextString();
+//                        }
                         updateData(key, value, item);
                     }
                     ListBookData.getInstance(from).addItems(item);
@@ -173,53 +173,52 @@ public class Utils {
             }
         }
     }
-
-    private static void updateData(String key, Object value, BookItem item) {
+    private static void updateData(String key, String value, BookItem item) {
         switch (key) {
             case "ID":
-                item.setId((int)value);
+                item.setId(value);
                 break;
             case "Name":
-                item.setBookName((String)value);
+                item.setBookName(value);
                 break;
             case "InternetImg":
-                String url = (String)value;
+                String url = value;
                 url = url.replaceAll("\\\\","");
                 Log.d("URL",url);
                 item.setImgUrl(url);
                 break;
             case "new":
-                item.setHowOld((String)value);
+                item.setHowOld(value);
                 break;
             case "Author":
-                item.setAuthorName((String) value);
+                item.setAuthorName( value);
                 break;
             case "Press":
-                item.setPublisher((String)value);
+                item.setPublisher(value);
                 break;
             case "detail":
-                item.setDetail((String) value);
+                item.setDetail( value);
                 break;
             case "Status":
-                item.setStatue((String)value);
+                item.setStatue(value);
                 break;
             case "Oprice":
-                item.setOriginPrice((String)value);
+                item.setOriginPrice(value);
                 break;
             case "Sprice":
-                item.setSellPrice((String)value);
+                item.setSellPrice(value);
                 break;
             case "share":
-                item.setShareNumber((int)value);
+                item.setShareNumber(value);
                 break;
             case "mark":
-                item.setMessageNumber((int)value);
+                item.setMessageNumber(value);
                 break;
             case "Other":
-                item.setRemark((String)value);
+                item.setRemark(value);
                 break;
             case "subMenu":
-                item.setSubClassify((String)value);
+                item.setSubClassify(value);
                 break;
             default:
                 break;
@@ -227,7 +226,7 @@ public class Utils {
     }
 
     public static void getDetailData(String content) {
-        if(content == null || content.equals("null")) return;
+        if(TextUtils.isEmpty(content)) return;
         JsonReader reader = null;
         try{
             reader = new JsonReader(new StringReader(content));
@@ -261,6 +260,11 @@ public class Utils {
                                 break;
                             case "Mail":
                                 BookOtherData.getInstance().setMail(v);
+                            case "share":
+                                BookOtherData.getInstance().setShareNumber(v);
+                                break;
+                            case "mark":
+                                BookOtherData.getInstance().setMarkNumber(v);
                                 break;
                             default:
                                 break;
@@ -316,8 +320,8 @@ public class Utils {
 //    }
 
     public static boolean isCommentSucceed(String content) {
-        Log.i("isCommentSucceed",content + "isCommentSucceed");
-        if(content == null || content.equals("null")) return false;
+        Log.e("isCommentSucceed",content + "isCommentSucceed");
+        if(TextUtils.isEmpty(content)) return false;
         JsonReader reader = null;
         Boolean value = false;
         try {
@@ -326,19 +330,20 @@ public class Utils {
             reader.beginObject();
             while (reader.hasNext()) {
                 String key  = reader.nextName();
-                value =  Boolean.valueOf(reader.nextString());
+                value =  reader.nextBoolean();
+                key = null;
             }
             reader.endObject();
         }catch (Exception e) {
             Log.e("Utils/getDetailData","error in isCommentSucceed",e);
         }finally {
             try {
-                reader.close();
+                if(reader != null) {
+                    reader.close();
+                    reader = null;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            if(reader != null) {
-                reader = null;
             }
         }
         return value;
@@ -452,7 +457,6 @@ public class Utils {
                 editor.putString(Constants.USERURL,json.getString("Head"));
                 editor.putString(Constants.NICNAME,json.getString("thirdName"));
                 editor.putString(Constants.SEX,json.getString("Sex"));
-                editor.putString(Constants.Birthday,json.getString("birth"));
                 editor.putString(Constants.School,json.getString("School"));
                 editor.putString(Constants.PhoneNumber,json.getString("teleNum"));
                 editor.putString(Constants.QQNumber,json.getString("qqNum"));
@@ -461,15 +465,13 @@ public class Utils {
                 editor.putBoolean(weike.util.Constants.USER_ONLINE_KEY,true);
                 editor.apply();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("loginSuccess","error in save baseInfo",e);
                 if(json != null) {
                     json  = null;
                 }
                 return false;
             }
-            if(json != null) {
-                json  = null;
-            }
+            json = null;
             return true;
         }
     }

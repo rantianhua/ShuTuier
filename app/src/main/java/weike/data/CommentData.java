@@ -4,9 +4,10 @@ package weike.data;
  * Created by Rth on 2015/3/2.
  */
 public class CommentData {
-    private int bookId;
+    private String bookId;
     private String content;
     private String sendTime;
+    private String uid;
 
     private static CommentData commentData;
 
@@ -17,11 +18,19 @@ public class CommentData {
         return commentData;
     }
 
-    public int getBookId() {
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
+    public void setBookId(String bookId) {
         this.bookId = bookId;
     }
 

@@ -85,11 +85,11 @@ public class ListBookData {
 //        }
     }
 
-    public Map<String,Object> getBookItemById(int id) {
+    public Map<String,Object> getBookItemById(String id) {
         int i = -1;
         for(BookItem item : list) {
             i ++;
-            if(item.getId() == id){
+            if(item.getId().equals(id)){
                 Map<String,Object> result = new HashMap<>();
                 result.put("item",item);
                 result.put("position",i);

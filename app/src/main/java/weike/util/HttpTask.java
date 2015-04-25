@@ -144,10 +144,11 @@ public class HttpTask implements Runnable {
                 break;
             default:
                 CommentData dataComment = CommentData.getInstance();
-                list.add(new BasicNameValuePair("id_maker","1"));
+                list.add(new BasicNameValuePair("id_maker",dataComment.getUid()));
                 list.add(new BasicNameValuePair("content", dataComment.getContent()));
                 list.add( new BasicNameValuePair("id_book", String.valueOf(dataComment.getBookId())));
                 list.add(new BasicNameValuePair("send_time",dataComment.getSendTime()));
+                Log.e("list is ", list.toString());
                 CommentData.clear();
                 break;
 
@@ -163,7 +164,7 @@ public class HttpTask implements Runnable {
                 entity = response.getEntity();
                 if(entity != null) {
                     content = EntityUtils.toString(entity);
-                    Log.i("HTTPTask","content is  " + content);
+                    Log.e("HTTPTask","content is  " + content);
                     if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG))
                             && message.what != 1) {
                         message.what =  0;
@@ -183,8 +184,7 @@ public class HttpTask implements Runnable {
                 }
             }catch (Exception e) {
                 message.what = 1;
-                Log.e("HttpTask","error in dopost");
-                e.printStackTrace();
+                Log.e("HttpTask","error in dopost",e);
             }finally {
                 if(entity != null) {
                     entity = null;
@@ -213,7 +213,7 @@ public class HttpTask implements Runnable {
             if(entity != null) {
                 content = EntityUtils.toString(entity);
                 if (content != null) {
-                    Log.i("doGet","content is "  +content);
+                    Log.e("doGet","content is "  +content);
                 }
             }
         }catch (Exception e) {

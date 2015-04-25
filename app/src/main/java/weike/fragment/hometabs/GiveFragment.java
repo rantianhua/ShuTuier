@@ -44,7 +44,7 @@ public class GiveFragment extends Fragment   implements SwipeRefreshLayout.OnRef
     ListView listView;
 
     private static GiveFragment fragment  = null;
-    private final String dataLink = Constants.OLink+"赠送";
+    private final String dataLink = Constants.OLink+"3";
     private BookListAdapter adapter = null;
     private ListBookData data = null;
     private Handler handler = null;

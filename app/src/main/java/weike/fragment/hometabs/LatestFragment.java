@@ -44,7 +44,7 @@ public class LatestFragment extends Fragment   implements SwipeRefreshLayout.OnR
     private static LatestFragment fragment = null;
     private BookListAdapter adapter = null;
     private ListBookData data = null;
-    private final String dataLink = Constants.OLink + "最新";
+    private final String dataLink = Constants.OLink + "4";
     private Handler handler = null;
     private boolean isDatainited = false;
     private ProgressBar pb = null;
