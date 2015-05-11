@@ -67,11 +67,10 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
 
     private void initContentView(View v) {
         ButterKnife.inject(this,v);
-        String[] tvs = {"QQ好友","QQ空间","微博","腾讯微博","微信","朋友圈"};
+        String[] tvs = {"QQ好友","QQ空间","微博","微信","朋友圈"};
         Integer[] icons = {R.drawable.qq_round,
             R.drawable.q_zone,
             R.drawable.sina_round,
-            R.drawable.qq_weibo,
             R.drawable.wx_round,
             R.drawable.wx_friends};
         GridShareAdapter adapter = new GridShareAdapter(getActivity(),tvs,icons);
@@ -133,11 +132,11 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
                 //qq好友分享
                 QQShareContent qqContent = new QQShareContent();
                 //分享文字
-                qqContent.setShareContent(Constants.ShareLink+getArguments().getInt(ITEMID));
+                qqContent.setShareContent(Constants.ShareLink+getArguments().getString(ITEMID));
                 qqContent.setTitle("藤书坊");
                 //分享的图片
                 qqContent.setShareImage(new UMImage(getActivity(), getArguments().getString(IMGURL)));
-                qqContent.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                qqContent.setTargetUrl(Constants.ShareLink + getArguments().getString(ITEMID));
                 controller.setShareMedia(qqContent);
                 shareMessage(SHARE_MEDIA.QQ);
                 break;
@@ -145,7 +144,7 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
                 //qq空间分享
                 QZoneShareContent qZoneContent = new QZoneShareContent();
                 qZoneContent.setShareContent("以书会友，以书交友");
-                qZoneContent.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                qZoneContent.setTargetUrl(Constants.ShareLink + getArguments().getString(ITEMID));
                 qZoneContent.setTitle("藤书坊");
                 qZoneContent.setShareImage(new UMImage(getActivity(), getArguments().getString(IMGURL)));
                 controller.setShareMedia(qZoneContent);
@@ -154,16 +153,10 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
             case 2:
                 //新浪微博分享
                 controller.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
-                controller.setShareContent("以书会友，以书交友" +Constants.ShareLink + getArguments().getInt(ITEMID));
+                controller.setShareContent("以书会友，以书交友" +Constants.ShareLink + getArguments().getString(ITEMID));
                 shareMessage(SHARE_MEDIA.SINA);
                 break;
             case 3:
-               //腾讯微博分享
-                controller.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
-                controller.setShareContent("以书会友，以书交友" +Constants.ShareLink + getArguments().getInt(ITEMID));
-                shareMessage(SHARE_MEDIA.TENCENT);
-                break;
-            case 4:
                 //威信好友分享
                 //设置微信好友分享内容
                 WeiXinShareContent weixinContent = new WeiXinShareContent();
@@ -172,13 +165,13 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
                 //设置title
                 weixinContent.setTitle("藤书坊");
                 //设置分享内容跳转URL
-                weixinContent.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                weixinContent.setTargetUrl(Constants.ShareLink + getArguments().getString(ITEMID));
                 //设置分享图片
                 weixinContent.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
                 controller.setShareMedia(weixinContent);
                 shareMessage(SHARE_MEDIA.WEIXIN);
                 break;
-            case 5:
+            case 4:
                 //朋友圈分享
                 //设置微信朋友圈分享内容
                 CircleShareContent circleMedia = new CircleShareContent();
@@ -186,7 +179,7 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
                 //设置朋友圈title
                 circleMedia.setTitle("藤书坊");
                 circleMedia.setShareImage(new UMImage(getActivity(),getArguments().getString(IMGURL)));
-                circleMedia.setTargetUrl(Constants.ShareLink + getArguments().getInt(ITEMID));
+                circleMedia.setTargetUrl(Constants.ShareLink + getArguments().getString(ITEMID));
                 controller.setShareMedia(circleMedia);
                 shareMessage(SHARE_MEDIA.WEIXIN_CIRCLE);
                 break;
@@ -210,7 +203,7 @@ public class ShareFragment extends DialogFragment implements AdapterView.OnItemC
     }
 
     private void notifyServer() {
-        String url = Constants.SHARENOTIFYLINK+getArguments().getInt(ITEMID);
+        String url = Constants.SHARENOTIFYLINK+getArguments().getString(ITEMID);
         HttpTask task = new HttpTask(getActivity(),url,new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {

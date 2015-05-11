@@ -1,5 +1,6 @@
 package weike.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import com.umeng.socialize.bean.SocializeEntity;
 import com.umeng.socialize.controller.UMServiceFactory;
 import com.umeng.socialize.controller.UMSocialService;
 import com.umeng.socialize.controller.listener.SocializeListeners;
+import com.umeng.update.UmengUpdateAgent;
 
 import java.io.File;
 
@@ -49,6 +51,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     TextView tvVersion;
 
     private int arrowNextSize;
+    private static Context context;
 
     //友盟授权接口
     UMSocialService controller = UMServiceFactory.getUMSocialService("com.umeng.login");
@@ -77,9 +80,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         tvIdea.setOnClickListener(this);
         rlVersion.setOnClickListener(this);
         btnLogout.setOnClickListener(this);
+
     }
 
-    public static SettingFragment getInstance() {
+    public static SettingFragment getInstance(Context con) {
+        context = con;
         return new SettingFragment();
     }
 
@@ -89,29 +94,30 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
             case R.id.tv_setting_about_us:
                 break;
             case R.id.tv_setting_your_idea:
-                startActivity(new Intent(getActivity(), FeedbackActivity.class));
-                getActivity().overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                startActivity(new Intent(context, FeedbackActivity.class));
+                if(getActivity() != null) {
+                    getActivity().overridePendingTransition(R.anim.right_in,R.anim.left_out);
+                }
                 break;
             case R.id.btn_logout:
                 logout();
                 break;
             case R.id.rl_setting_update_version:
+                Toast.makeText(context,"版本更新",Toast.LENGTH_SHORT).show();
+                UmengUpdateAgent.forceUpdate(context);
                 break;
         }
     }
 
     private void logout() {
-        switch (getActivity().getSharedPreferences(Constants.SP_USER,0).getString(Constants.LOGIN_WAY, "")) {
+        switch (context.getSharedPreferences(Constants.SP_USER,0).getString(Constants.LOGIN_WAY, "")) {
             case Constants.QQ:
-                Tencent tencent = Tencent.createInstance("1104326437",getActivity());
-                tencent.logout(getActivity());
+                Tencent tencent = Tencent.createInstance("1104326437",context);
+                tencent.logout(context);
                 clearLocal();
-                Toast.makeText(getActivity(), "已登出",
+                Toast.makeText(context, "已登出",
                         Toast.LENGTH_SHORT).show();
                 callUserInfoListener();
-                break;
-            case Constants.WX:
-                logOut(SHARE_MEDIA.WEIXIN);
                 break;
             case Constants.SINA:
                 logOut( SHARE_MEDIA.SINA);
@@ -122,8 +128,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
     }
 
     private void logOut(SHARE_MEDIA media) {
-        controller.deleteOauth(getActivity(),media,
-                listeners);
+//        controller.deleteOauth(context,media,
+//                listeners);
+        clearLocal();
+        Toast.makeText(context, "已登出.",
+                Toast.LENGTH_SHORT).show();
+        //清空用户信息
+        callUserInfoListener();
     }
 
     private void callUserInfoListener() {
@@ -141,13 +152,13 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         @Override
         public void onComplete(int status, SocializeEntity socializeEntity) {
             if (status == 200) {
-                Toast.makeText(getActivity(), "已登出.",
+                Toast.makeText(context, "已登出.",
                         Toast.LENGTH_SHORT).show();
                 //清空用户信息
                 clearLocal();
                 callUserInfoListener();
             } else {
-                Toast.makeText(getActivity(), "登出失败" + status,
+                Toast.makeText(context, "登出失败" + status,
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -155,9 +166,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
 
     private void clearLocal() {
         try {
-            SharedPreferences.Editor editor = getActivity().getSharedPreferences(Constants.SP_USER,0).edit();
+            SharedPreferences.Editor editor = context.getSharedPreferences(Constants.SP_USER,0).edit();
             editor.clear();
-            editor.commit();
+            editor.apply();
             File file = new File(Utils.getPicturePath()+Constants.USERICONFILE);
             file.delete();
             file = null;
@@ -172,6 +183,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         if(userInfoListener  != null) {
             userInfoListener = null;
         }
+        context = null;
     }
 }
 

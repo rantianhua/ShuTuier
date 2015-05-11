@@ -70,8 +70,9 @@ public class GridAdapter extends BaseAdapter {
         }
         Map<String,String> map = data.get(position);
         loader.get(map.get("InternetImg"),ImageLoader.getImageListener(hodler.img,R.drawable.def,R.drawable.def));
-        hodler.tvAlign.setText(map.get("close"));
-        //hodler.tvDate.setText(map.get("date"));
+        String status = map.get("Status").equals("1") ? "交易完成" : "未交易";
+        hodler.tvAlign.setText(status);
+        hodler.tvDate.setText(map.get("time"));
         return convertView;
     }
 

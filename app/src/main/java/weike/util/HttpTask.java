@@ -3,7 +3,10 @@ package weike.util;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.google.gson.stream.JsonReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,6 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,38 +81,21 @@ public class HttpTask implements Runnable {
         switch (from) {
             case "CommitBook":
                 CommitBookData data = CommitBookData.getInstance();
-                NameValuePair pair1 = new BasicNameValuePair("publisher","1");
-                NameValuePair pair2 = new BasicNameValuePair("Name",data.getBookName());
-                NameValuePair pair3 = new BasicNameValuePair("Author", data.getBookAuthor());
-                NameValuePair pair4 = new BasicNameValuePair("Press",data.getPublisher());
-                NameValuePair pair5 = new BasicNameValuePair("Oprice",data.getoPrice());
-                NameValuePair pair6 = new BasicNameValuePair("Sprice",data.getsPrice());
-                NameValuePair pair7 = new BasicNameValuePair("Number", data.getBookNumber());
-                NameValuePair pair8 = new BasicNameValuePair("Menu",data.getMainClassify());
-                NameValuePair pair9 = new BasicNameValuePair("subMenu",data.getSubClassify());
-                NameValuePair pair10 = new BasicNameValuePair("Other",data.getRemark());
-                NameValuePair pair11= new BasicNameValuePair("InternetImg",data.getCoverUrl());
-                NameValuePair pair12= new BasicNameValuePair("new", data.getHowOld());
-                NameValuePair pair13= new BasicNameValuePair("Status",data.getStatus());
-                NameValuePair pair14= new BasicNameValuePair("Prule", data.getSendCondition());
-                NameValuePair pair15= new BasicNameValuePair("detail",data.getDescription());
-                NameValuePair pair16= new BasicNameValuePair("ISBN",data.getIsbn());
-                list.add(pair1);
-                list.add(pair2);
-                list.add(pair3);
-                list.add(pair4);
-                list.add(pair5);
-                list.add(pair6);
-                list.add(pair7);
-                list.add(pair8);
-                list.add(pair9);
-                list.add(pair10);
-                list.add(pair11);
-                list.add(pair12);
-                list.add(pair13);
-                list.add(pair14);
-                list.add(pair15);
-                list.add(pair16);
+                list.add(new BasicNameValuePair("publisher",data.getUid()));
+                list.add(new BasicNameValuePair("Name",data.getBookName()));
+                list.add(new BasicNameValuePair("Author", data.getBookAuthor()));
+                list.add(new BasicNameValuePair("Oprice",data.getoPrice()));
+                list.add( new BasicNameValuePair("Sprice",data.getsPrice()));
+                list.add(new BasicNameValuePair("Press",data.getPublisher()));
+                list.add(new BasicNameValuePair("Number", data.getBookNumber()));
+                list.add(new BasicNameValuePair("sortId",data.getCategory()));
+                list.add(new BasicNameValuePair("Other",data.getRemark()));
+                list.add(new BasicNameValuePair("InternetImg",data.getCoverUrl()));
+                list.add(new BasicNameValuePair("new", String.valueOf(data.getHowOld())));
+                list.add(new BasicNameValuePair("Status",data.getStatus()));
+                list.add(new BasicNameValuePair("Prule", data.getSendCondition()));
+                list.add(new BasicNameValuePair("detail",data.getDescription()));
+                list.add( new BasicNameValuePair("ISBN",data.getIsbn()));
                 CommitBookData.clear();
                 break;
             case LoginActivity.TAG:
@@ -210,7 +197,7 @@ public class HttpTask implements Runnable {
         try{
             response = client.execute(get);
             entity = response.getEntity();
-            if(entity != null) {
+            if(entity != null ) {
                 content = EntityUtils.toString(entity);
                 if (content != null) {
                     Log.e("doGet","content is "  +content);
@@ -240,7 +227,23 @@ public class HttpTask implements Runnable {
                     Utils.getDetailData(content);
                 }else if(url.contains(Constants.BASEMYCOMMIT)) {
                     msg.obj = Utils.getMyCommitData(content);
-                }else {
+                }else if(url.contains(Constants.MESSAGELISTLINK)) {
+                    //获取被留言的书的列表
+                    Utils.getMessageList(content);
+                }else if(url.contains(Constants.MESSAGENUMBERLINK)) {
+                    if(!TextUtils.isEmpty(content)) {
+                        JsonReader reader = new JsonReader(new StringReader(content));
+                        try {
+                            reader.beginObject();
+                            reader.nextName();
+                            msg.arg1 = Integer.valueOf(reader.nextString());
+                            reader.endObject();
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else {
                     Log.e("HttpTask","没有数据要数据");
                 }
             }catch (Exception e) {

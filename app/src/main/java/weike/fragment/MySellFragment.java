@@ -1,6 +1,7 @@
 package weike.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,13 +10,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -38,6 +41,12 @@ public class MySellFragment extends Fragment {
 
     @InjectView(R.id.gridView)
     GridView gridView;
+    @InjectView(R.id.rl_loading_personal)
+    RelativeLayout rlLoading;
+    @InjectView(R.id.tv_loading)
+    TextView tvLoading;
+    @InjectView(R.id.progressBar_loading)
+    ProgressBar pbLoading;
 
     private static PersonalFragment.UpdateToolbar updateToolbar = null;
     private Handler han = null;
@@ -45,6 +54,7 @@ public class MySellFragment extends Fragment {
     private GridAdapter  adapter = null;
     private final String TAG = "MySellFragment";
     private final int REQUEST_CHANGE = 42;
+    private static Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +65,8 @@ public class MySellFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.grid_books,container,false);
-        initData();
         initView(v);
+        initData();
         return v;
     }
 
@@ -66,13 +76,18 @@ public class MySellFragment extends Fragment {
             if(han == null) {
                 initHandler();
             }
-            SharedPreferences sp = getActivity().getSharedPreferences(Constants.SP_USER,0);
+            SharedPreferences sp = context.getSharedPreferences(Constants.SP_USER,0);
             String uid = sp.getString(Constants.UID,"");
-            Log.e(TAG, "uid is " + uid);
-            HttpTask task = new HttpTask(getActivity(), Utils.getMyCommitUrl(uid, Constants.TYPE_MYSELL),han,Constants.TYPE_MYSELL,null);
-            HttpManager.startTask(task);
+            uid = "A19CB7051089EFF8C95C755E7F93008E";   //测试uid
+            try {
+                rlLoading.setVisibility(View.VISIBLE);
+                HttpTask task = new HttpTask(context, Utils.getMyCommitUrl(uid, Constants.TYPE_MYSELL),han,Constants.TYPE_MYSELL,null);
+                HttpManager.startTask(task);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }else {
-            Toast.makeText(getActivity(),"网络不可用",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"网络不可用",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -81,15 +96,21 @@ public class MySellFragment extends Fragment {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                rlLoading.setVisibility(View.INVISIBLE);
                 if(msg.what == 0) {
                     ArrayList<Map<String,String>> list =  (ArrayList<Map<String,String>>)msg.obj;
                     data = (ArrayList<Map<String,String>>)list.clone();
                     list = null;
                     if(adapter == null) {
-                        adapter = new GridAdapter(getActivity(),data);
+                        adapter = new GridAdapter(context,data);
                         gridView.setAdapter(adapter);
                     }
                     adapter.notifyDataSetChanged();
+                    if(adapter.getCount() == 0) {
+                        rlLoading.setVisibility(View.VISIBLE);
+                        pbLoading.setVisibility(View.GONE);
+                        tvLoading.setText("您还没有已出售的书籍");
+                    }
                 }
             }
         };
@@ -100,7 +121,7 @@ public class MySellFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int preState = data.get(position).get("close").equals("未交易") ? 0 : 1;
+                String preState = data.get(position).get("Status");
                 HandleBookDialogFragment fragment = HandleBookDialogFragment.getInstance(data.get(position).get("ID"),position,preState);
                 fragment.setTargetFragment(MySellFragment.this,REQUEST_CHANGE);
                 fragment.show(getChildFragmentManager(), "action");
@@ -108,7 +129,8 @@ public class MySellFragment extends Fragment {
         });
     }
 
-    public static MySellFragment getInstance(PersonalFragment.UpdateToolbar listener) {
+    public static MySellFragment getInstance(PersonalFragment.UpdateToolbar listener,Context con) {
+        context = con;
         updateToolbar = listener;
         return new MySellFragment();
     }
@@ -117,6 +139,7 @@ public class MySellFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         updateToolbar.changeTitle(5);
+        context = null;
     }
 
     @Override
@@ -136,19 +159,19 @@ public class MySellFragment extends Fragment {
         if(requestCode == REQUEST_CHANGE && resultCode == Activity.RESULT_OK && data != null){
             int pos = data.getIntExtra(Constants.HANDLE_BOOK_POSITION,-1);
             int action = data.getIntExtra(Constants.HANDLE_BOOK_ACTION,-1);
-            updateData(pos,action);
+            if(pos != -1 && action != -1) {
+                updateData(pos,action);
+            }
         }
     }
 
     private void updateData(int pos, int action) {
-        if(pos != -1) {
-            if(action == 0) {
-                data.get(pos).put("close","交易完成");
-                adapter.notifyDataSetChanged();
-            }else if(action == 1) {
-                data.remove(pos);
-                adapter.notifyDataSetChanged();
-            }
+        if(action == 0) {
+            data.get(pos).put("Status","1");
+            adapter.notifyDataSetChanged();
+        }else if(action == 1) {
+            data.remove(pos);
+            adapter.notifyDataSetChanged();
         }
     }
 }

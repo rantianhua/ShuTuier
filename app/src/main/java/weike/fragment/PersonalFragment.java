@@ -1,5 +1,6 @@
 package weike.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
 
     private final String TAG = "PersonalFragment";
     private static UpdateToolbar toolbarListener = null;
+    private static  Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,13 +62,14 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     }
 
     private void showUserPhoto() {
-        new GetUserPhotoWork(userPhoto,getActivity(),true,
+        new GetUserPhotoWork(userPhoto,context,true,
                 getResources().getDimensionPixelSize(R.dimen.img_center_user_size),
                 getResources().getDimensionPixelSize(R.dimen.img_center_user_size))
                 .execute();
     }
 
-    public static PersonalFragment getInstance(UpdateToolbar listener) {
+    public static PersonalFragment getInstance(UpdateToolbar listener,Context con) {
+        context = con;
         toolbarListener = listener;
        return new PersonalFragment();
     }
@@ -75,23 +78,23 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_my_base_information:
-                changeFragment(BaseInfoFragment.getInstance(toolbarListener));
+                changeFragment(BaseInfoFragment.getInstance(toolbarListener,context));
                 toolbarListener.changeTitle(4);
                 break;
             case R.id.tv_my_send:
-                changeFragment(MySendFragment.getInstance(toolbarListener));
+                changeFragment(MySendFragment.getInstance(toolbarListener,context));
                 toolbarListener.changeTitle(2);
                 break;
             case R.id.tv_my_ask_send:
-                changeFragment(MyAskSendFragment.getInstance(toolbarListener));
+                changeFragment(MyAskSendFragment.getInstance(toolbarListener,context));
                 toolbarListener.changeTitle(3);
                 break;
             case R.id.tv_my_buy:
-                changeFragment(MyAskBuyFragment.getInstance(toolbarListener));
+                changeFragment(MyAskBuyFragment.getInstance(toolbarListener,context));
                 toolbarListener.changeTitle(1);
                 break;
             case R.id.tv_my_sell:
-                changeFragment(MySellFragment.getInstance(toolbarListener));
+                changeFragment(MySellFragment.getInstance(toolbarListener,context));
                 toolbarListener.changeTitle(0);
                 break;
         }

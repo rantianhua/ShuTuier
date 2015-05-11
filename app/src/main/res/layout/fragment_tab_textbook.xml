@@ -84,7 +84,7 @@
         android:visibility="invisible"
         />
 
-    <include layout="@layout/view_loding_data"
+    <include layout="@layout/view_loading_data"
         android:id="@+id/rl_tab_textbook_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -58,7 +58,6 @@
         <item>生活</item>
         <item>经管</item>
         <item>科技</item>
-        <item>编程</item>
         <item>考研</item>
     </string-array>
 
@@ -134,4 +133,7 @@
     <string name="search">搜索</string>
     <string name="et_search">输入书名或ISBN号搜索</string>
     <string name="loading">正在加载&#8230;</string>
+
+    <string name="have_message">你发布的 《%1$s》 被留言了，快打开去看看吧！</string>
+
 </resources>

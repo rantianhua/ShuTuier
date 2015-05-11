@@ -1,5 +1,7 @@
 package weike.util;
 
+import android.util.Log;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,7 +21,10 @@ public class HttpManager {
 
     static {
         //创建一个单一分静态实例
-        instance = new HttpManager();
+        if(instance == null) {
+            Log.e("HtpManager", "create a new instance");
+            instance = new HttpManager();
+        }
     }
 
     //私有构造方法
@@ -35,11 +40,22 @@ public class HttpManager {
     }
 
     public static void startTask(HttpTask task) {
+        if(instance.threadPool.isShutdown()) {
+            return;
+        }
         instance.threadPool.execute(task);
     }
 
     public static void startTask(DouBanTask task) {
         instance.threadPool.execute(task);
+    }
+
+    public static void cance() {
+        if(instance != null) {
+            instance.decodeWorkQueue.clear();
+            instance.threadPool.shutdownNow();
+            instance = null;
+        }
     }
 
 }

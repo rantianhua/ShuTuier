@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import weike.data.BookOtherData;
 import weike.shutuier.R;
 import weike.util.Utils;
 
@@ -66,10 +68,16 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     private String TAG = "Contact";
     private Animation scaleBig = null,scaleSmall = null;
     private int drawableSize;
+    private static  Context con;
 
     //枚举类，表示电话的子菜单的状态
     public enum Status{
         CLOSE,OPEN
+    }
+
+    public static  ContactDialogFragment getInstance(Context context) {
+        con = context;
+        return new ContactDialogFragment();
     }
 
     @Override
@@ -81,8 +89,8 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(getActivity(),R.style.dialog_contacts);
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final Dialog dialog = new Dialog(con,R.style.dialog_contacts);
+        LayoutInflater inflater = LayoutInflater.from(con);
         View v = inflater.inflate(R.layout.dialog_contacts,null,false);
         initView(v);
         dialog.setContentView(v);
@@ -93,33 +101,64 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
         ButterKnife.inject(this, v);
         tvEnd.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
-        Drawable qq = getResources().getDrawable(R.drawable.qq_round);
-        qq.setBounds(0,0,drawableSize,drawableSize);
-        tvQQ.setCompoundDrawables(qq,null,null,null);
-        tvQQ.setCompoundDrawablePadding(20);
-        tvQQ.setText("1348748184");
-        Drawable phone = getResources().getDrawable(R.drawable.phone);
-        phone.setBounds(0,0,drawableSize,drawableSize);
-        tvPhone.setCompoundDrawables(phone,null,null,null);
-        tvPhone.setCompoundDrawablePadding(20);
-        tvPhone.setText("15929733174");
-        Drawable wx = getResources().getDrawable(R.drawable.wx_round);
-        wx.setBounds(0,0,drawableSize,drawableSize);
-        tvWx.setCompoundDrawables(wx,null,null,null);
-        tvWx.setCompoundDrawablePadding(20);
-        tvWx.setText("rth");
-        Drawable email = getResources().getDrawable(R.drawable.email);
-        email.setBounds(0,0,drawableSize,drawableSize);
-        tvEmail.setCompoundDrawables(email,null,null,null);
-        tvEmail.setCompoundDrawablePadding(20);
-        tvEmail.setText("15953163807@163.com");
-        tvQQ.setOnClickListener(this);
-        tvPhone.setOnClickListener(this);
-        tvWx.setOnClickListener(this);
-        tvEmail.setOnClickListener(this);
-        imgCall.setOnClickListener(this);
-        imgAdd.setOnClickListener(this);
-        imgSms.setOnClickListener(this);
+
+        BookOtherData detail = BookOtherData.getInstance();
+        String qqNumber = detail.getQqNumber();
+        String wxNumber = detail.getWxNumber();
+        String phoneNumber = detail.getTeleNumber();
+        String mailNumber = detail.getMail();
+        if(TextUtils.isEmpty(qqNumber)) {
+            tvQQ.setVisibility(View.GONE);
+            line2.setVisibility(View.GONE);
+        }else {
+            Drawable qq = getResources().getDrawable(R.drawable.qq_round);
+            qq.setBounds(0,0,drawableSize,drawableSize);
+            tvQQ.setCompoundDrawables(qq,null,null,null);
+            tvQQ.setCompoundDrawablePadding(20);
+            tvQQ.setText(qqNumber);
+            tvQQ.setOnClickListener(this);
+        }
+        if(TextUtils.isEmpty(wxNumber)) {
+            tvWx.setVisibility(View.GONE);
+            line3.setVisibility(View.GONE);
+        }else{
+            Drawable wx = getResources().getDrawable(R.drawable.wx_round);
+            wx.setBounds(0,0,drawableSize,drawableSize);
+            tvWx.setCompoundDrawables(wx,null,null,null);
+            tvWx.setCompoundDrawablePadding(20);
+            tvWx.setText(wxNumber);
+            tvWx.setOnClickListener(this);
+        }
+        if(TextUtils.isEmpty(phoneNumber)) {
+            tvPhone.setVisibility(View.GONE);
+            line1.setVisibility(View.GONE);
+        }else {
+            Drawable phone = getResources().getDrawable(R.drawable.phone);
+            phone.setBounds(0,0,drawableSize,drawableSize);
+            tvPhone.setCompoundDrawables(phone,null,null,null);
+            tvPhone.setCompoundDrawablePadding(20);
+            tvPhone.setText(phoneNumber);
+            tvPhone.setOnClickListener(this);
+            imgCall.setOnClickListener(this);
+            imgAdd.setOnClickListener(this);
+            imgSms.setOnClickListener(this);
+        }
+        if(TextUtils.isEmpty(mailNumber)) {
+            tvEmail.setVisibility(View.GONE);
+        }else {
+            Drawable email = getResources().getDrawable(R.drawable.email);
+            email.setBounds(0,0,drawableSize,drawableSize);
+            tvEmail.setCompoundDrawables(email,null,null,null);
+            tvEmail.setCompoundDrawablePadding(20);
+            tvEmail.setText(mailNumber);
+            tvEmail.setOnClickListener(this);
+        }
+        if(tvQQ.getVisibility() == View.GONE &&
+                tvPhone.getVisibility() == View.GONE &&
+                tvEmail.getVisibility() == View.GONE &&
+                tvWx.getVisibility() == View.GONE) {
+            tvNone.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -173,16 +212,16 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     private void sendEmail(String s) {
         Uri uri = Uri.parse("mailto:" + s);
         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-        if(it.resolveActivity(getActivity().getPackageManager()) != null) {
+        if(it.resolveActivity(con.getPackageManager()) != null) {
             startActivity(it);
         }else {
-            Toast.makeText(getActivity(),"未安装可用的邮件应用",Toast.LENGTH_SHORT).show();
+            Toast.makeText(con,"未安装可用的邮件应用",Toast.LENGTH_SHORT).show();
         }
     }
 
     private void openWx() {
         //复制微信号到剪贴板
-        ClipboardManager cmb = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager cmb = (ClipboardManager) con.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData data = ClipData.newPlainText("wx_number", tvWx.getText().toString());
         cmb.setPrimaryClip(data);
         //打开微信
@@ -194,14 +233,14 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
             intent.setComponent(cmp);
             startActivity(intent);
         }else {
-            Toast.makeText(getActivity(),"未安装微信应用",Toast.LENGTH_SHORT).show();
+            Toast.makeText(con,"未安装微信应用",Toast.LENGTH_SHORT).show();
         }
     }
 
     //检查是否安装了某些应用
     private boolean checkInstallation(String packageName){
         try {
-            getActivity().getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            con.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
         } catch (Exception e) {
             return false;
@@ -212,10 +251,10 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     private void startWPA(CharSequence text) {
         String url="mqqwpa://im/chat?chat_type=wpa&uin="+text.toString();
         Intent qqWpa = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        if(qqWpa.resolveActivity(getActivity().getPackageManager()) != null) {
+        if(qqWpa.resolveActivity(con.getPackageManager()) != null) {
             startActivity(qqWpa);
         }else {
-            Toast.makeText(getActivity(),"未安装手机QQ",Toast.LENGTH_SHORT).show();
+            Toast.makeText(con,"未安装手机QQ",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -345,7 +384,7 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
             final int n = i;
             if(status == Status.CLOSE) {
                 //展示子菜单项
-                anim = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_contact_add_show);
+                anim = AnimationUtils.loadAnimation(con,R.anim.translate_contact_add_show);
                 anim.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -375,7 +414,7 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
                     }
                 });
             }else{
-                anim = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_contact_add_hide);
+                anim = AnimationUtils.loadAnimation(con,R.anim.translate_contact_add_hide);
                 anim.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -429,6 +468,6 @@ public class ContactDialogFragment extends DialogFragment implements View.OnClic
     @Override
     public void onResume() {
         super.onResume();
-        getDialog().getWindow().setLayout(Utils.getWindowWidth(getActivity())-40, WindowManager.LayoutParams.WRAP_CONTENT);
+        getDialog().getWindow().setLayout(Utils.getWindowWidth(con)-40, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 }

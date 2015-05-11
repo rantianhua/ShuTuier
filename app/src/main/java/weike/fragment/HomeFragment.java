@@ -1,11 +1,11 @@
 package weike.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +46,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private List<Fragment> frags = null;
     private FragmentPagerAdapter adapter = null;
     private int unSelectColor,selectedColor;
+    private Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedColor = getActivity().getResources().getColor(R.color.tv_selected);
-        unSelectColor = getActivity().getResources().getColor(android.R.color.secondary_text_light);
+        context= getActivity();
+        selectedColor = context.getResources().getColor(R.color.tv_selected);
+        unSelectColor = context.getResources().getColor(android.R.color.secondary_text_light);
     }
 
     @Override

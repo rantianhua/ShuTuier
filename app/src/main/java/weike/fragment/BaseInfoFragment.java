@@ -2,6 +2,7 @@ package weike.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -88,12 +89,13 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private Handler saveHan = null; //保存用户信息的异步处理
     private ProgressDialog pd = null;
     public static UserInfoChangeListener userInfoListener;
+    private static Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        sp = getActivity().getSharedPreferences(Constants.SP_USER,0);
+        sp = context.getSharedPreferences(Constants.SP_USER,0);
         uploadPicPath = sp.getString(Constants.USERURL,""); //初始化用户头像链接
     }
 
@@ -107,24 +109,24 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private void initView(View v) {
         ButterKnife.inject(this,v);
         //显示头像
-        new GetUserPhotoWork(userIcon,getActivity(),false,
+        new GetUserPhotoWork(userIcon,context,false,
                 getResources().getDimensionPixelSize(R.dimen.base_info_user_size),
                 getResources().getDimensionPixelSize(R.dimen.base_info_user_size))
                 .execute();
 
         etNicName.setText(sp.getString(Constants.NICNAME,""));
         etSex.setText(sp.getString(Constants.SEX,"男"));
-        String birthday = sp.getString(Constants.Birthday,"");
-        if(!TextUtils.isEmpty(birthday)) {
-            etBirthday.setText(birthday);
-        }
+//        String birthday = sp.getString(Constants.Birthday,"");
+//        if(!TextUtils.isEmpty(birthday)) {
+//            etBirthday.setText(birthday);
+//        }
         etQQ.setText(sp.getString(Constants.QQNumber,""));
         etPhone.setText(sp.getString(Constants.PhoneNumber,""));
         etWx.setText(sp.getString(Constants.WxNumber,""));
         etEmail.setText(sp.getString(Constants.Email, ""));
         etSex.addTextChangedListener(textWatcher);
         etNicName.addTextChangedListener(textWatcher);
-        etBirthday.addTextChangedListener(textWatcher);
+        //etBirthday.addTextChangedListener(textWatcher);
         etQQ.addTextChangedListener(textWatcher);
         etPhone.addTextChangedListener(textWatcher);
         etEmail.addTextChangedListener(textWatcher);
@@ -191,9 +193,9 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
 
     private void saveBaseInfo() {
         //先暂存基本信息
-        cacheUserInfo();
+        if(!cacheUserInfo()) return;
         if(pd == null) {
-            pd = new ProgressDialog(getActivity());
+            pd = new ProgressDialog(context);
         }
         pd.setMessage("正在保存...");
         pd.show();
@@ -251,7 +253,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
                 if(pd.isShowing()) {
                     pd.dismiss();
                 }
-                Toast.makeText(getActivity(),"上传头像失败。",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,"上传头像失败。",Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -260,8 +262,12 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         if(saveHan == null) {
             initSaveHandler();
         }
-        HttpTask task = new HttpTask(getActivity(),Constants.CHANGEUSERINFO,saveHan,TAG,"post");
-        HttpManager.startTask(task);
+        try {
+            HttpTask task = new HttpTask(context,Constants.CHANGEUSERINFO,saveHan,TAG,"post");
+            HttpManager.startTask(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initSaveHandler() {
@@ -275,13 +281,13 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
                 }
                 if(msg.what == 0 && msg.obj.toString().equals("true")) {
                     //保存成功，将新数据写入SharePrefernce
-                    Toast.makeText(getActivity(),"保存成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"保存成功",Toast.LENGTH_SHORT).show();
                     updateLocal();
                     if(userInfoListener != null) {
                         userInfoListener.userInfoChanged();
                     }
                 }else {
-                    Toast.makeText(getActivity(),"保存失败",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"保存失败",Toast.LENGTH_SHORT).show();
                     UserInfoData.recycle();
                 }
             }
@@ -289,17 +295,30 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     }
 
     //暂存数据
-    private void cacheUserInfo() {
+    private boolean cacheUserInfo() {
         UserInfoData data = UserInfoData.getInstance();
         data.setNicName(etNicName.getText().toString());
-        data.setSex(etSex.getText().toString());
-        data.setBirthday(etBirthday.getText().toString());
+        String sex = etSex.getText().toString();
+        String cacheSex = null;
+        if(sex.equals("男")) {
+            cacheSex = "0";
+        }
+        if(sex.equals("女")) {
+            cacheSex = "1";
+        }
+        if(TextUtils.isEmpty(cacheSex)) {
+            Toast.makeText(context,"请输入正确的性别：男或女",Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        data.setSex(cacheSex);
+        //data.setBirthday(etBirthday.getText().toString());
         data.setAddress(etAddress.getText().toString());
         data.setQqNumber(etQQ.getText().toString());
         data.setPhoneNumber(etPhone.getText().toString());
         data.setWxNumber(etWx.getText().toString());
         data.setEmail(etEmail.getText().toString());
         data.setUserUrl(sp.getString(Constants.USERURL,""));
+        return true;
     }
 
     private void updateLocal() {
@@ -308,7 +327,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(Constants.NICNAME,newData.getNicName());
         editor.putString(Constants.SEX,newData.getSex());
-        editor.putString(Constants.Birthday,newData.getBirthday());
+        //editor.putString(Constants.Birthday,newData.getBirthday());
         editor.putString(Constants.School,newData.getSchool());
         editor.putString(Constants.Address,newData.getAddress());
         editor.putString(Constants.QQNumber,newData.getQqNumber());
@@ -320,7 +339,8 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         UserInfoData.recycle();
     }
 
-    public static BaseInfoFragment getInstance(PersonalFragment.UpdateToolbar listener) {
+    public static BaseInfoFragment getInstance(PersonalFragment.UpdateToolbar listener,Context conn) {
+        context = conn;
         if(listener != null) {
             toolbarListener = listener;
         }
@@ -337,6 +357,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         if(userInfoListener != null) {
             userInfoListener = null;
         }
+        context = null;
     }
 
     @Override
@@ -347,7 +368,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         }else if(requestCode == REQUEST_ALBUM && resultCode == Activity.RESULT_OK && data != null) {
             Uri seleectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getActivity().getContentResolver().query(seleectedImage,filePathColumn,null,null,null) ;
+            Cursor cursor = context.getContentResolver().query(seleectedImage,filePathColumn,null,null,null) ;
             if(cursor != null && cursor.moveToFirst()) {
                 int columIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
                 String picPath = cursor.getString(columIndex);
@@ -393,7 +414,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
     private void openAlbum() {
         Intent albumIntent = new Intent(Intent.ACTION_PICK, null);
         albumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        if (albumIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (albumIntent.resolveActivity(context.getPackageManager()) != null) {
             startActivityForResult(albumIntent, REQUEST_ALBUM);
         }
     }
@@ -402,7 +423,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
         //打开相机拍照
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //确保程序能处理返回的Intent
-        if(takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if(takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
             takePicPath = Utils.getPicturePath() +  "/" + System.currentTimeMillis() + ".jpg";
             Uri imageUri = Uri.fromFile(new File(takePicPath));
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);   //将照片存放在指定位置

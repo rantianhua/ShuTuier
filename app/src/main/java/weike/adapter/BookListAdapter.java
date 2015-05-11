@@ -111,7 +111,7 @@ public class BookListAdapter extends BaseAdapter {
                 holder.tvPublisher.setText(item.getPublisher());
                 holder.tvDetail.setText(item.getDetail());
                 String status = "出售";
-                switch (status) {
+                switch (item.getStatue()) {
                     case "0":
                         status = "出售";
                         break;

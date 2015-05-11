@@ -3,6 +3,7 @@ package weike.fragment;
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -56,7 +57,7 @@ import weike.util.Utils;
 /**
  * Created by Rth on 2015/2/28.
  */
-public class SellFragment extends Fragment implements AdapterView.OnItemSelectedListener,View.OnClickListener
+public class CommitFragment extends Fragment implements AdapterView.OnItemSelectedListener,View.OnClickListener
         ,View.OnTouchListener{
 
     private EditText etBookName,etAuthor,
@@ -77,14 +78,14 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private final int REQUEST_PIC_WAY = 40;
     private ProgressDialog pd = null;
     private   ArrayAdapter<String> arrayAdapter = null; //subClassify的适配器
-    private static String isbn = null; //记录isbn号
-    private String mainCf = "教材";   //记录选择的主分类
-    private String subCf = "全部";    //记录选择的子分类
-    private String oOrn = "全新"; //记录选择的新旧程度
+    private  String isbn = null; //记录isbn号
+    private String category = "教材";   //书的分类
+    private int oOrn = 10; //记录选择的新旧程度
     private LayoutTransition layoutTransition = null;   //布局动画
     private String coverDouBanUrl = null; //从豆瓣获取的封面url
     private UpCompletionHandler upHandler = null;   //处理异步上传图片的handler
     private final String TAG = "SellFragment";
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -163,9 +164,9 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                     String data = (String) msg.obj;
                     completeBaseInfo(data);
                 }else if(msg.what == 1){
-                    Toast.makeText(getActivity(),"ISBN有误，请输入正确的ISBN号",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"ISBN有误，请输入正确的ISBN号",Toast.LENGTH_SHORT).show();
                 }else {
-                    Toast.makeText(getActivity(),"查询图书信息失败！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"查询图书信息失败！",Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -184,7 +185,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                     etOPrice.setText(originPrice);
                     etBookName.setText(map.get("title"));
                     etPublisher.setText(map.get("publisher"));
-                    ImageLoader loader = Mysingleton.getInstance(getActivity()).getImageLoader();
+                    ImageLoader loader = Mysingleton.getInstance(context).getImageLoader();
                     int w  = getResources().getDimensionPixelSize(R.dimen.img_cover_width);
                     int h  = getResources().getDimensionPixelSize(R.dimen.img_cover_height);
                     coverDouBanUrl = map.get("image").replaceAll("\\\\","");
@@ -195,7 +196,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                 }catch (NullPointerException e) {
                     Log.e("SellFragment","error in completeBaseInfo",e);
                     //没有查到该图书信息
-                    Toast.makeText(getActivity(),"查询图书信息失败！lalal",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"查询图书信息失败！lalal",Toast.LENGTH_SHORT).show();
                 }
             }
             map =  null;
@@ -203,26 +204,28 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         data = null;
     }
 
-    public static SellFragment getInstance(String isbn){
-        SellFragment.isbn = isbn;
-        return new SellFragment();
+    public static CommitFragment getInstance(){
+        return new CommitFragment();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.spinner_sub_classify:
-                subCf = subClassify.getItemAtPosition(position).toString();
+                category = subClassify.getItemAtPosition(position).toString();
                 break;
             case R.id.spinner_college:
-                subCf = college.getItemAtPosition(position).toString();
+                category = college.getItemAtPosition(position).toString();
                 break;
             case R.id.spinner_main_classify:
                 updateSubClassify(position);
-                mainCf = mainClassify.getItemAtPosition(position).toString();
+                //"考研"作为一个独立主分类
+                if(position == 7) {
+                    category = mainClassify.getItemAtPosition(position).toString();
+                }
                 break;
             case R.id.spinner_how_old:
-                oOrn = howOld.getItemAtPosition(position).toString();
+                oOrn = position;
                 break;
             default:
                 break;
@@ -243,22 +246,22 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                 }
                 break;
             case 1:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.LITERATURE);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.LITERATURE);
                 break;
             case 2:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.POPULAR);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.POPULAR);
                 break;
             case 3:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.CULTURE);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.CULTURE);
                 break;
             case 4:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.LIFE);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.LIFE);
                 break;
             case 5:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.MANAGEMENT);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.MANAGEMENT);
                 break;
             case 6:
-                arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, Constants.SCIENCE);
+                arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item, Constants.SCIENCE);
                 break;
             default:
                 break;
@@ -362,7 +365,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             //检查信息是否完整
             if(canCommit()) {
                 if(pd == null) {
-                    pd = new ProgressDialog(getActivity());
+                    pd = new ProgressDialog(context);
                 }
                 pd.setMessage("正在发布...");
                 pd.show();
@@ -394,7 +397,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             if(commitHandler == null ) {
                 initCommitHandler();
             }
-            HttpTask task = new HttpTask(getActivity(),Constants.COMMITLINK,commitHandler,"CommitBook","post");
+            HttpTask task = new HttpTask(context,Constants.COMMITLINK,commitHandler,"CommitBook","post");
             HttpManager.startTask(task);
         } catch (Exception e) {
             Log.e(TAG,"error in commit book task",e);
@@ -410,18 +413,19 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
                     pd.dismiss();
                     pd = null;
                 }
-                switch (msg.what) {
-                    case 0:
+                String res = (String)msg.obj;
+                if(!TextUtils.isEmpty(res)) {
+                    if(res.equals("true")) {
                         reset();
                         showToast("发布成功！");
-                        break;
-                    case 1:
+                    }else {
                         showToast("发布失败！");
-                        String result = (String) msg.obj;
-                        Log.e("commitBook",result);
-                        result = null;
-                        break;
+                    }
+                    res = null;
+                }else {
+                    showToast("发布失败！");
                 }
+
             }
         };
     }
@@ -490,25 +494,26 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             return false;
         }
         commitData.setoPrice(text.toString());
-        commitData.setMainClassify(mainCf);
-        commitData.setSubClassify(subCf);
+        commitData.setCategory(category);
         commitData.setHowOld(oOrn);
-        StringBuilder status = new StringBuilder();
-        if(cbSell.isChecked()) {
-            status.append("出售");
-            if(cbGive.isChecked()) {
-                status.append("/");
-                status.append("赠送");
-            }
+        int status = 0;
+        if(cbSell.isChecked() && !cbAskBuy.isChecked() && cbPay.isChecked() && !cbGive.isChecked()) {
+            status = 0;
+        }else if(!cbSell.isChecked() && cbAskBuy.isChecked() && cbPay.isChecked() && !cbGive.isChecked())  {
+            status = 1;
+        }else if(cbSell.isChecked() && !cbAskBuy.isChecked() && !cbPay.isChecked() && cbGive.isChecked()) {
+            status = 2;
+        }else if(!cbSell.isChecked() && cbAskBuy.isChecked() && !cbPay.isChecked() && cbGive.isChecked()){
+            status = 3;
+        }else if(cbSell.isChecked() && !cbAskBuy.isChecked() && cbPay.isChecked() && cbGive.isChecked()) {
+            status = 4;
+        }else if(!cbSell.isChecked() && cbAskBuy.isChecked() && cbPay.isChecked() && cbGive.isChecked()) {
+            status = 5;
         }else {
-            status.append("求购");
-            if(cbGive.isChecked()) {
-                status.append("/");
-                status.append("求赠");
-            }
+            showToast("请完成出售方式");
+            return false;
         }
-        commitData.setStatus(status.toString());
-        status =  null;
+        commitData.setStatus(String.valueOf(status));
         if(cbGive.isChecked()) {
             text = etSendCondition.getText();
             if(TextUtils.isEmpty(text)){
@@ -543,17 +548,16 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }
         if(isbn != null) {
             commitData.setIsbn(isbn);
-            isbn = null;
         }else {
             commitData.setIsbn("");
         }
-        SharedPreferences sp = getActivity().getSharedPreferences(Constants.SP_USER,0);
+        SharedPreferences sp = context.getSharedPreferences(Constants.SP_USER,0);
         commitData.setUid(sp.getString(Constants.UID,""));
         return true;
     }
 
     private void showToast(String message) {
-        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
     }
 
     private void showDialog() {
@@ -566,7 +570,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private void dispatchTakenPicture() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //确保程序能处理返回的Intent
-        if(takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if(takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
             fileName = System.currentTimeMillis() + ".jpg";      //图片名
             Uri imageUri = Uri.fromFile(new File(Utils.getPicturePath(),fileName));
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);   //将照片存放在指定位置
@@ -586,7 +590,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         }else if(requestCode == ALBUM_OK && resultCode == Activity.RESULT_OK && data != null) {
             Uri seleectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getActivity().getContentResolver().query(seleectedImage,filePathColumn,null,null,null) ;
+            Cursor cursor = context.getContentResolver().query(seleectedImage,filePathColumn,null,null,null) ;
             if(cursor != null && cursor.moveToFirst()) {
                 int columIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
                 picPath = cursor.getString(columIndex);
@@ -613,7 +617,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
     private void chooseFromLocal() {
         Intent albumIntent = new Intent(Intent.ACTION_PICK, null);
         albumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        if (albumIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (albumIntent.resolveActivity(context.getPackageManager()) != null) {
             startActivityForResult(albumIntent, ALBUM_OK);
         }
     }
@@ -641,7 +645,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             }
             String url = Utils.getDouBanUrl(isbn);
             if(pd == null) {
-                pd = new ProgressDialog(getActivity());
+                pd = new ProgressDialog(context);
                 pd.setMessage("正在查询图书信息...");
             }
             pd.show();
@@ -653,7 +657,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
             }
             url = null;
         }else{
-            Toast.makeText(getActivity(),"网络未连接",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"网络未连接",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -694,7 +698,7 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         if(layoutTransition == null) {
             layoutTransition = new LayoutTransition();
         }
-        layoutTransition.setAnimator(LayoutTransition.APPEARING,layoutTransition.getAnimator(LayoutTransition.APPEARING));
+        layoutTransition.setAnimator(LayoutTransition.APPEARING, layoutTransition.getAnimator(LayoutTransition.APPEARING));
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, layoutTransition.getAnimator(LayoutTransition.DISAPPEARING));
         tableInput.setLayoutTransition(layoutTransition);
     }
@@ -713,5 +717,21 @@ public class SellFragment extends Fragment implements AdapterView.OnItemSelected
         //让EditText可以获取滚动事件
         v.getParent().requestDisallowInterceptTouchEvent(true);
         return false;
+    }
+
+    public void setIsbn(String result) {
+        this.isbn = result;
+    }
+
+    public String getIsbn() {
+        return this.isbn;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }

@@ -1,14 +1,17 @@
 package weike.shutuier;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,24 +25,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.update.UmengUpdateAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import myinterface.UserInfoChangeListener;
 import weike.fragment.BaseInfoFragment;
 import weike.fragment.HomeFragment;
 import weike.fragment.MessageFragment;
-import weike.fragment.SellFragment;
+import weike.fragment.CommitFragment;
 import weike.fragment.SettingFragment;
+import weike.my_service.LocalMessageServer;
+import myinterface.MessageChangeListener;
 import weike.util.ConnectReceiver;
 import weike.util.Constants;
 import weike.util.FragmentLabel;
 import weike.util.GetUserPhotoWork;
+import weike.util.HttpManager;
 import weike.zing.CaptureActivity;
 import weike.zing.Intents;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener
-        ,ConnectReceiver.GetNetState,UserInfoChangeListener{
+        ,ConnectReceiver.GetNetState,UserInfoChangeListener,MessageChangeListener{
 
     @InjectView(R.id.toolbar_main)
     Toolbar toolbar;
@@ -79,25 +92,61 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     RelativeLayout rlSetting;
     @InjectView(R.id.rl_section_swipe)
     RelativeLayout rlSwipe;
+    @InjectView(R.id.viewpager_fragments)
+    ViewPager vp;
 
-    FragmentManager fm = null;
     private boolean havaItemSelected = false;   //标识是否有section处于选中状态
     private static final int REQUEST_CODE = 200;
     public static final String TAG = "MainActivity";
     //网络状态接收器
     private ConnectReceiver netReceiver = new ConnectReceiver(this);
+
     public static boolean netConnect = false;    //记录接收的网络状态
     private SharedPreferences sp = null;
     private String result = null;   //记录扫一扫的结果
+    public  static final String LOCAL_MESSAGE_ACTION = "local_message";
+    private LocalMessageReceiver messageReceiver;
+    private LocalBroadcastManager localBroadcastManager;
+    private FragmentPagerAdapter pagerAdapter;
+    private List<Fragment> fragments;
+    private HomeFragment home;
+    private CommitFragment commit;
+    private MessageFragment message;
+    private boolean firstBack =false;   //记录是否首次按下返回键
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //注册广播接收器
+        //注册广播接收器，接收网络连接变化
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.registerReceiver(netReceiver,filter);
+        this.registerReceiver(netReceiver, filter);
         sp = getSharedPreferences(Constants.SP_USER,0);
+
+        //友盟自动更新
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
+        UmengUpdateAgent.update(this);
+
+        //启动服务，获取留言消息
+        startService(new Intent(this, LocalMessageServer.class));
+
+        //注册本地广播，接收留言消息
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter(LOCAL_MESSAGE_ACTION);
+        messageReceiver = new LocalMessageReceiver();
+        localBroadcastManager.registerReceiver(messageReceiver, intentFilter);
+
+        fragments = new ArrayList<>();
+        home = HomeFragment.getInstance();
+        commit = CommitFragment.getInstance();
+        commit.setContext(this);
+        message = MessageFragment.getInstance();
+        message.setMessageChangListener(this);
+        message.setContext(this);
+        fragments.add(home);
+        fragments.add(commit);
+        fragments.add(message);
+
         initView();
     }
 
@@ -111,19 +160,25 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 if(rlCommit.isSelected() &&  (result != null || !getTitle().equals(FragmentLabel.Commit.getValue()))) {
-                    replaceFragments(SellFragment.getInstance(result),FragmentLabel.Commit.getValue());
+                    if(remindLogin()) return;
+                    if(remindContact()) return;
+                    commit.setIsbn(result);
+                    vp.setCurrentItem(1,true);
+                    setTitle(FragmentLabel.Commit.getValue());
                     result = null;
                     return;
                 }
                 if(rlHome.isSelected()) {
                     if(!getTitle().equals(FragmentLabel.Home.getValue())) {
-                        replaceFragments(HomeFragment.getInstance(), FragmentLabel.Home.getValue());
+                        vp.setCurrentItem(0,true);
+                        setTitle(FragmentLabel.Home.getValue());
                     }
                     return;
                 }
                 if(rlMessage.isSelected()) {
                     if(!getTitle().equals(FragmentLabel.Message.getValue())) {
-                        replaceFragments(MessageFragment.getInstance(), FragmentLabel.Message.getValue());
+                        vp.setCurrentItem(2);
+                        setTitle( FragmentLabel.Message.getValue());
                     }
                 }
             }
@@ -151,10 +206,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         userPhoto.setOnClickListener(this);
 
         //初始化fragment
-        if(fm == null) {
-            fm = getSupportFragmentManager();
-        }
-        fm.beginTransaction().add(R.id.contain,HomeFragment.getInstance()).commit();
+        pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return fragments.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
+            }
+        };
+        vp.setAdapter(pagerAdapter);
+        vp.setCurrentItem(0,true);
 
         rlSetting.setOnClickListener(this);
         rlCommit.setOnClickListener(this);
@@ -162,21 +226,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         rlMessage.setOnClickListener(this);
         rlSetting.setOnClickListener(this);
         rlSwipe.setOnClickListener(this);
-    }
-
-    private void replaceFragments(Fragment fragment,String title) {
-        if(fragment instanceof  SellFragment) {
-            if(remindLogin()) return;
-            if(remindContact()) return;
-        }
-        if(fm  == null) {
-            fm = getSupportFragmentManager();
-        }
-        fm.beginTransaction().setCustomAnimations(R.anim.right_in,R.anim.left_out)
-                .replace(R.id.contain,fragment).commit();
-        if(title != null) {
-            setTitle(title);
-        }
     }
 
     //检查并提醒登陆
@@ -191,17 +240,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     //检查并提醒完善联系方式
     private boolean remindContact() {
-        if(TextUtils.isEmpty(sp.getString(Constants.QQNumber, "")) &&
-                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
-                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
-                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
-            //先让用户完善联系方式
-            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
-                    .setNegativeButton("知道啦", null).create();
-            dialog.setTitle("未完善联系方式");
-            dialog.show();
-            return true;
-        }
+//        if(TextUtils.isEmpty(sp.getString(Constants.QQNumber, "")) &&
+//                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
+//                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
+//                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
+//            //先让用户完善联系方式
+//            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
+//                    .setNegativeButton("知道啦", null).create();
+//            dialog.setTitle("未完善联系方式");
+//            dialog.show();
+//            return true;
+//        }
+//        return false;
         return false;
     }
 
@@ -355,6 +405,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             this.unregisterReceiver(netReceiver);
             netReceiver = null;
         }
+        if(messageReceiver != null) {
+            localBroadcastManager.unregisterReceiver(messageReceiver);
+            messageReceiver = null;
+        }
+        message.setContext(null);
+        message.setMessageChangListener(null);
+        HttpManager.cance();
+        stopService(new Intent(this,LocalMessageServer.class));
     }
 
     @Override
@@ -362,38 +420,46 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         updateUserInfo();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //启动服务
-        //startService(new Intent(this, LocalMessageServer.class));
-//        bindService(new Intent(this, LocalMessageServer.class),new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName name, IBinder service) {
-//
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName name) {
-//
-//            }
-//        },BIND_AUTO_CREATE);
+    //本地广播，接受后去留言消息的后台操作发送的广播
+    private class LocalMessageReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(LOCAL_MESSAGE_ACTION)) {
+                //处理本地广播
+                int num = intent.getIntExtra(Constants.MESSAGE_NUMBER,0);
+                updateMessageNum(num);
+            }
+        }
+    }
+
+    private void updateMessageNum(int num) {
+        int sum = sp.getInt(Constants.MESSAGE_NUMBER,0);
+        sum += num;
+        tvMessageNumber.setText(sum > 0 ? sum+"" : "");
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(Constants.MESSAGE_NUMBER,sum);
+        editor.apply();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-//        //stopService(new Intent(this,LocalMessageServer.class));
-//        unbindService(new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName name, IBinder service) {
-//
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName name) {
-//
-//            }
-//        });
+    public void messageNumChange() {
+        updateMessageNum(-1);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!firstBack) {
+            Toast.makeText(this,"再按一次退出应用",Toast.LENGTH_SHORT).show();
+            firstBack = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    firstBack = false;
+                }
+            },2000);
+        }else {
+            this.finish();
+            System.exit(0);
+        }
     }
 }

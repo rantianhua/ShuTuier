@@ -9,7 +9,10 @@
         android:layout_height="60dp"
         android:text="@string/choose_contact"
         android:gravity="center"
-        android:id="@+id/tv_contact_title"/>
+        android:id="@+id/tv_contact_title"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <View
         android:layout_width="match_parent"
@@ -25,7 +28,8 @@
         android:id="@+id/tv_contact_none"
         android:layout_below="@+id/line_contact_title"
         android:text="@string/contact_none"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -33,7 +37,7 @@
         android:paddingLeft="15dp"
         android:gravity="center_vertical|start"
         android:id="@+id/tv_contact_phone"
-        android:layout_below="@+id/line_contact_title"
+        android:layout_below="@+id/tv_contact_none"
         />
 
     <View
@@ -41,7 +45,8 @@
         android:layout_height="0.8dp"
         android:background="@color/list_item_bottom"
         android:layout_below="@+id/tv_contact_phone"
-        android:id="@+id/line_contact_one"/>
+        android:id="@+id/line_contact_one"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -50,14 +55,16 @@
         android:gravity="center_vertical"
         android:id="@+id/tv_contact_qq"
         android:layout_below="@+id/line_contact_one"
-        android:background="@drawable/tv_contact_bg"/>
+        android:background="@drawable/tv_contact_bg"
+        />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
         android:background="@color/list_item_bottom"
         android:layout_below="@+id/tv_contact_qq"
-        android:id="@+id/line_contact_two"/>
+        android:id="@+id/line_contact_two"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -66,14 +73,16 @@
         android:gravity="center_vertical"
         android:id="@+id/tv_contact_wx"
         android:layout_below="@+id/line_contact_two"
-        android:background="@drawable/tv_contact_bg"/>
+        android:background="@drawable/tv_contact_bg"
+        />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.8dp"
         android:background="@color/list_item_bottom"
         android:layout_below="@+id/tv_contact_wx"
-        android:id="@+id/line_contact_three"/>
+        android:id="@+id/line_contact_three"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -82,7 +91,8 @@
         android:gravity="center_vertical"
         android:id="@+id/tv_contact_email"
         android:layout_below="@+id/line_contact_three"
-        android:background="@drawable/tv_contact_bg"/>
+        android:background="@drawable/tv_contact_bg"
+        />
 
     <View
         android:layout_width="match_parent"

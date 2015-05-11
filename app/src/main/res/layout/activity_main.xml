@@ -12,12 +12,10 @@
         android:fitsSystemWindows="false">
 
         <!-- 内容界面 -->
-
-        <LinearLayout
-            android:id="@+id/contain"
+        <android.support.v4.view.ViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:id="@+id/viewpager_fragments"/>
 
         <!-- 侧滑菜单内容 -->
        <include layout="@layout/drawer" />

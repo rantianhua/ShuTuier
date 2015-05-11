@@ -30,7 +30,7 @@ public class SettingActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         setTitle(FragmentLabel.Setting.getValue());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportFragmentManager().beginTransaction().add(R.id.container_setting, SettingFragment.getInstance()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container_setting, SettingFragment.getInstance(this)).commit();
     }
 
     @Override

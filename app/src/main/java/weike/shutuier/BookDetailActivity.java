@@ -98,7 +98,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
 
     private Handler hanGetDetail = null,hanComment=null;
     private ImageLoader imageLoader;
-    private String itemId;
+    private static String  itemId;
     private String comment = null;
     public static final String TAG = "BookDetailActivity";
     private BookItem item = null;
@@ -120,45 +120,54 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
             initHandler();
         }
 
+        //get rough message of bookItem by itemId sent by ListItem
         Intent intent = getIntent();
         itemId = intent.getStringExtra(Constants.EXTRA_ITEM_ID);
-        String linkUrl = Constants.DetailLink + itemId;
-        final String from = intent.getStringExtra(Constants.REQUEST_FROM_FRAGMENT);
-        HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
-        HttpManager.startTask(task);
-        ListBookData data = ListBookData.getInstance(from);
-        item = (BookItem) data.getBookItemById(itemId).get("item");
+        if(!TextUtils.isEmpty(itemId)) {
+            String linkUrl = Constants.DetailLink + itemId;
+            final String from = intent.getStringExtra(Constants.REQUEST_FROM_FRAGMENT);
+            try {
+                HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
+                HttpManager.startTask(task);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ListBookData data = ListBookData.getInstance(from);
+            item = (BookItem) data.getBookItemById(itemId).get("item");
 
-        if(imageLoader == null) {
-            imageLoader = Mysingleton.getInstance(this).getImageLoader();
+            if(imageLoader == null) {
+                imageLoader = Mysingleton.getInstance(this).getImageLoader();
+            }
+
+            imageLoader.get(item.getImgUrl(),ImageLoader.getImageListener(bookCover,R.drawable.def,R.drawable.def));
+            StringBuilder builder = new StringBuilder();
+            builder.append("书名：");
+            builder.append(item.getBookName());
+            tvBookName.setText(builder.toString());
+            builder.delete(0, builder.length());
+            builder.append("作者：");
+            builder.append(item.getAuthorName());
+            tvAuthor.setText(builder.toString());
+            builder.delete(0,builder.length());
+            builder.append("出版社：");
+            builder.append(item.getPublisher());
+            tvPublisher.setText(builder);
+            builder.delete(0,builder.length());
+            builder.append("￥");
+            builder.append(item.getOriginPrice());
+            tvOPrice.setText(builder);
+            builder.delete(0,builder.length());
+            builder.append("￥");
+            builder.append(item.getSellPrice());
+            tvSPrice.setText(builder);
+            tvDetail.setText(item.getDetail());
+            tvRemark.setText(item.getRemark());
+            builder.delete(0,builder.length());
+            builder = null;
+            initBottomView();
+        }else {
+            Toast.makeText(this,"加载失败",Toast.LENGTH_SHORT).show();
         }
-
-        imageLoader.get(item.getImgUrl(),ImageLoader.getImageListener(bookCover,R.drawable.def,R.drawable.def));
-        StringBuilder builder = new StringBuilder();
-        builder.append("书名：");
-        builder.append(item.getBookName());
-        tvBookName.setText(builder.toString());
-        builder.delete(0, builder.length());
-        builder.append("作者：");
-        builder.append(item.getAuthorName());
-        tvAuthor.setText(builder.toString());
-        builder.delete(0,builder.length());
-        builder.append("出版社：");
-        builder.append(item.getPublisher());
-        tvPublisher.setText(builder);
-        builder.delete(0,builder.length());
-        builder.append("￥");
-        builder.append(item.getOriginPrice());
-        tvOPrice.setText(builder);
-        builder.delete(0,builder.length());
-        builder.append("￥");
-        builder.append(item.getSellPrice());
-        tvSPrice.setText(builder);
-        tvDetail.setText(item.getDetail());
-        tvRemark.setText(item.getRemark());
-        builder.delete(0,builder.length());
-        builder = null;
-        initBottomView();
     }
 
     //初始化底部视图
@@ -167,9 +176,12 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         rlLiuyan.setOnClickListener(this);
         //根据书的状态改变不同的状态
         String status  = item.getStatue();
-        if(!status.contains("赠送")){
-            tvSendCondition.setVisibility(View.INVISIBLE);
-            tvSenConditionLabel.setVisibility(View.INVISIBLE);
+        switch (status) {
+            case "0":
+            case "1":
+                tvSendCondition.setVisibility(View.INVISIBLE);
+                tvSenConditionLabel.setVisibility(View.INVISIBLE);
+                break;
         }
         btnBack.setOnClickListener(this);
         btnSend.setOnClickListener(this);
@@ -193,8 +205,11 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         tvShareNumber.setText(BookOtherData.getInstance().getShareNumber());
                         tvLiuyanNumber.setText(BookOtherData.getInstance().getMarkNumber());
                         try {
-                            imageLoader.get(BookOtherData.getInstance().getHeadUrl(), ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def),
-                                    ownerSize,ownerSize);
+                            String url = BookOtherData.getInstance().getHeadUrl();
+                            if(!TextUtils.isEmpty(url)) {
+                                imageLoader.get(url, ImageLoader.getImageListener(userIcon, R.drawable.def, R.drawable.def),
+                                        ownerSize,ownerSize);
+                            }
                         } catch (Exception e) {
                             Log.e(TAG,"error in get UserIcon",e);
                         }
@@ -206,7 +221,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                         }
                         break;
                     case 1:
-                        Toast.makeText(BookDetailActivity.this,"加载评论失败",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BookDetailActivity.this,"加载留言失败",Toast.LENGTH_SHORT).show();
                         break;
                     case 2:
                         break;
@@ -244,7 +259,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 e.printStackTrace();
             }
         }else {
-            new GetUserPhotoWork(imageView,this,false,commenterSize,commenterSize);
+            new GetUserPhotoWork(imageView,this,false,ownerSize,ownerSize);
         }
         return v;
     }
@@ -268,10 +283,9 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 break;
             case R.id.btn_send_comment:
                 if(!checkLogin()) {
-                    CharSequence str = etCommend.getText();
-                    if(!TextUtils.isEmpty(str)) {
-                        comment = str.toString();
-                        str = null;
+                    comment = etCommend.getText().toString();
+                    if(!TextUtils.isEmpty(comment)) {
+                        etCommend.setText("");
                         sendComment();
                     }
                 }
@@ -282,7 +296,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
                 }
                 break;
             case R.id.btn_contact_him:
-                new ContactDialogFragment().show(getSupportFragmentManager(),"contact");
+                ContactDialogFragment.getInstance(BookDetailActivity.this).show(getSupportFragmentManager(),"contact");
                 break;
             default:
                 break;
@@ -292,7 +306,7 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     private boolean checkLogin() {
         SharedPreferences sp = getSharedPreferences(Constants.SP_USER,0) ;
         if(!sp.getBoolean(Constants.USER_ONLINE_KEY,false)) {
-            showToast("您还为登录！");
+            showToast("您还未登录！");
             return true;
         }
         return false;
@@ -370,5 +384,4 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         SimpleDateFormat format = new SimpleDateFormat("MM-dd  HH:mm");
         return format.format(new Date());
     }
-
 }

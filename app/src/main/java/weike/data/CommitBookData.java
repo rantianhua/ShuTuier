@@ -9,10 +9,9 @@ public class CommitBookData {
     private String bookName;
     private String bookAuthor;
     private String publisher;
-    private String mainClassify;
-    private String subClassify;
+    private String category;
     private String bookNumber;
-    private String howOld;
+    private int howOld;
     private String oPrice;
     private String sPrice;
     private String status;
@@ -32,9 +31,7 @@ public class CommitBookData {
         builder.append("--");
         builder.append(this.publisher);
         builder.append("--");
-        builder.append(this.mainClassify);
-        builder.append("--");
-        builder.append(this.subClassify);
+        builder.append(this.category);
         builder.append("--");
         builder.append(this.bookNumber);
         builder.append("--");
@@ -96,51 +93,31 @@ public class CommitBookData {
         this.publisher = publisher;
     }
 
-    public String getMainClassify() {
-        if(mainClassify == null) {
+    public String getCategory() {
+        if(category == null) {
             return "";
         }else {
-            return mainClassify;
+            return category;
         }
     }
 
-    public void setMainClassify(String mainClassify) {
-        this.mainClassify = mainClassify;
-    }
-
-    public String getSubClassify() {
-        if(subClassify == null) {
-            return "";
-        }else {
-            return subClassify;
-        }
-    }
-
-    public void setSubClassify(String subClassify) {
-        this.subClassify = subClassify;
-    }
-
-    public String getBookNumber() {
-        if(bookNumber == null) {
-            return "";
-        }else {
-            return bookNumber;
-        }
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public void setBookNumber(String bookNumber) {
         this.bookNumber = bookNumber;
     }
 
-    public String getHowOld() {
-        if(howOld == null) {
-            return "";
-        }else {
-            return howOld;
-        }
+    public String getBookNumber() {
+        return bookNumber == null ? "" : this.bookNumber;
     }
 
-    public void setHowOld(String howOld) {
+    public int getHowOld() {
+        return howOld;
+    }
+
+    public void setHowOld(int howOld) {
         this.howOld = howOld;
     }
 

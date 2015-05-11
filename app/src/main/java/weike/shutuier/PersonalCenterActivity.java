@@ -19,7 +19,6 @@ public class PersonalCenterActivity extends ActionBarActivity implements Persona
     Toolbar toolbar;
 
     private final String TAG = "PersonalCenterActivity";
-    private String bactTag = "activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +33,12 @@ public class PersonalCenterActivity extends ActionBarActivity implements Persona
         getSupportActionBar().setTitle("个人中心");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, PersonalFragment.getInstance(this))
+                .add(R.id.container, PersonalFragment.getInstance(this,PersonalCenterActivity.this))
                 .commit();
     }
 
     @Override
     public void changeTitle(int mode) {
-        if(mode == 5) {
-            bactTag = "activity";
-        }else {
-            bactTag = "fragment";
-        }
         switch (mode) {
             case 0:
                 toolbar.setTitle("我的出售");

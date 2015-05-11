@@ -18,6 +18,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.stream.JsonReader;
+
+import java.io.IOException;
+import java.io.StringReader;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.data.ChangBookSateData;
@@ -66,7 +71,7 @@ public class HandleBookDialogFragment extends DialogFragment implements View.OnC
     private void initView(View v) {
         ButterKnife.inject(this, v);
         //0表示未交易，1表示已交易
-        tvComplete.setVisibility(getArguments().getInt(Constants.HANDLE_BOOK_PRESTATE) == 0 ? View.VISIBLE : View.INVISIBLE);
+        tvComplete.setVisibility(getArguments().getString(Constants.HANDLE_BOOK_PRESTATE).equals("0") ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -143,8 +148,21 @@ public class HandleBookDialogFragment extends DialogFragment implements View.OnC
                     pbDelete.setVisibility(View.INVISIBLE);
                 }
                 if(msg.what == 0) {
-                    String result = (String)msg.obj;
-                    if(result.equals("true")) {
+                    boolean res = false;
+                    try {
+                        JsonReader reader = new JsonReader(new StringReader((String)msg.obj));
+                        reader.beginObject();
+                        while (reader.hasNext()) {
+                            if(reader.nextName().equals("msg")) {
+                                res = reader.nextBoolean();
+                                break;
+                            }
+                        }
+                        reader.endObject();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if(res) {
                         Toast.makeText(getActivity(),"操作成功",Toast.LENGTH_SHORT).show();
                         callBack();
                     }else {
@@ -173,11 +191,11 @@ public class HandleBookDialogFragment extends DialogFragment implements View.OnC
         this.dismiss();
     }
 
-    public static HandleBookDialogFragment getInstance(String id,int pos,int preSate) {
+    public static HandleBookDialogFragment getInstance(String id,int pos,String preSate) {
         Bundle bun = new Bundle();
         bun.putString(Constants.HANDLE_BOOK_ID,id);
         bun.putInt(Constants.HANDLE_BOOK_POSITION,pos);
-        bun.putInt(Constants.HANDLE_BOOK_PRESTATE,preSate);
+        bun.putString(Constants.HANDLE_BOOK_PRESTATE, preSate);
         HandleBookDialogFragment fragment = new HandleBookDialogFragment();
         fragment.setArguments(bun);
         return fragment;

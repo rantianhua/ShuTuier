@@ -142,7 +142,6 @@
                 android:layout_below="@+id/tv_description"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
-                android:maxLines="8"
                 android:layout_alignStart="@+id/img_book_details_user"
                 android:layout_alignLeft="@+id/img_book_details_user"
                 android:layout_alignRight="@+id/tv_book_details_origin_price"

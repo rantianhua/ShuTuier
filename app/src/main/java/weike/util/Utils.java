@@ -33,8 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import weike.data.BookItem;
+import weike.data.BookMessageListData;
 import weike.data.BookOtherData;
 import weike.data.ListBookData;
+import weike.data.MessageBookData;
 import weike.data.UserInfoData;
 
 /**
@@ -260,6 +262,7 @@ public class Utils {
                                 break;
                             case "Mail":
                                 BookOtherData.getInstance().setMail(v);
+                                break;
                             case "share":
                                 BookOtherData.getInstance().setShareNumber(v);
                                 break;
@@ -303,21 +306,6 @@ public class Utils {
             }
         }
     }
-
-//    public static Map<String, String> ObjectToMap(Object obj) throws Exception {
-//        Map<String, String> mapValue = new HashMap<String, String>();
-//        Class<?> cls = obj.getClass();
-//        Field[] fields = cls.getDeclaredFields();
-//        for (Field field : fields) {
-//            String name = field.getName();
-//            String strGet = "get" + name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
-//            Method methodGet = cls.getDeclaredMethod(strGet);
-//            Object object = methodGet.invoke(obj);
-//            String value = object != null ? object.toString() : "";
-//            mapValue.put(name, value);
-//        }
-//        return mapValue;
-//    }
 
     public static boolean isCommentSucceed(String content) {
         Log.e("isCommentSucceed",content + "isCommentSucceed");
@@ -413,8 +401,8 @@ public class Utils {
         return dm.widthPixels;
     }
 
-    public static String getMyCommitUrl(String id,String type) {
-        return Constants.BASEMYCOMMIT + id + "/name/"  + type;
+    public static String getMyCommitUrl(String openId,String mode) {
+        return Constants.BASEMYCOMMIT + mode + "&openId="  + openId;
     }
 
     public static ArrayList<Map<String,String>> getMyCommitData(String content) {
@@ -485,6 +473,35 @@ public class Utils {
                 bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
             }
         }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //获取被留言的书的列表
+    public static void getMessageList(String content) {
+        if(TextUtils.isEmpty(content)) return;
+        BookMessageListData data = BookMessageListData.getInstance();
+        JsonReader reader = new JsonReader(new StringReader(content));
+        try {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                MessageBookData messageBookData = new MessageBookData();
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    String name = reader.nextName();
+                    if(name.equals("Name")) {
+                        messageBookData.setName(reader.nextName());
+                    }
+                    if(name.equals("ID")) {
+                        messageBookData.setId(reader.nextString());
+                    }
+                }
+                reader.endObject();
+                data.getList().add(messageBookData);
+            }
+            reader.endArray();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
