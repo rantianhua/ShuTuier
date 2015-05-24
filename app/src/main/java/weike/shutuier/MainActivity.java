@@ -1,6 +1,7 @@
 package weike.shutuier;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -219,6 +220,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         };
         vp.setAdapter(pagerAdapter);
         vp.setCurrentItem(0,true);
+        vp.setEnabled(false);
 
         rlSetting.setOnClickListener(this);
         rlCommit.setOnClickListener(this);
@@ -226,6 +228,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         rlMessage.setOnClickListener(this);
         rlSetting.setOnClickListener(this);
         rlSwipe.setOnClickListener(this);
+
+        updateMessageNum(sp.getInt(Constants.MESSAGE_NUMBER,0));
     }
 
     //检查并提醒登陆
@@ -240,18 +244,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     //检查并提醒完善联系方式
     private boolean remindContact() {
-//        if(TextUtils.isEmpty(sp.getString(Constants.QQNumber, "")) &&
-//                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
-//                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
-//                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
-//            //先让用户完善联系方式
-//            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
-//                    .setNegativeButton("知道啦", null).create();
-//            dialog.setTitle("未完善联系方式");
-//            dialog.show();
-//            return true;
-//        }
-//        return false;
+        if(TextUtils.isEmpty(sp.getString(Constants.QQNumber, "")) &&
+                TextUtils.isEmpty(sp.getString(Constants.PhoneNumber,"")) &&
+                TextUtils.isEmpty(sp.getString(Constants.WxNumber,"")) &&
+                TextUtils.isEmpty(sp.getString(Constants.Email,""))) {
+            //先让用户完善联系方式
+            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).setMessage("请点击头像到个人中心完善联系方式！")
+                    .setNegativeButton("知道啦", null).create();
+            dialog.setTitle("未完善联系方式");
+            dialog.show();
+            return true;
+        }
         return false;
     }
 
@@ -433,11 +436,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     private void updateMessageNum(int num) {
-        int sum = sp.getInt(Constants.MESSAGE_NUMBER,0);
-        sum += num;
-        tvMessageNumber.setText(sum > 0 ? sum+"" : "");
+        if(num == -1) {
+            int sum = Integer.valueOf(tvMessageNumber.getText().toString());
+            num = sum - 1;
+        }
+        tvMessageNumber.setText(num > 0 ? num+"" : "");
         SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(Constants.MESSAGE_NUMBER,sum);
+        editor.putInt(Constants.MESSAGE_NUMBER,num);
         editor.apply();
     }
 

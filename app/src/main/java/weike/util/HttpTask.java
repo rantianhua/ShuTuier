@@ -19,6 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class HttpTask implements Runnable {
 
     public HttpTask(Context context,String url,Handler handler,String from,String method) {
         this.url = url;
+        Log.e("HttpTask","url is "+url);
         this.handler = handler;
         this.from = from;
         if(method != null) {
@@ -76,26 +78,24 @@ public class HttpTask implements Runnable {
     }
 
     private void doPost() {
-        Log.e("HttpTask","post url is" + url);
         List<NameValuePair> list = new ArrayList<>();
         switch (from) {
             case "CommitBook":
                 CommitBookData data = CommitBookData.getInstance();
-                list.add(new BasicNameValuePair("publisher",data.getUid()));
-                list.add(new BasicNameValuePair("Name",data.getBookName()));
-                list.add(new BasicNameValuePair("Author", data.getBookAuthor()));
-                list.add(new BasicNameValuePair("Oprice",data.getoPrice()));
-                list.add( new BasicNameValuePair("Sprice",data.getsPrice()));
-                list.add(new BasicNameValuePair("Press",data.getPublisher()));
-                list.add(new BasicNameValuePair("Number", data.getBookNumber()));
-                list.add(new BasicNameValuePair("sortId",data.getCategory()));
-                list.add(new BasicNameValuePair("Other",data.getRemark()));
-                list.add(new BasicNameValuePair("InternetImg",data.getCoverUrl()));
-                list.add(new BasicNameValuePair("new", String.valueOf(data.getHowOld())));
-                list.add(new BasicNameValuePair("Status",data.getStatus()));
-                list.add(new BasicNameValuePair("Prule", data.getSendCondition()));
-                list.add(new BasicNameValuePair("detail",data.getDescription()));
+                list.add(new BasicNameValuePair("openId",data.getUid()));
+                list.add(new BasicNameValuePair("count", data.getBookNumber()));
+                list.add(new BasicNameValuePair("old", String.valueOf(data.getHowOld())));
+                list.add(new BasicNameValuePair("category",data.getCategory()));
+                list.add(new BasicNameValuePair("method",data.getSendCondition()));
+                list.add(new BasicNameValuePair("old_price",data.getoPrice()));
+                list.add( new BasicNameValuePair("price",data.getsPrice()));
+                list.add(new BasicNameValuePair("name",data.getBookName()));
                 list.add( new BasicNameValuePair("ISBN",data.getIsbn()));
+                list.add(new BasicNameValuePair("author", data.getBookAuthor()));
+                list.add(new BasicNameValuePair("img",data.getCoverUrl()));
+                list.add(new BasicNameValuePair("type",data.getStatus()));
+                list.add(new BasicNameValuePair("publish",data.getPublisher()));
+                list.add(new BasicNameValuePair("content",data.getDescription()));
                 CommitBookData.clear();
                 break;
             case LoginActivity.TAG:
@@ -104,38 +104,33 @@ public class HttpTask implements Runnable {
                 list.add(new BasicNameValuePair("OpenId",dataInfo.getOpenId()));
                 list.add(new BasicNameValuePair("Sex", dataInfo.getSex()));
                 list.add(new BasicNameValuePair("Head",dataInfo.getUserUrl()));
-                Log.e("list is ", list.toString());
                 break;
             case HandleBookDialogFragment.TAG:
                 ChangBookSateData dataHandleBook = ChangBookSateData.getInstance();
                 list.add(new BasicNameValuePair("ID",dataHandleBook.getId()));
                 list.add(new BasicNameValuePair("close",dataHandleBook.getClose()));
-                Log.e("list is ", list.toString());
                 ChangBookSateData.clear();
                 break;
             case BaseInfoFragment.TAG:
                 UserInfoData dataBaseInfo = UserInfoData.getInstance();
-                list.add(new BasicNameValuePair("OpenId",
+                list.add(new BasicNameValuePair("openId",
                         con.getSharedPreferences(Constants.SP_USER,0)
                                 .getString(Constants.UID,"")));
-                list.add(new BasicNameValuePair("Head",dataBaseInfo.getUserUrl()));
+                list.add(new BasicNameValuePair("img",dataBaseInfo.getUserUrl()));
                 list.add(new BasicNameValuePair("thirdName",dataBaseInfo.getNicName()));
                 list.add(new BasicNameValuePair("Sex",dataBaseInfo.getSex()));
-                list.add(new BasicNameValuePair("birth",dataBaseInfo.getBirthday()));
                 list.add(new BasicNameValuePair("School",dataBaseInfo.getSchool()));
                 list.add(new BasicNameValuePair("teleNum",dataBaseInfo.getPhoneNumber()));
                 list.add(new BasicNameValuePair("qqNum",dataBaseInfo.getQqNumber()));
                 list.add(new BasicNameValuePair("weixinNum",dataBaseInfo.getWxNumber()));
                 list.add(new BasicNameValuePair("Mail",dataBaseInfo.getEmail()));
-                Log.e("list is ", list.toString());
+                list.add(new BasicNameValuePair("address",dataBaseInfo.getAddress()));
                 break;
             default:
                 CommentData dataComment = CommentData.getInstance();
                 list.add(new BasicNameValuePair("id_maker",dataComment.getUid()));
                 list.add(new BasicNameValuePair("content", dataComment.getContent()));
                 list.add( new BasicNameValuePair("id_book", String.valueOf(dataComment.getBookId())));
-                list.add(new BasicNameValuePair("send_time",dataComment.getSendTime()));
-                Log.e("list is ", list.toString());
                 CommentData.clear();
                 break;
 
@@ -151,12 +146,20 @@ public class HttpTask implements Runnable {
                 entity = response.getEntity();
                 if(entity != null) {
                     content = EntityUtils.toString(entity);
-                    Log.e("HTTPTask","content is  " + content);
-                    if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG) || from.equals(BaseInfoFragment.TAG))
+                    if(TextUtils.isEmpty(content)) message.what = 1;
+                    Log.e("post","get content is " + content);
+                    if((from.equals("CommitBook") || from.equals(HandleBookDialogFragment.TAG))
                             && message.what != 1) {
                         message.what =  0;
                         message.obj = content;
-                    }else if(from.equals(LoginActivity.TAG) && message.what != 1) {
+                    }else if(from.equals(BaseInfoFragment.TAG) && message.what != 1) {
+                        if(Utils.changeBaseInfo(content)) {
+                            message.what = 0;
+                        }else {
+                            message.what = 1;
+                        }
+                    }
+                    else if(from.equals(LoginActivity.TAG) && message.what != 1) {
                         if(Utils.loginSuccess(content,con)) {
                             message.what = 0;
                         }else {
@@ -166,6 +169,8 @@ public class HttpTask implements Runnable {
                     else {
                         if(Utils.isCommentSucceed(content) && message.what != 1){
                             message.what = 0;
+                        }else {
+                            message.what = 1;
                         }
                     }
                 }
@@ -191,7 +196,6 @@ public class HttpTask implements Runnable {
     }
 
     private void doGet() {
-        Log.e("doget","url is " + url);
         get = new HttpGet(url);
         Message msg = handler.obtainMessage();
         try{
@@ -199,9 +203,6 @@ public class HttpTask implements Runnable {
             entity = response.getEntity();
             if(entity != null ) {
                 content = EntityUtils.toString(entity);
-                if (content != null) {
-                    Log.e("doGet","content is "  +content);
-                }
             }
         }catch (Exception e) {
             Log.e("HttpTask/doGet","error in doGet",e);
@@ -218,13 +219,15 @@ public class HttpTask implements Runnable {
                 get = null;
             }
         }
-        if(msg.what != 1) {
+        if(msg.what != 1 && !TextUtils.isEmpty(content)) {
+            Log.e("get","content is " + content );
             try{
-                Log.e("HttpTask","url is " + url);
                 if(url.contains(Constants.OLink) || url.contains(Constants.SEARCHLINK)) {
                     Utils.getListData(content,from);
                 }else if(url.contains(Constants.DetailLink)) {
-                    Utils.getDetailData(content);
+                    if( !Utils.getDetailData(content)) {
+                        msg.what = 1;
+                    }
                 }else if(url.contains(Constants.BASEMYCOMMIT)) {
                     msg.obj = Utils.getMyCommitData(content);
                 }else if(url.contains(Constants.MESSAGELISTLINK)) {
@@ -232,14 +235,14 @@ public class HttpTask implements Runnable {
                     Utils.getMessageList(content);
                 }else if(url.contains(Constants.MESSAGENUMBERLINK)) {
                     if(!TextUtils.isEmpty(content)) {
-                        JsonReader reader = new JsonReader(new StringReader(content));
+                        JSONObject json = null;
                         try {
-                            reader.beginObject();
-                            reader.nextName();
-                            msg.arg1 = Integer.valueOf(reader.nextString());
-                            reader.endObject();
+                            json = new JSONObject(content);
+                            msg.arg1 = json.getInt("msg");
                         }catch (Exception e) {
                             e.printStackTrace();
+                        }finally {
+                            json = null;
                         }
                     }
                 }

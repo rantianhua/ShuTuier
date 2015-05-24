@@ -13,6 +13,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.shutuier.R;
+import weike.util.Constants;
 import weike.util.GetUserPhotoWork;
 
 /**
@@ -34,6 +35,8 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
     ImageView imgBg;
     @InjectView(R.id.img_user_photo)
     ImageView userPhoto;
+    @InjectView(R.id.tv_personal_user_name)
+    TextView tvUserName;
 
     private final String TAG = "PersonalFragment";
     private static UpdateToolbar toolbarListener = null;
@@ -58,6 +61,12 @@ public class PersonalFragment extends Fragment implements View.OnClickListener{
         tvMyInfo.setOnClickListener(this);
         tvMySell.setOnClickListener(this);
         tvMySend.setOnClickListener(this);
+
+        tvUserName.setText(
+               context.getSharedPreferences(Constants.SP_USER,0)
+                .getString(Constants.NICNAME,"")
+        );
+
         showUserPhoto();
     }
 

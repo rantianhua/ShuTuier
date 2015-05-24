@@ -8,7 +8,7 @@ public class Constants {
     public static final String OLink = "http://www.tengshufang.com/API/get?mode=";
     public static final String DetailLink = "http://www.tengshufang.com/API/item?id=";
     public static final String ShareLink = "http://www.tengshufang.com/book?book=";
-    public static String CommentsLink = "http://www.tengshufang.comAPI/mark";
+    public static String CommentsLink = "http://www.tengshufang.com/API/mark";
     public static String COMMITLINK = "http://www.tengshufang.com/API/publish";
     public static String LOGINLINK = "http://www.tengshufang.com/API/login";
     public static String PICLINK = "http://7xi56i.com1.z0.glb.clouddn.com/";

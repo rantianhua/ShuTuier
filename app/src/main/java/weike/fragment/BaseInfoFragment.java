@@ -279,7 +279,7 @@ public class BaseInfoFragment extends Fragment implements View.OnClickListener{
                     pd.dismiss();
                     pd = null;
                 }
-                if(msg.what == 0 && msg.obj.toString().equals("true")) {
+                if(msg.what == 0) {
                     //保存成功，将新数据写入SharePrefernce
                     Toast.makeText(context,"保存成功",Toast.LENGTH_SHORT).show();
                     updateLocal();

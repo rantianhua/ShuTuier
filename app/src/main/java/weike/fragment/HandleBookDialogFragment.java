@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.google.gson.stream.JsonReader;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -149,17 +151,11 @@ public class HandleBookDialogFragment extends DialogFragment implements View.OnC
                 }
                 if(msg.what == 0) {
                     boolean res = false;
+                    JSONObject json = null;
                     try {
-                        JsonReader reader = new JsonReader(new StringReader((String)msg.obj));
-                        reader.beginObject();
-                        while (reader.hasNext()) {
-                            if(reader.nextName().equals("msg")) {
-                                res = reader.nextBoolean();
-                                break;
-                            }
-                        }
-                        reader.endObject();
-                    } catch (IOException e) {
+                        json = new JSONObject((String)msg.obj);
+                        res = json.getBoolean("msg");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     if(res) {

@@ -1,5 +1,5 @@
 
-package weike.wxapi;
+package weike.shutuier.wxapi;
 
 import com.umeng.socialize.weixin.view.WXCallbackActivity;
 

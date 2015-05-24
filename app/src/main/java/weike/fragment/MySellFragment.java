@@ -78,7 +78,6 @@ public class MySellFragment extends Fragment {
             }
             SharedPreferences sp = context.getSharedPreferences(Constants.SP_USER,0);
             String uid = sp.getString(Constants.UID,"");
-            uid = "A19CB7051089EFF8C95C755E7F93008E";   //测试uid
             try {
                 rlLoading.setVisibility(View.VISIBLE);
                 HttpTask task = new HttpTask(context, Utils.getMyCommitUrl(uid, Constants.TYPE_MYSELL),han,Constants.TYPE_MYSELL,null);

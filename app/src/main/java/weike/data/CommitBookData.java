@@ -17,7 +17,7 @@ public class CommitBookData {
     private String status;
     private String sendCondition;
     private String description;
-    private String remark;
+    //private String remark;
     private String coverUrl;
     private String isbn;
     private String uid;
@@ -46,8 +46,8 @@ public class CommitBookData {
         builder.append(this.sendCondition);
         builder.append("--");
         builder.append(this.description);
-        builder.append("--");
-        builder.append(this.remark);
+//        builder.append("--");
+//        builder.append(this.remark);
         builder.append("--");
         builder.append(this.coverUrl);
         builder.append("--");
@@ -177,30 +177,6 @@ public class CommitBookData {
         }
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getRemark() {
-        if(remark == null) {
-            return "";
-        }else {
-            return remark;
-        }
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getCoverUrl() {
-        if(coverUrl == null) {
-            return "";
-        }else {
-            return coverUrl;
-        }
-    }
-
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
     }
@@ -237,5 +213,13 @@ public class CommitBookData {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
     }
 }

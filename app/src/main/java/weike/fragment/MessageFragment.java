@@ -19,11 +19,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.protobuf.MessageOrBuilder;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import weike.adapter.MessageAdapter;
 import weike.data.BookMessageListData;
 import myinterface.MessageChangeListener;
+import weike.data.MessageBookData;
 import weike.shutuier.MainActivity;
 import weike.shutuier.MessageActivity;
 import weike.shutuier.R;
@@ -47,11 +50,11 @@ public class MessageFragment extends Fragment {
 
     private  Context context;
     private SharedPreferences sp;
-    private BookMessageListData data = null;
-    private MessageAdapter adapter;
+    private static BookMessageListData data = null;
+    private static MessageAdapter adapter;
     private Handler han;
 
-    private MessageChangeListener listener;
+    private static MessageChangeListener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,7 +82,6 @@ public class MessageFragment extends Fragment {
                 intent.putExtra(Constants.Book_Id,ItemId);
                 startActivity(intent);
                 intent = null;
-                listener.messageNumChange();
             }
         });
     }
@@ -89,6 +91,7 @@ public class MessageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         int num = sp.getInt(Constants.MESSAGE_NUMBER,0);
         if(num > 0) {
+            data.getList().clear();
             initData();
         }
     }
@@ -100,9 +103,7 @@ public class MessageFragment extends Fragment {
                 initHandler();
             }
             try {
-//                HttpTask task = new HttpTask(context,Constants.
-//                        MESSAGELISTLINK+sp.getString(Constants.UID,""),han,null,null);
-                HttpTask task = new HttpTask(context,Constants.MESSAGELISTLINK+"A19CB7051089EFF8C95C755E7F93008E",han,null,null);
+                HttpTask task = new HttpTask(context,Constants.MESSAGELISTLINK+sp.getString(Constants.UID,""),han,null,null);
                 HttpManager.startTask(task);
             }catch (Exception  e) {
                 e.printStackTrace();
@@ -145,11 +146,27 @@ public class MessageFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         sp = null;
+        listener = null;
+        adapter = null;
+        data = null;
     }
 
     public void setMessageChangListener(MessageChangeListener listener) {
         this.listener = null;
         this.listener = listener;
+    }
+
+    public static void changeMessageNum(String id) {
+        int i = 0;
+        for(MessageBookData message  : data.getList()) {
+            if(message.getId().equals(id)) {
+                break;
+            }
+            i++;
+        }
+        data.getList().remove(i);
+        adapter.updataData(data.getList());
+        listener.messageNumChange();
     }
 
 }

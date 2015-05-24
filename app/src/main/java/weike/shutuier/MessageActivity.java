@@ -19,7 +19,9 @@ import com.android.volley.toolbox.ImageLoader;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import myinterface.MessageChangeListener;
 import weike.data.BookOtherData;
+import weike.fragment.MessageFragment;
 import weike.util.Constants;
 import weike.util.GetUserPhotoWork;
 import weike.util.HttpManager;
@@ -42,9 +44,13 @@ public class MessageActivity extends ActionBarActivity {
     private ImageLoader imageLoader;
     private int ownerSize,commenterSize;
 
+    private String itemId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_message);
+
         ButterKnife.inject(this);
 
         ownerSize = getResources().getDimensionPixelSize(R.dimen.item_title_photo);
@@ -54,9 +60,9 @@ public class MessageActivity extends ActionBarActivity {
         setTitle("留言");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String id  = getIntent().getStringExtra(Constants.Book_Id);
-        if(id != null) {
-            getData(id);
+        itemId = getIntent().getStringExtra(Constants.Book_Id);
+        if(itemId != null) {
+            getData(itemId);
         }
     }
 
@@ -93,6 +99,7 @@ public class MessageActivity extends ActionBarActivity {
                                     otherData.getList().get(i).get("Head"),
                                     otherData.getList().get(i).get("send_time")), 0);
                         }
+                        MessageFragment.changeMessageNum(itemId);
                         break;
                     case 1:
                         Toast.makeText(MessageActivity.this, "加载留言失败", Toast.LENGTH_SHORT).show();
@@ -124,7 +131,7 @@ public class MessageActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
         }else {
-            new GetUserPhotoWork(imageView,this,false,commenterSize,commenterSize);
+            new GetUserPhotoWork(imageView,this,false,ownerSize,ownerSize);
         }
         return v;
     }
@@ -144,4 +151,5 @@ public class MessageActivity extends ActionBarActivity {
         super.onDestroy();
         BookOtherData.getInstance().getList().clear();
     }
+
 }

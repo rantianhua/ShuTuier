@@ -67,8 +67,6 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
     TextView tvOwner;
     @InjectView(R.id.tv_book_details_decription)
     TextView tvDetail;
-    @InjectView(R.id.tv_book_details_remark)
-    TextView tvRemark;
     @InjectView(R.id.ll_comments_list)
     LinearLayout ll;
     @InjectView(R.id.rl_detail_liuyan)
@@ -110,7 +108,12 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         setContentView(R.layout.activity_book_details);
         ownerSize = getResources().getDimensionPixelSize(R.dimen.item_title_photo);
         commenterSize = getResources().getDimensionPixelSize(R.dimen.comment_list_user_size);
-        initView();
+
+        try {
+            initView();
+        } catch (Exception e) {
+            finish();
+        }
     }
 
     private void initView() {
@@ -124,7 +127,8 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
         Intent intent = getIntent();
         itemId = intent.getStringExtra(Constants.EXTRA_ITEM_ID);
         if(!TextUtils.isEmpty(itemId)) {
-            String linkUrl = Constants.DetailLink + itemId;
+            String linkUrl = Constants.DetailLink + itemId + "&openId=" + getSharedPreferences(Constants.SP_USER,0).getString(Constants.UID,
+                    "");
             final String from = intent.getStringExtra(Constants.REQUEST_FROM_FRAGMENT);
             try {
                 HttpTask task = new HttpTask(this,linkUrl, hanGetDetail,from,null);
@@ -148,20 +152,19 @@ public class BookDetailActivity extends ActionBarActivity implements View.OnClic
             builder.append("作者：");
             builder.append(item.getAuthorName());
             tvAuthor.setText(builder.toString());
-            builder.delete(0,builder.length());
+            builder.delete(0, builder.length());
             builder.append("出版社：");
             builder.append(item.getPublisher());
             tvPublisher.setText(builder);
-            builder.delete(0,builder.length());
+            builder.delete(0, builder.length());
             builder.append("￥");
             builder.append(item.getOriginPrice());
             tvOPrice.setText(builder);
-            builder.delete(0,builder.length());
+            builder.delete(0, builder.length());
             builder.append("￥");
             builder.append(item.getSellPrice());
             tvSPrice.setText(builder);
             tvDetail.setText(item.getDetail());
-            tvRemark.setText(item.getRemark());
             builder.delete(0,builder.length());
             builder = null;
             initBottomView();

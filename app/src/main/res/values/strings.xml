@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">藤书坊</string>
+    <string name="app_name">腾书坊</string>
     <string name="my_purpose">以书会友，以书交友</string>
     <string name="qq_login">QQ登陆</string>
     <string name="sina_login">新浪微博登陆</string>
@@ -62,7 +62,6 @@
     </string-array>
 
     <string-array name="colleges">
-        <item>全部</item>
         <item>计算机学院</item>
         <item>通电工程学院</item>
         <item>电子工程学院</item>

@@ -150,11 +150,6 @@ public class Utils {
                     while (reader.hasNext()) {
                         String key = reader.nextName();
                         String value = reader.nextString();
-//                        if(key.equals("ID") || key.equals("collection") || key.equals("mark") || key.equals("share")) {
-//                            value = reader.nextInt();
-//                        }else{
-//                            value = reader.nextString();
-//                        }
                         updateData(key, value, item);
                     }
                     ListBookData.getInstance(from).addItems(item);
@@ -227,8 +222,9 @@ public class Utils {
         }
     }
 
-    public static void getDetailData(String content) {
-        if(TextUtils.isEmpty(content)) return;
+    public static boolean getDetailData(String content) {
+        if(TextUtils.isEmpty(content)) return false;
+        boolean success = true;
         JsonReader reader = null;
         try{
             reader = new JsonReader(new StringReader(content));
@@ -295,6 +291,7 @@ public class Utils {
             reader.endObject();
         }catch (Exception e) {
             Log.e("Utils/getDetailData","error in getDetailData",e);
+            success = false;
         }finally {
             try {
                 if(reader != null) {
@@ -305,34 +302,21 @@ public class Utils {
                 e.printStackTrace();
             }
         }
+        return success;
     }
 
     public static boolean isCommentSucceed(String content) {
-        Log.e("isCommentSucceed",content + "isCommentSucceed");
         if(TextUtils.isEmpty(content)) return false;
-        JsonReader reader = null;
+        JSONObject json = null;
         Boolean value = false;
         try {
-            reader = new JsonReader(new StringReader(content));
-            reader.setLenient(true);
-            reader.beginObject();
-            while (reader.hasNext()) {
-                String key  = reader.nextName();
-                value =  reader.nextBoolean();
-                key = null;
-            }
-            reader.endObject();
+            json = new JSONObject(content);
+            value = json.getBoolean("msg");
         }catch (Exception e) {
             Log.e("Utils/getDetailData","error in isCommentSucceed",e);
+            value = false;
         }finally {
-            try {
-                if(reader != null) {
-                    reader.close();
-                    reader = null;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+          json = null;
         }
         return value;
     }
@@ -365,6 +349,7 @@ public class Utils {
 
     //解析来自豆瓣api的json数据
     public static Map<String,String> cutDoubanData(String data){
+        if(TextUtils.isEmpty(data)) return null;
         JsonReader reader = null;
         Map<String ,String> map = new HashMap<>();
         try {
@@ -481,19 +466,20 @@ public class Utils {
     public static void getMessageList(String content) {
         if(TextUtils.isEmpty(content)) return;
         BookMessageListData data = BookMessageListData.getInstance();
-        JsonReader reader = new JsonReader(new StringReader(content));
+        JsonReader reader = null;
         try {
+            reader = new JsonReader(new StringReader(content));
             reader.beginArray();
             while (reader.hasNext()) {
-                MessageBookData messageBookData = new MessageBookData();
                 reader.beginObject();
+                MessageBookData messageBookData = new MessageBookData();
                 while (reader.hasNext()) {
                     String name = reader.nextName();
                     if(name.equals("Name")) {
-                        messageBookData.setName(reader.nextName());
+                        messageBookData.setName(reader.nextString());
                     }
                     if(name.equals("ID")) {
-                        messageBookData.setId(reader.nextString());
+                        messageBookData.setId(String.valueOf(reader.nextInt()));
                     }
                 }
                 reader.endObject();
@@ -501,7 +487,38 @@ public class Utils {
             }
             reader.endArray();
         }catch (Exception e) {
-            e.printStackTrace();
+            Log.e("getMessageList", "error in getMessageList", e);
+        }finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                reader = null;
+            }
         }
+    }
+
+    public static boolean changeBaseInfo(String content) {
+        if(TextUtils.isEmpty(content)) {
+            return false;
+        }
+        JSONObject json = null;
+        UserInfoData data = UserInfoData.getInstance();
+        try {
+            json = new JSONObject(content);
+            if(json.getString("thirdName").equals(data.getNicName())) {
+                data = null;
+                return true;
+            }
+        }catch (Exception e) {
+            Log.e("changeBaseInfo","error in change base info",e);
+            if(json != null) {
+                json = null;
+            }
+        }
+        json = null;
+        return false;
     }
 }

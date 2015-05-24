@@ -64,7 +64,6 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="1.4"
                 android:id="@+id/tv_setting_version"
                 android:gravity="center"/>
 

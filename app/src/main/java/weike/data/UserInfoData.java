@@ -18,6 +18,7 @@ public class UserInfoData {
     private String wxNumber = "";
     private String email = "";
     private String loginWay = "";
+    private String feeling =  "";   //个性签名
 
     public String getLoginWay() {
         return loginWay;
@@ -52,7 +53,7 @@ public class UserInfoData {
     }
 
     public String getAddress() {
-        return address;
+        return address == null ? "" : address;
     }
 
     public void setAddress(String address) {
@@ -126,5 +127,13 @@ public class UserInfoData {
         if(data  != null) {
             data = null;
         }
+    }
+
+    public void setFeeling(String feeling) {
+        this.feeling = feeling;
+    }
+
+    public String getFeeling() {
+        return feeling;
     }
 }

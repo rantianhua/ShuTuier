@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,6 +42,8 @@ import com.qiniu.android.storage.UpCompletionHandler;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 
 import weike.data.CommitBookData;
@@ -61,7 +64,7 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
         ,View.OnTouchListener{
 
     private EditText etBookName,etAuthor,
-            etPublisher,etOPrice,etSPrice,etDescription,etRemarks,etNumber,etSendCondition;
+            etPublisher,etOPrice,etSPrice,etDescription,etNumber,etSendCondition;
     private Spinner mainClassify,subClassify,howOld,college;
     private CheckBox cbPay,cbGive,cbSell,cbAskBuy;
     private ImageView imgCover;
@@ -79,7 +82,7 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
     private ProgressDialog pd = null;
     private   ArrayAdapter<String> arrayAdapter = null; //subClassify的适配器
     private  String isbn = null; //记录isbn号
-    private String category = "教材";   //书的分类
+    private String category = "计算机学院";   //书的分类
     private int oOrn = 10; //记录选择的新旧程度
     private LayoutTransition layoutTransition = null;   //布局动画
     private String coverDouBanUrl = null; //从豆瓣获取的封面url
@@ -115,7 +118,7 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
         cbSell = (CheckBox) v.findViewById(R.id.cb_sell);
         cbAskBuy = (CheckBox) v.findViewById(R.id.cb_ask_buy);
         etDescription = (EditText) v.findViewById(R.id.et_descripition);
-        etRemarks = (EditText) v.findViewById(R.id.et_remarks);
+        //etRemarks = (EditText) v.findViewById(R.id.et_remarks);
         imgCover = (ImageView) v.findViewById(R.id.img_book_cover);
         btnAddCover = (Button) v.findViewById(R.id.btn_add_book_cover);
         btnReset = (Button) v.findViewById(R.id.btn_reset);
@@ -133,7 +136,7 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
 
         etSendCondition.setOnTouchListener(this);
         etDescription.setOnTouchListener(this);
-        etRemarks.setOnTouchListener(this);
+        //etRemarks.setOnTouchListener(this);
 
         mainClassify.setOnItemSelectedListener(this);
         subClassify.setOnItemSelectedListener(this);
@@ -414,18 +417,27 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
                     pd = null;
                 }
                 String res = (String)msg.obj;
-                if(!TextUtils.isEmpty(res)) {
-                    if(res.equals("true")) {
-                        reset();
-                        showToast("发布成功！");
-                    }else {
-                        showToast("发布失败！");
+                boolean success = false;
+                JSONObject json = null;
+                try {
+                    json = new JSONObject(res);
+                    if(json.getString("msg").equals("true")) {
+                        success = true;
                     }
-                    res = null;
+                }catch (Exception e) {
+                    Log.e(TAG,"error in cut response data",e);
+                }finally {
+                    if(json != null) {
+                      json = null;
+                    }
+                }
+                if(success) {
+                    reset();
+                    showToast("发布成功！");
                 }else {
                     showToast("发布失败！");
                 }
-
+                res = null;
             }
         };
     }
@@ -453,7 +465,7 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
             etSendCondition.setText("");
         }
         etDescription.setText("");
-        etRemarks.setText("");
+        //etRemarks.setText("");
         imgCover.setImageResource(R.drawable.def);
     }
 
@@ -539,12 +551,6 @@ public class CommitFragment extends Fragment implements AdapterView.OnItemSelect
             commitData.setDescription(text.toString());
         }else {
             commitData.setDescription("");
-        }
-        text = etRemarks.getText();
-        if(!TextUtils.isEmpty(text)){
-            commitData.setRemark(text.toString());
-        }else {
-            commitData.setRemark("");
         }
         if(isbn != null) {
             commitData.setIsbn(isbn);

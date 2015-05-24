@@ -171,38 +171,12 @@
                 android:layout_alignRight="@+id/tv_book_details_origin_price"
                 android:layout_alignEnd="@+id/tv_book_details_origin_price"/>
 
-            <TextView
-                android:id="@+id/tv_remark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/remarks"
-                android:textSize="16sp"
-                android:layout_below="@+id/tv_send_condition"
-                android:layout_marginTop="10dp"
-                android:layout_alignLeft="@+id/img_book_details_user"
-                android:layout_alignStart="@+id/img_book_details_user"
-                />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_book_details_remark"
-                android:layout_below="@+id/tv_remark"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                android:layout_alignStart="@+id/img_book_details_user"
-                android:layout_alignLeft="@+id/img_book_details_user"
-                android:layout_alignRight="@+id/tv_book_details_origin_price"
-                android:layout_alignEnd="@+id/tv_book_details_origin_price"
-                />
-
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
                 android:id="@+id/margin3"
                 android:background="@color/list_item_bottom"
-                android:layout_below="@+id/tv_book_details_remark"/>
+                android:layout_below="@+id/tv_send_condition"/>
 
             <TextView
                 android:layout_width="wrap_content"

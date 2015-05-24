@@ -31,12 +31,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Be Winner"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/img_user_photo"
                 android:layout_marginTop="10dp"
                 android:textSize="18sp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:id="@+id/tv_personal_user_name"/>
 
             <TextView
                 android:layout_width="match_parent"

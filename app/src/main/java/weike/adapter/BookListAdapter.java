@@ -136,10 +136,10 @@ public class BookListAdapter extends BaseAdapter {
                 holder.tvSPrice.setText("￥"+item.getSellPrice());
                 holder.tvSNum.setText(item.getShareNumber()+"");
                 holder.tvMNum.setText(item.getMessageNumber()+"");
+                loader.get(list.get(position).getImgUrl(),ImageLoader.getImageListener(holder.imgView,R.drawable.def,R.drawable.def),w,h);
             } catch (Exception e) {
                 Log.e("BookListAdapter","error in setTextView",e);
             }
-            loader.get(list.get(position).getImgUrl(),ImageLoader.getImageListener(holder.imgView,R.drawable.def,R.drawable.def),w,h);
             return convertView;
         }
 

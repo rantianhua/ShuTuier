@@ -103,7 +103,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
                 logout();
                 break;
             case R.id.rl_setting_update_version:
-                Toast.makeText(context,"版本更新",Toast.LENGTH_SHORT).show();
                 UmengUpdateAgent.forceUpdate(context);
                 break;
         }
